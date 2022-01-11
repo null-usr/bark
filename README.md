@@ -1,1 +1,2 @@
-readme for initial commit
+cd dialogue-editor-client
+npm start
