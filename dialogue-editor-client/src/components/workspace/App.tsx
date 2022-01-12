@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 import './App.css';
-import DialogueNode from './DialogueNode';
-import DialogueForm from './DialogueForm';
+import DialogueNode from '../../helpers/DialogueNode';
+import DialogueForm from '../../helpers/DialogueForm';
 import ReactFlow, {
   removeElements,
   addEdge,

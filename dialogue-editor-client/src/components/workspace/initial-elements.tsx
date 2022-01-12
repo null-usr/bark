@@ -1,6 +1,6 @@
 import { Elements } from 'react-flow-renderer';
-import DialogueNode from './DialogueNode';
-import DialogueEdge from './DialogueEdge';
+import DialogueNode from '../../helpers/DialogueNode';
+import DialogueEdge from '../../helpers/DialogueEdge';
 
 const initialElements : Elements<any> = [
   new DialogueNode("Character 1", "Hello world!"),
