@@ -52,7 +52,7 @@ function App() {
       return;
     setElements((els: any[]) => {
       let elems = [...els];
-      elems.push(new DialogueNode(event.character_name, event.dialog));
+      elems.push(new DialogueNode(event.character_name, event.dialog, 250, 250));
       console.log(elems);
       return elems;
     });

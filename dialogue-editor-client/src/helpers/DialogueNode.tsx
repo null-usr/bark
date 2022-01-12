@@ -2,7 +2,7 @@ import { XYPosition } from 'react-flow-renderer';
 
 // this is a temporary class - eventually we'll need events too I assume
 class DialogueNode {
-	private static last_id: number = 0;
+	private static last_id: number = 1;
 	id: string;
 	private _character_name: string = "";
 	get character_name() {
@@ -33,11 +33,11 @@ class DialogueNode {
 	position: XYPosition;
 
 	// ctor
-	constructor(character_name: string, dialogue: string) {
+	constructor(character_name: string, dialogue: string, x: number, y: number) {
 		this.character_name = character_name;
 		this.dialogue = dialogue;
 		this.id = (DialogueNode.last_id++).toString();
-		this.position = { x: 250, y: 250 };
+		this.position = { x: x, y: y };
 		this._set_data();
 	}
 
