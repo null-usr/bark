@@ -1,10 +1,10 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const HeaderContainer = styled.div<{
-	background?: string
+    background?: string
 }>`
-	// width: 100%;
-	background: ${({background}) => background || "grey"};
-	color: white;
-	padding: 20px;
+    // width: 100%;
+    background: ${({ background }) => background || 'grey'};
+    color: white;
+    padding: 20px;
 `

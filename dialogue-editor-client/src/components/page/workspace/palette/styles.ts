@@ -1,10 +1,10 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const PaletteContainer = styled.div`
-	// height: 100%;
-	display: flex;
-	flex-direction: column;
-	background: yellow;
+    // height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: yellow;
 
-	padding: 20px;
+    padding: 20px;
 `

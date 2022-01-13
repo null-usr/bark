@@ -1,0 +1,76 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "airbnb",
+        "prettier",
+        "prettier/prettier",
+        "plugin:prettier/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 13,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "no-use-before-define":"off",
+        "react/button-has-type": 0,
+        "react/no-unescaped-entities": 0,
+        "no-unused-vars": 0,
+        "no-underscore-dangle": 0,
+        "camelcase": 0,
+        "no-plusplus": 0,
+        "react/function-component-definition": 0,
+        "react/jsx-no-bind": 0,
+        "no-console": 0,
+        "react/destructuring-assignment": 0,
+      "@typescript-eslint/no-use-before-define":[
+         "error"
+      ],
+      "react/jsx-filename-extension":[
+         "warn",
+         {
+            "extensions":[
+               ".tsx"
+            ]
+         }
+      ],
+      "import/extensions":[
+         "error",
+         "ignorePackages",
+         {
+            "ts":"never",
+            "tsx":"never"
+         }
+      ],
+      "no-shadow":"off",
+      "@typescript-eslint/no-shadow":[
+         "error"
+      ],
+      "max-len":[
+         "warn",
+         {
+            "code":80
+         }
+      ],
+      "import/prefer-default-export":"off",
+      "react/prop-types":"off"
+    },
+    "settings":{
+        "import/resolver":{
+           "typescript":{
+              
+           }
+        }
+    }
+}
