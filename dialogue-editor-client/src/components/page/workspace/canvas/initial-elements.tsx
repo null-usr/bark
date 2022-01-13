@@ -1,7 +1,7 @@
 import { Elements } from 'react-flow-renderer';
-import DialogueNode from '../../helpers/DialogueNode';
-import DialogueEdge from '../../helpers/DialogueEdge';
-import StartNode from '../../helpers/StartNode';
+import DialogueNode from '../../../../helpers/DialogueNode';
+import DialogueEdge from '../../../../helpers/DialogueEdge';
+import StartNode from '../../../../helpers/StartNode';
 
 const initialElements : Elements<any> = [
   new StartNode(),
