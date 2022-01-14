@@ -20,11 +20,11 @@ Things like grouping can be thought about later
 We can offer several prebuilt node types
 
 * Root Node (Utility node)
-* * Mandatory node, the entry point into that scene's dialogue
+  * Mandatory node, the entry point into that scene's dialogue
 * Basic Dialogue Node
-* * For basic dialogue. Field for dialogue and field for next node. One entry one exit
+  * For basic dialogue. Field for dialogue and field for next node. One entry one exit
 * Choice Node(?)
-* * One entry, multiple exits
+  * One entry, multiple exits
 
 # File Format
 
