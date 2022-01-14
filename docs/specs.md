@@ -14,7 +14,7 @@ Dragging an edge into an empty space should automatically create a node that's t
 
 
 Things like grouping can be thought about later
-Another great feature would be the ability to drag a node or node group onto an edge and have it be inserted into that space. This will only work for the "text" attribute so we can just follow the link down to the end.
+Another great feature would be the ability to drag a node or node group onto an edge and have it be inserted into that space. Just follow the chain of "next" until we get to a null or invalid ID.
 
 # Node Types
 
