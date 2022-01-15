@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from 'styled-components';
 
 export const WorkspaceContainer = styled.div`
     display: flex;
@@ -7,4 +7,9 @@ export const WorkspaceContainer = styled.div`
     // width: 100%;
 
     flex: 1;
-`
+
+    .reactflow-wrapper {
+        flex-grow: 1;
+        height: 100%;
+    }
+`;
