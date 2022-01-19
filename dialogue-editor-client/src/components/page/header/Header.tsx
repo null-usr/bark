@@ -44,19 +44,26 @@ function Header() {
 
     const handleFileRead = (e: any) => {
         const content = fileReader.result
-        const flow: FlowExportObject | null = JSON.parse(content as string)
+        const flow: FlowExportObject | null = JSON.parse(
+            content as string,
+            (k, v) => {
+                const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
+
+                return matches ? Symbol.for(matches[1]) : v
+            }
+        )
 
         // need to access the setElements of our canvas somehow
         if (flow) {
             const [x = 0, y = 0] = flow.position
             // rFlow.setElements(flow.elements || [])
 
-            for (let index = 0; index < flow.elements.length; index++) {
-                if (flow.elements[index].data) {
-                    flow.elements[index].data.label.$$typeof =
-                        Symbol.for('react.element')
-                }
-            }
+            // for (let index = 0; index < flow.elements.length; index++) {
+            //     if (flow.elements[index].data) {
+            //         flow.elements[index].data.label.$$typeof =
+            //             Symbol.for('react.element')
+            //     }
+            // }
             console.log(flow.elements)
             rFlow.setElements(flow.elements)
             transform({ x, y, zoom: flow.zoom || 0 })
@@ -73,7 +80,9 @@ function Header() {
         if (rFlow.reactFlowInstance) {
             const flow = rFlow.reactFlowInstance.toObject()
 
-            const out = JSON.stringify(flow)
+            const out = JSON.stringify(flow, (k, v) =>
+                typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
+            )
 
             const blob = new Blob([out], { type: 'application/json' })
             const href = URL.createObjectURL(blob)
