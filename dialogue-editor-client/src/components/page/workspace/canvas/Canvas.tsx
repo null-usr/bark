@@ -27,6 +27,8 @@ const customModalStyles = {
     },
 }
 
+const getNodeId = () => `randomnode_${+new Date()}`
+
 const Canvas: React.FC<{}> = (props) => {
     // for modal
     const [modalIsOpen, setIsOpen] = React.useState(false)
@@ -34,7 +36,16 @@ const Canvas: React.FC<{}> = (props) => {
 
     // on add option click, open the modal
     function addOption(event: any) {
-        setIsOpen(true)
+        // setIsOpen(true)
+        const newNode = {
+            id: `random_node-${getNodeId()}`,
+            data: { label: 'Added node' },
+            position: {
+                x: Math.random() * window.innerWidth - 100,
+                y: Math.random() * window.innerHeight,
+            },
+        }
+        rFlow.setElements((els) => els.concat(newNode))
     }
 
     function closeModal() {
