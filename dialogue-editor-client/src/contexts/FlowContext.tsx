@@ -5,7 +5,7 @@ import React, { createContext, useMemo, useState } from 'react'
 import { Elements } from 'react-flow-renderer'
 
 type reactFlowInstance = {
-    project: (position: { x: number; y: number }) => {}
+    project: (position: { x: number; y: number }) => { x: number, y: number}
     fitView: (padding: number, includeHiddenNodes: boolean) => {}
     zoomIn(): void
     zoomOut(): void

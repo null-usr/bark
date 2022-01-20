@@ -126,12 +126,37 @@ const Canvas: React.FC<{}> = (props) => {
             x: event.clientX - reactFlowBounds.left,
             y: event.clientY - reactFlowBounds.top,
         });
+<<<<<<< HEAD
         const newNode = {
             id: uuid(),
             type,
             position,
             data: { label: `${type} node` },
         };
+=======
+        let newNode: any;
+        switch (type) {
+            case 'dialogue':
+                newNode = new DialogueNode(
+                    'character name',
+                    'sample dialogue',
+                    position.x,
+                    position.y
+                );
+                break;
+            case 'option 2':
+                newNode = {};
+                break;
+            default:
+                newNode = {
+                    id: getId(),
+                    type,
+                    position,
+                    data: { label: `${type} node` },
+                };
+                break;
+        }
+>>>>>>> d50fa2c (feat: add dialogue palette item)
 
         rFlow.setElements((els: any[]) => {
             return els.concat(newNode);
