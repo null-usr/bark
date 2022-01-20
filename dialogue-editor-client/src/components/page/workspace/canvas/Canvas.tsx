@@ -104,12 +104,28 @@ const Canvas: React.FC<{}> = (props) => {
             x: event.clientX - reactFlowBounds.left,
             y: event.clientY - reactFlowBounds.top,
         });
-        const newNode = {
-            id: getId(),
-            type,
-            position,
-            data: { label: `${type} node` },
-        };
+        let newNode: any;
+        switch (type) {
+            case 'dialogue':
+                newNode = new DialogueNode(
+                    'character name',
+                    'sample dialogue',
+                    position.x,
+                    position.y
+                );
+                break;
+            case 'option 2':
+                newNode = {};
+                break;
+            default:
+                newNode = {
+                    id: getId(),
+                    type,
+                    position,
+                    data: { label: `${type} node` },
+                };
+                break;
+        }
 
         setElements((es) => es.concat(newNode));
     };

@@ -39,6 +39,13 @@ const Workspace: React.FC<{}> = (props) => {
                 >
                     Output Node
                 </div>
+                <div
+                    className="node react-flow__node-output"
+                    onDragStart={(event) => onDragStart(event, 'dialogue')}
+                    draggable
+                >
+                    Dialogue Node
+                </div>
             </Palette>
             <Canvas />
         </WorkspaceContainer>
