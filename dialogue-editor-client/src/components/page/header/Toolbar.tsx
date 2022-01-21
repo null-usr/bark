@@ -9,6 +9,7 @@ import { FlowContext } from '../../../contexts/FlowContext'
 import { Dropdown } from '../../dropdown/Dropdown'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 import initialElements from '../workspace/canvas/initial-elements'
+import { LoadScene, SaveScene } from '../../../helpers/serialization'
 
 function buildFileSelector() {
     const fileSelector = document.createElement('input')
@@ -17,7 +18,7 @@ function buildFileSelector() {
     return fileSelector
 }
 
-function Header() {
+function Toolbar() {
     const fileReader = new FileReader()
     const nodes = useStoreState((store) => store.nodes)
     // const [elements, setElements] = useState(null)
@@ -44,14 +45,7 @@ function Header() {
 
     const handleFileRead = (e: any) => {
         const content = fileReader.result
-        const flow: FlowExportObject | null = JSON.parse(
-            content as string,
-            (k, v) => {
-                const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
-
-                return matches ? Symbol.for(matches[1]) : v
-            }
-        )
+        const flow: FlowExportObject | null = LoadScene(content as string)
 
         // need to access the setElements of our canvas somehow
         if (flow) {
@@ -80,9 +74,7 @@ function Header() {
         if (rFlow.reactFlowInstance) {
             const flow = rFlow.reactFlowInstance.toObject()
 
-            const out = JSON.stringify(flow, (k, v) =>
-                typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
-            )
+            const out = SaveScene(flow)
 
             const blob = new Blob([out], { type: 'application/json' })
             const href = URL.createObjectURL(blob)
@@ -126,4 +118,4 @@ function Header() {
     )
 }
 
-export default Header
+export default Toolbar
