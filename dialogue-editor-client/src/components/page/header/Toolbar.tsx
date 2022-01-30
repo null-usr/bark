@@ -9,7 +9,11 @@ import { FlowContext } from '../../../contexts/FlowContext'
 import { Dropdown } from '../../dropdown/Dropdown'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 import initialElements from '../workspace/canvas/initial-elements'
-import { LoadScene, SaveScene } from '../../../helpers/serialization'
+import {
+    LoadScene,
+    SaveScene,
+    SerializeScene,
+} from '../../../helpers/serialization'
 
 function buildFileSelector() {
     const fileSelector = document.createElement('input')
@@ -87,6 +91,21 @@ function Toolbar() {
         }
     }, [rFlow.reactFlowInstance])
 
+    const onExport = () => {
+        if (rFlow.reactFlowInstance) {
+            const out = SerializeScene(rFlow)
+
+            const blob = new Blob([out], { type: 'application/json' })
+            const href = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = href
+            link.download = 'file.json'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        }
+    }
+
     // load our initial elemnets up
     const onNew = () => {
         rFlow.setElements(initialElements)
@@ -104,8 +123,8 @@ function Toolbar() {
                 <Dropdown label="File">
                     <button onClick={onNew}>New</button>
                     <button onClick={handleFileSelect}>Open</button>
-                    <button onClick={onSave}>Download</button>
-                    <button>Close</button>
+                    <button onClick={onSave}>Save</button>
+                    <button onClick={onExport}>Export</button>
                     <div>File 3</div>
                 </Dropdown>
                 <button>Edit</button>

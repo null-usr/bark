@@ -135,9 +135,9 @@ class BasicNode {
         if (this.nodeData.current) {
             const data = this.nodeData.current.getNodeData()
             const output: any = {}
-            output.id = this.id
+            output[this.id] = {}
             data.forEach((element: iFieldData) => {
-                output.id[element.key] = element.value
+                output[this.id][element.key] = element.value
             })
             return output
         }

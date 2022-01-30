@@ -19,7 +19,7 @@ type reactFlowInstance = {
     getElements(): Elements
 }
 
-interface IReactFlow {
+export interface IReactFlow {
     reactFlowInstance: reactFlowInstance | undefined
     setReactFlowInstance: React.Dispatch<
         React.SetStateAction<reactFlowInstance | undefined>
