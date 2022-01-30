@@ -134,8 +134,12 @@ class BasicNode {
     public serialize = (): Object => {
         if (this.nodeData.current) {
             const data = this.nodeData.current.getNodeData()
-            console.log(data)
-            return {}
+            const output: any = {}
+            output.id = this.id
+            data.forEach((element: iFieldData) => {
+                output.id[element.key] = element.value
+            })
+            return output
         }
         return {}
     }
