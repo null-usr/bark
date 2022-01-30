@@ -7,24 +7,26 @@ import { FieldContainer } from './styles'
 
 export const StringField: React.FC<{
     k: string
-    v?: string
+    v: string
+    index: number
+    updateField(index: number, k: string, v: string): void
     del?(k: string): void
-}> = ({ k, v, del }) => {
-    const [key, setKey] = useState<string>(k)
-    const [value, setValue] = useState<string | undefined>(v)
+}> = ({ k, v, index, updateField, del }) => {
+    // const [key, setKey] = useState<string>(k)
+    // const [value, setValue] = useState<string | undefined>(v)
 
     return (
         <FieldContainer>
             <input
                 type="text"
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
+                value={k}
+                onChange={(e) => updateField(index, e.target.value, v)}
             />
             :
             <input
                 type="text"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
+                value={v}
+                onChange={(e) => updateField(index, k, e.target.value)}
             />
             <button onClick={del ? () => del(k) : undefined}>Delete</button>
         </FieldContainer>
