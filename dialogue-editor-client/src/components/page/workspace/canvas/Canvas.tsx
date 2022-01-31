@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import Modal from 'react-modal'
 import ReactFlow, {
+    ReactFlowProvider,
     removeElements,
     addEdge,
     MiniMap,
@@ -8,6 +9,7 @@ import ReactFlow, {
     Background,
     Elements,
 } from 'react-flow-renderer'
+import { v4 as uuid } from 'uuid'
 import DialogueNode from '../../../../helpers/DialogueNode'
 import DialogueForm from '../../../../helpers/DialogueForm'
 // import initialElements from './initial-elements'
@@ -60,6 +62,8 @@ const Canvas: React.FC<{}> = (props) => {
     // }, [rFlow.elements])
 
     // const [elements, rFlow.setElements] = useState(initialElements)
+    const reactFlowWrapper = useRef<any>(null)
+
     const onElementsRemove = (elementsToRemove: Elements<any>) =>
         rFlow.setElements((els: any) => removeElements(elementsToRemove, els))
     const onConnect = (params: any) =>
@@ -87,13 +91,69 @@ const Canvas: React.FC<{}> = (props) => {
         rFlow.setElements((els: any[]) => {
             return els.concat(newNode)
         })
-
-        console.log(rFlow.elements)
     }
 
     function onLoad(_reactFlowInstance: any) {
         _reactFlowInstance.fitView()
         rFlow.setReactFlowInstance(_reactFlowInstance)
+    }
+
+    // ====================== DRAG & DROP BEHAVIOUR ===============================
+    const onDragOver = (event: {
+        preventDefault: () => void
+        dataTransfer: { dropEffect: string }
+    }) => {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+    }
+
+    const onDrop = (event: {
+        preventDefault: () => void
+        dataTransfer: { getData: (arg0: string) => any }
+        clientX: number
+        clientY: number
+    }) => {
+        event.preventDefault()
+
+        if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
+            return
+        }
+
+        const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
+        const type = event.dataTransfer.getData('application/reactflow')
+        const position = rFlow.reactFlowInstance.project({
+            x: event.clientX - reactFlowBounds.left,
+            y: event.clientY - reactFlowBounds.top,
+        })
+        let newNode: any
+        switch (type) {
+            case 'dialogue':
+                newNode = new DialogueNode(
+                    'character name',
+                    'sample dialogue',
+                    position.x,
+                    position.y
+                )
+                break
+            case 'option 2':
+                newNode = {}
+                break
+            case 'base':
+                newNode = new BasicNode(position.x, position.y, uuid())
+                break
+            default:
+                newNode = {
+                    id: uuid(),
+                    type,
+                    position,
+                    data: { label: `${type} node` },
+                }
+                break
+        }
+
+        rFlow.setElements((els: any[]) => {
+            return els.concat(newNode)
+        })
     }
 
     Modal.setAppElement('#root')
@@ -110,37 +170,46 @@ const Canvas: React.FC<{}> = (props) => {
                 <button onClick={closeModal}>close</button>
                 <DialogueForm callback={submitModal} />
             </Modal>
+            <ReactFlowProvider>
+                <div
+                    style={{ width: '100%', height: '100%' }}
+                    className="reactflow-wrapper"
+                    ref={reactFlowWrapper}
+                >
+                    <ReactFlow
+                        elements={rFlow.elements}
+                        onElementsRemove={onElementsRemove}
+                        onConnect={onConnect}
+                        onLoad={onLoad}
+                        onDragOver={onDragOver}
+                        onDrop={onDrop}
+                        snapToGrid
+                        snapGrid={[15, 15]}
+                        style={{ height: '100%', width: '100%', zIndex: 0 }}
+                    >
+                        <MiniMap
+                            nodeStrokeColor={(n) => {
+                                if (n.style?.background)
+                                    return n.style.background as string
+                                if (n.type === 'input') return '#0041d0'
+                                if (n.type === 'output') return '#ff0072'
+                                if (n.type === 'default') return '#1a192b'
 
-            <ReactFlow
-                elements={rFlow.elements}
-                onElementsRemove={onElementsRemove}
-                onConnect={onConnect}
-                onLoad={onLoad}
-                snapToGrid
-                snapGrid={[15, 15]}
-                style={{ height: '100%', width: '100%', zIndex: 0 }}
-            >
-                <MiniMap
-                    nodeStrokeColor={(n) => {
-                        if (n.style?.background)
-                            return n.style.background as string
-                        if (n.type === 'input') return '#0041d0'
-                        if (n.type === 'output') return '#ff0072'
-                        if (n.type === 'default') return '#1a192b'
+                                return '#1a192b'
+                            }}
+                            nodeColor={(n) => {
+                                if (n.style?.background)
+                                    return n.style.background as string
 
-                        return '#1a192b'
-                    }}
-                    nodeColor={(n) => {
-                        if (n.style?.background)
-                            return n.style.background as string
-
-                        return '#fff'
-                    }}
-                    nodeBorderRadius={2}
-                />
-                <Controls />
-                <Background color="#aaa" gap={16} />
-            </ReactFlow>
+                                return '#fff'
+                            }}
+                            nodeBorderRadius={2}
+                        />
+                        <Controls />
+                        <Background color="#aaa" gap={16} />
+                    </ReactFlow>
+                </div>
+            </ReactFlowProvider>
             <AddButton z={1} onClick={addOption}>
                 Add Dialogue Option
             </AddButton>

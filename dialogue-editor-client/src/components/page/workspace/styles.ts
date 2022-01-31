@@ -7,4 +7,9 @@ export const WorkspaceContainer = styled.div`
     // width: 100%;
 
     flex: 1;
+
+    .reactflow-wrapper {
+        flex-grow: 1;
+        height: 100%;
+    }
 `

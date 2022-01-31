@@ -53,12 +53,18 @@ class DialogueNode {
         this._set_data()
     }
 
+    edit(event: any) {
+        console.log(this)
+        console.log(event)
+    }
+
     private _set_data() {
         this.data = {
             label: (
                 <>
                     <h2>{this.character_name}</h2>
                     <p>{this.dialogue}</p>
+                    <button onClick={this.edit}>Edit</button>
                 </>
             ),
         }
