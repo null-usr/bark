@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 export const PaletteContainer = styled.div`
     // height: 100%;
@@ -26,4 +26,4 @@ export const PaletteContainer = styled.div`
     .description {
         margin-bottom: 10px;
     }
-`;
+`

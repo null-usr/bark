@@ -1,16 +1,16 @@
-import React from 'react';
-import Canvas from './canvas/Canvas';
-import Palette from './palette/Palette';
-import { WorkspaceContainer } from './styles';
+import React from 'react'
+import Canvas from './canvas/Canvas'
+import Palette from './palette/Palette'
+import { WorkspaceContainer } from './styles'
 
 const Workspace: React.FC<{}> = (props) => {
     const onDragStart = (
         event: React.DragEvent<HTMLDivElement>,
         nodeType: string
     ) => {
-        event.dataTransfer.setData('application/reactflow', nodeType);
-        event.dataTransfer.effectAllowed = 'move';
-    };
+        event.dataTransfer.setData('application/reactflow', nodeType)
+        event.dataTransfer.effectAllowed = 'move'
+    }
 
     return (
         <WorkspaceContainer>
@@ -46,10 +46,17 @@ const Workspace: React.FC<{}> = (props) => {
                 >
                     Dialogue Node
                 </div>
+                <div
+                    className="node react-flow__node-output"
+                    onDragStart={(event) => onDragStart(event, 'base')}
+                    draggable
+                >
+                    Base Node
+                </div>
             </Palette>
             <Canvas />
         </WorkspaceContainer>
-    );
-};
+    )
+}
 
-export default Workspace;
+export default Workspace

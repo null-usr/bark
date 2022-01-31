@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import Modal from 'react-modal';
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import Modal from 'react-modal'
 import ReactFlow, {
     ReactFlowProvider,
     removeElements,
@@ -8,14 +8,14 @@ import ReactFlow, {
     Controls,
     Background,
     Elements,
-} from 'react-flow-renderer';
-import { v4 as uuid } from 'uuid';
-import DialogueNode from '../../../../helpers/DialogueNode';
-import DialogueForm from '../../../../helpers/DialogueForm';
+} from 'react-flow-renderer'
+import { v4 as uuid } from 'uuid'
+import DialogueNode from '../../../../helpers/DialogueNode'
+import DialogueForm from '../../../../helpers/DialogueForm'
 // import initialElements from './initial-elements'
-import { AddButton, CanvasContainer } from './styles';
-import { FlowContext } from '../../../../contexts/FlowContext';
-import BasicNode from '../../../../helpers/BasicNode';
+import { AddButton, CanvasContainer } from './styles'
+import { FlowContext } from '../../../../contexts/FlowContext'
+import BasicNode from '../../../../helpers/BasicNode'
 
 // styles for the modal
 const customModalStyles = {
@@ -28,14 +28,14 @@ const customModalStyles = {
         transform: 'translate(-50%, -50%)',
         zIndex: 100,
     },
-};
+}
 
-const getNodeId = () => `randomnode_${+new Date()}`;
+const getNodeId = () => `randomnode_${+new Date()}`
 
 const Canvas: React.FC<{}> = (props) => {
     // for modal
-    const [modalIsOpen, setIsOpen] = React.useState(false);
-    const rFlow = useContext(FlowContext);
+    const [modalIsOpen, setIsOpen] = React.useState(false)
+    const rFlow = useContext(FlowContext)
 
     // on add option click, open the modal
     function addOption(event: any) {
@@ -43,12 +43,12 @@ const Canvas: React.FC<{}> = (props) => {
         const newNode = new BasicNode(
             Math.random() * window.innerWidth - 100,
             Math.random() * window.innerHeight
-        );
-        rFlow.setElements((els) => els.concat(newNode));
+        )
+        rFlow.setElements((els) => els.concat(newNode))
     }
 
     function closeModal() {
-        setIsOpen(false);
+        setIsOpen(false)
     }
 
     // useEffect(() => {
@@ -62,15 +62,15 @@ const Canvas: React.FC<{}> = (props) => {
     // }, [rFlow.elements])
 
     // const [elements, rFlow.setElements] = useState(initialElements)
-    const reactFlowWrapper = useRef<any>(null);
+    const reactFlowWrapper = useRef<any>(null)
 
     const onElementsRemove = (elementsToRemove: Elements<any>) =>
-        rFlow.setElements((els: any) => removeElements(elementsToRemove, els));
+        rFlow.setElements((els: any) => removeElements(elementsToRemove, els))
     const onConnect = (params: any) =>
-        rFlow.setElements((els: any) => addEdge(params, els));
+        rFlow.setElements((els: any) => addEdge(params, els))
 
     const submitModal = (event: any) => {
-        closeModal();
+        closeModal()
         if (
             event == null ||
             event.character_name == null ||
@@ -78,7 +78,7 @@ const Canvas: React.FC<{}> = (props) => {
             event.dialog == null ||
             event.dialog === ''
         ) {
-            return;
+            return
         }
 
         const newNode = new DialogueNode(
@@ -86,47 +86,46 @@ const Canvas: React.FC<{}> = (props) => {
             event.dialog,
             250,
             250
-        );
+        )
 
         rFlow.setElements((els: any[]) => {
-            return els.concat(newNode);
-        });
-    };
+            return els.concat(newNode)
+        })
+    }
 
     function onLoad(_reactFlowInstance: any) {
-        _reactFlowInstance.fitView();
-        rFlow.setReactFlowInstance(_reactFlowInstance);
+        _reactFlowInstance.fitView()
+        rFlow.setReactFlowInstance(_reactFlowInstance)
     }
 
     // ====================== DRAG & DROP BEHAVIOUR ===============================
     const onDragOver = (event: {
-        preventDefault: () => void;
-        dataTransfer: { dropEffect: string };
+        preventDefault: () => void
+        dataTransfer: { dropEffect: string }
     }) => {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'move';
-    };
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+    }
 
     const onDrop = (event: {
-        preventDefault: () => void;
-        dataTransfer: { getData: (arg0: string) => any };
-        clientX: number;
-        clientY: number;
+        preventDefault: () => void
+        dataTransfer: { getData: (arg0: string) => any }
+        clientX: number
+        clientY: number
     }) => {
-        event.preventDefault();
+        event.preventDefault()
 
         if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
-            return;
+            return
         }
 
-        const reactFlowBounds =
-            reactFlowWrapper.current.getBoundingClientRect();
-        const type = event.dataTransfer.getData('application/reactflow');
+        const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
+        const type = event.dataTransfer.getData('application/reactflow')
         const position = rFlow.reactFlowInstance.project({
             x: event.clientX - reactFlowBounds.left,
             y: event.clientY - reactFlowBounds.top,
-        });
-        let newNode: any;
+        })
+        let newNode: any
         switch (type) {
             case 'dialogue':
                 newNode = new DialogueNode(
@@ -134,27 +133,30 @@ const Canvas: React.FC<{}> = (props) => {
                     'sample dialogue',
                     position.x,
                     position.y
-                );
-                break;
+                )
+                break
             case 'option 2':
-                newNode = {};
-                break;
+                newNode = {}
+                break
+            case 'base':
+                newNode = new BasicNode(position.x, position.y, uuid())
+                break
             default:
                 newNode = {
                     id: uuid(),
                     type,
                     position,
                     data: { label: `${type} node` },
-                };
-                break;
+                }
+                break
         }
 
         rFlow.setElements((els: any[]) => {
-            return els.concat(newNode);
-        });
-    };
+            return els.concat(newNode)
+        })
+    }
 
-    Modal.setAppElement('#root');
+    Modal.setAppElement('#root')
 
     return (
         <CanvasContainer>
@@ -188,18 +190,18 @@ const Canvas: React.FC<{}> = (props) => {
                         <MiniMap
                             nodeStrokeColor={(n) => {
                                 if (n.style?.background)
-                                    return n.style.background as string;
-                                if (n.type === 'input') return '#0041d0';
-                                if (n.type === 'output') return '#ff0072';
-                                if (n.type === 'default') return '#1a192b';
+                                    return n.style.background as string
+                                if (n.type === 'input') return '#0041d0'
+                                if (n.type === 'output') return '#ff0072'
+                                if (n.type === 'default') return '#1a192b'
 
-                                return '#1a192b';
+                                return '#1a192b'
                             }}
                             nodeColor={(n) => {
                                 if (n.style?.background)
-                                    return n.style.background as string;
+                                    return n.style.background as string
 
-                                return '#fff';
+                                return '#fff'
                             }}
                             nodeBorderRadius={2}
                         />
@@ -212,7 +214,7 @@ const Canvas: React.FC<{}> = (props) => {
                 Add Dialogue Option
             </AddButton>
         </CanvasContainer>
-    );
-};
+    )
+}
 
-export default Canvas;
+export default Canvas

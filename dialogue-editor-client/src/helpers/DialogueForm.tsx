@@ -1,54 +1,53 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
 interface IProps {
-    callback: (data: object) => void;
+    callback: (data: object) => void
 }
 
 interface IState {
-    character_name: '';
-    dialog: '';
+    character_name: ''
+    dialog: ''
 }
 
 class DialogueForm extends Component<IProps, IState> {
-    callback: (data: object) => void;
+    callback: (data: object) => void
 
     constructor(props: IProps) {
-        super(props);
+        super(props)
         this.state = {
             character_name: '',
             dialog: '',
-        };
+        }
 
-        this.callback = props.callback;
+        this.callback = props.callback
 
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.submitModal = this.submitModal.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this)
+        this.submitModal = this.submitModal.bind(this)
     }
 
     handleInputChange(event: any) {
-        const { target } = event;
-        const value =
-            target.type === 'checkbox' ? target.checked : target.value;
+        const { target } = event
+        const value = target.type === 'checkbox' ? target.checked : target.value
 
         switch (target.name) {
             case 'character_name':
                 this.setState({
                     character_name: value,
-                });
-                break;
+                })
+                break
             case 'dialog':
                 this.setState({
                     dialog: value,
-                });
-                break;
+                })
+                break
             default:
-                throw new Error(`invalid target name ${target.name}`);
+                throw new Error(`invalid target name ${target.name}`)
         }
     }
 
     submitModal(event: any) {
-        event.preventDefault();
-        this.callback(this.state);
+        event.preventDefault()
+        this.callback(this.state)
     }
 
     render() {
@@ -67,8 +66,8 @@ class DialogueForm extends Component<IProps, IState> {
                 />
                 <button type="submit">Add</button>
             </form>
-        );
+        )
     }
 }
 
-export default DialogueForm;
+export default DialogueForm
