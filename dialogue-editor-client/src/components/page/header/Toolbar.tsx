@@ -29,10 +29,10 @@ function Toolbar() {
     const rFlow = useContext(FlowContext)
     const { transform } = useZoomPanHelper()
 
-    useEffect(() => {
-        console.log('elements updated to:')
-        console.log(rFlow.elements)
-    }, [rFlow.elements])
+    // useEffect(() => {
+    //     console.log('elements updated to:')
+    //     console.log(rFlow.elements)
+    // }, [rFlow.elements])
 
     // const onRestore = useCallback(() => {
     //     const restoreFlow = async () => {

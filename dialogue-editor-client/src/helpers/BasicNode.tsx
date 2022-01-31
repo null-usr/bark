@@ -20,6 +20,7 @@ import {
 } from 'react-flow-renderer'
 
 import { render } from 'react-dom'
+import { v4 as uuidv4 } from 'uuid'
 import { StringField } from './FieldComponents/StringField'
 import { Container } from './styles'
 
@@ -87,8 +88,6 @@ export const VariableNode = forwardRef<
 })
 
 class BasicNode {
-    private static last_id: number = 2
-
     id: string
 
     fields: iFieldData[]
@@ -108,21 +107,19 @@ class BasicNode {
     }
 
     // ctor
-    constructor(x: number, y: number) {
-        this.id = (BasicNode.last_id++).toString()
+    constructor(x: number, y: number, id?: string, data?: []) {
+        this.id = id || uuidv4()
         this.position = { x, y }
-        this._set_data()
-        this.fields = []
+        this.fields = data || []
         this.nodeData = createRef()
+        this._set_data()
     }
 
     private _set_data() {
         this.data = {
             label: (
                 <VariableNode
-                    ref={(instance) => {
-                        this.nodeData.current = instance
-                    }}
+                    ref={this.nodeData}
                     data={this.fields}
                     // callback={this.updateFields.bind(this)}
                 />
@@ -130,8 +127,23 @@ class BasicNode {
         }
     }
 
+    public updateFieldData = () => {
+        if (this.nodeData.current) {
+            this.fields = [...this.nodeData.current.getNodeData()]
+        }
+    }
+
+    public getFieldData = () => {
+        this.updateFieldData()
+        return this.fields
+    }
+
     // here we look into our component and grab all the data we need
-    public serialize = (): Object => {
+    public serialize = (): {
+        [id: string]: {
+            [key: string]: [value: string]
+        }
+    } => {
         if (this.nodeData.current) {
             const data = this.nodeData.current.getNodeData()
             const output: any = {}

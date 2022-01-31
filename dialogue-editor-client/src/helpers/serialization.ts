@@ -1,41 +1,98 @@
 // we'll want to save scenes to be loaded by our editor and
 // serialize lite versions to be loaded by the game engines
 
+import { Edge, FlowExportObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
 import BasicNode from './BasicNode'
 
-export function LoadScene(scene: string) {
-    const out = JSON.parse(scene, (k, v) => {
+export function LoadScene(scene: string): FlowExportObject {
+    const data: {
+        nodes: Array<any>
+        edges: Array<any>
+        zoom: number
+        position: [number, number]
+    } = JSON.parse(scene, (k, v) => {
         const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
         return matches ? Symbol.for(matches[1]) : v
     })
 
+    const out: FlowExportObject = {
+        elements: [],
+        position: [data.position[0], data.position[1]],
+        zoom: data.zoom,
+    }
+
+    out.elements = [...data.edges]
+
+    data.nodes.forEach((node) => {
+        if (node.fields) {
+            const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
+            out.elements.push(newBasic)
+        } else {
+            out.elements.push(node)
+        }
+    })
+
     return out
 }
 
-export function SaveScene(scene: object) {
-    const out = JSON.stringify(scene, (k, v) =>
+export function SaveScene(scene: FlowExportObject) {
+    const out: any = {
+        nodes: [],
+        edges: [],
+        zoom: 0,
+        position: [0, 0],
+    }
+
+    scene.elements.forEach((element) => {
+        const node = element as BasicNode
+        const edge = element as Edge
+
+        // check if it's a BasicNode, edge or generic
+        if (typeof node.getFieldData === 'function') {
+            const tmp: any = {}
+
+            tmp.fields = node.getFieldData()
+            tmp.x = node.position.x
+            tmp.y = node.position.y
+            tmp.id = node.id
+
+            out.nodes.push(tmp)
+        } else if (edge.source) {
+            out.edges.push(edge)
+        } else {
+            out.nodes.push(element)
+        }
+    })
+
+    out.zoom = scene.zoom
+    out.position = scene.position
+
+    // to allow for encoding of general react components
+    return JSON.stringify(out, (k, v) =>
         typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
     )
-    return out
 }
 
 export function SerializeScene(scene: IReactFlow) {
     console.log(scene)
     const out: any = {}
+    const edges: Edge[] = []
 
     scene.elements.forEach((element) => {
         const node = element as BasicNode
+        const edge = element as Edge
         if (typeof node.serialize === 'function') {
-            const tmp: any = node.serialize()
-            console.log('tmp is: ')
-            console.log(tmp)
-            const keys = Object.keys(tmp)
-            keys.forEach((key) => {
-                out[key] = tmp[key]
-            })
+            const tmp = node.serialize()
+            out[element.id] = tmp[element.id]
+        } else if (edge.source) {
+            edges.push(edge)
         }
+    })
+
+    edges.forEach((edge) => {
+        out[edge.source].next = edge.target
     })
 
     return JSON.stringify(out)
