@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Modal from 'react-modal'
 import ReactFlow, {
     removeElements,
@@ -10,8 +10,10 @@ import ReactFlow, {
 } from 'react-flow-renderer'
 import DialogueNode from '../../../../helpers/DialogueNode'
 import DialogueForm from '../../../../helpers/DialogueForm'
-import initialElements from './initial-elements'
+// import initialElements from './initial-elements'
 import { AddButton, CanvasContainer } from './styles'
+import { FlowContext } from '../../../../contexts/FlowContext'
+import BasicNode from '../../../../helpers/BasicNode'
 
 // styles for the modal
 const customModalStyles = {
@@ -26,27 +28,42 @@ const customModalStyles = {
     },
 }
 
-function onLoad(reactFlowInstance: any) {
-    reactFlowInstance.fitView()
-}
+const getNodeId = () => `randomnode_${+new Date()}`
 
 const Canvas: React.FC<{}> = (props) => {
     // for modal
     const [modalIsOpen, setIsOpen] = React.useState(false)
+    const rFlow = useContext(FlowContext)
+
     // on add option click, open the modal
     function addOption(event: any) {
-        setIsOpen(true)
+        // setIsOpen(true)
+        const newNode = new BasicNode(
+            Math.random() * window.innerWidth - 100,
+            Math.random() * window.innerHeight
+        )
+        rFlow.setElements((els) => els.concat(newNode))
     }
 
     function closeModal() {
         setIsOpen(false)
     }
 
-    const [elements, setElements] = useState(initialElements)
+    // useEffect(() => {
+    //     console.log('reactFlowInstance updated to:')
+    //     console.log(rFlow.reactFlowInstance)
+    // }, [rFlow.reactFlowInstance])
+
+    // useEffect(() => {
+    //     console.log('elements updated to:')
+    //     console.log(rFlow.elements)
+    // }, [rFlow.elements])
+
+    // const [elements, rFlow.setElements] = useState(initialElements)
     const onElementsRemove = (elementsToRemove: Elements<any>) =>
-        setElements((els: any) => removeElements(elementsToRemove, els))
+        rFlow.setElements((els: any) => removeElements(elementsToRemove, els))
     const onConnect = (params: any) =>
-        setElements((els: any) => addEdge(params, els))
+        rFlow.setElements((els: any) => addEdge(params, els))
 
     const submitModal = (event: any) => {
         closeModal()
@@ -56,16 +73,27 @@ const Canvas: React.FC<{}> = (props) => {
             event.character_name === '' ||
             event.dialog == null ||
             event.dialog === ''
-        )
+        ) {
             return
-        setElements((els: any[]) => {
-            const elems = [...els]
-            elems.push(
-                new DialogueNode(event.character_name, event.dialog, 250, 250)
-            )
-            console.log(elems)
-            return elems
+        }
+
+        const newNode = new DialogueNode(
+            event.character_name,
+            event.dialog,
+            250,
+            250
+        )
+
+        rFlow.setElements((els: any[]) => {
+            return els.concat(newNode)
         })
+
+        console.log(rFlow.elements)
+    }
+
+    function onLoad(_reactFlowInstance: any) {
+        _reactFlowInstance.fitView()
+        rFlow.setReactFlowInstance(_reactFlowInstance)
     }
 
     Modal.setAppElement('#root')
@@ -84,7 +112,7 @@ const Canvas: React.FC<{}> = (props) => {
             </Modal>
 
             <ReactFlow
-                elements={elements}
+                elements={rFlow.elements}
                 onElementsRemove={onElementsRemove}
                 onConnect={onConnect}
                 onLoad={onLoad}
