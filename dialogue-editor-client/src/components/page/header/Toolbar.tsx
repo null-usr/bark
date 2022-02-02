@@ -15,6 +15,7 @@ import {
     SerializeScene,
 } from '../../../helpers/serialization'
 
+// create an input which we then call click upon
 function buildFileSelector() {
     const fileSelector = document.createElement('input')
     fileSelector.setAttribute('type', 'file')
@@ -24,51 +25,24 @@ function buildFileSelector() {
 
 function Toolbar() {
     const fileReader = new FileReader()
-    const nodes = useStoreState((store) => store.nodes)
-    // const [elements, setElements] = useState(null)
     const rFlow = useContext(FlowContext)
     const { transform } = useZoomPanHelper()
-
-    // useEffect(() => {
-    //     console.log('elements updated to:')
-    //     console.log(rFlow.elements)
-    // }, [rFlow.elements])
-
-    // const onRestore = useCallback(() => {
-    //     const restoreFlow = async () => {
-    //         // const flow: FlowExportObject | null = await localStorage.getItem(flowKey);
-    //         // if (flow) {
-    //         //   const [x = 0, y = 0] = flow.position;
-    //         //   setElements(flow.elements || []);
-    //         //   transform({ x, y, zoom: flow.zoom || 0 });
-    //         // }
-    //     }
-
-    //     restoreFlow()
-    // }, [setElements, transform])
 
     const handleFileRead = (e: any) => {
         const content = fileReader.result
         const flow: FlowExportObject | null = LoadScene(content as string)
 
-        // need to access the setElements of our canvas somehow
         if (flow) {
             const [x = 0, y = 0] = flow.position
-            // rFlow.setElements(flow.elements || [])
-
-            // for (let index = 0; index < flow.elements.length; index++) {
-            //     if (flow.elements[index].data) {
-            //         flow.elements[index].data.label.$$typeof =
-            //             Symbol.for('react.element')
-            //     }
-            // }
-            console.log(flow.elements)
             rFlow.setElements(flow.elements)
             transform({ x, y, zoom: flow.zoom || 0 })
         }
     }
 
     const fileSelector = buildFileSelector()
+
+    // once our fileselector changes, we know a file has been selected
+    // so we read it
     fileSelector.onchange = (e) => {
         fileReader.onloadend = handleFileRead
         fileReader.readAsText((e.target as HTMLInputElement).files![0])

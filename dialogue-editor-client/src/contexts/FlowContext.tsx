@@ -4,6 +4,7 @@
 import React, { createContext, useMemo, useState } from 'react'
 import { Elements } from 'react-flow-renderer'
 
+// Move to new folder/find type definition from react-flow
 type reactFlowInstance = {
     project: (position: { x: number; y: number }) => { x: number; y: number }
     fitView: (padding: number, includeHiddenNodes: boolean) => {}
@@ -19,6 +20,7 @@ type reactFlowInstance = {
     getElements(): Elements
 }
 
+// Interface available to the palette & canvas in order to share data
 export interface IReactFlow {
     reactFlowInstance: reactFlowInstance | undefined
     setReactFlowInstance: React.Dispatch<
@@ -26,13 +28,6 @@ export interface IReactFlow {
     >
     elements: Elements<any>
     setElements: React.Dispatch<React.SetStateAction<Elements<any>>>
-}
-
-const defaultState = {
-    reactFlowInstance: undefined,
-    setReactFlowInstance: undefined,
-    elements: undefined,
-    setElements: undefined,
 }
 
 export const FlowContext = createContext<IReactFlow>(null!)

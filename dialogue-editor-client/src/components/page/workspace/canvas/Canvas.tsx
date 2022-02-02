@@ -35,11 +35,13 @@ const getNodeId = () => `randomnode_${+new Date()}`
 const Canvas: React.FC<{}> = (props) => {
     // for modal
     const [modalIsOpen, setIsOpen] = React.useState(false)
+
+    // we used our shared rflow instance so that our toolbar can 
+    // access the nodes as well
     const rFlow = useContext(FlowContext)
 
     // on add option click, open the modal
     function addOption(event: any) {
-        // setIsOpen(true)
         const newNode = new BasicNode(
             Math.random() * window.innerWidth - 100,
             Math.random() * window.innerHeight
@@ -51,17 +53,6 @@ const Canvas: React.FC<{}> = (props) => {
         setIsOpen(false)
     }
 
-    // useEffect(() => {
-    //     console.log('reactFlowInstance updated to:')
-    //     console.log(rFlow.reactFlowInstance)
-    // }, [rFlow.reactFlowInstance])
-
-    // useEffect(() => {
-    //     console.log('elements updated to:')
-    //     console.log(rFlow.elements)
-    // }, [rFlow.elements])
-
-    // const [elements, rFlow.setElements] = useState(initialElements)
     const reactFlowWrapper = useRef<any>(null)
 
     const onElementsRemove = (elementsToRemove: Elements<any>) =>
