@@ -27,3 +27,7 @@ export const PaletteContainer = styled.div`
         margin-bottom: 10px;
     }
 `
+
+export const Group = styled.div`
+    // pointer-events: none;
+`

@@ -36,7 +36,7 @@ const Canvas: React.FC<{}> = (props) => {
     // for modal
     const [modalIsOpen, setIsOpen] = React.useState(false)
 
-    // we used our shared rflow instance so that our toolbar can 
+    // we used our shared rflow instance so that our toolbar can
     // access the nodes as well
     const rFlow = useContext(FlowContext)
 
@@ -132,6 +132,9 @@ const Canvas: React.FC<{}> = (props) => {
             case 'base':
                 newNode = new BasicNode(position.x, position.y, uuid())
                 break
+            case 'custom':
+                newNode = new BasicNode(position.x, position.y, uuid())
+                break
             default:
                 newNode = {
                     id: uuid(),
@@ -174,6 +177,8 @@ const Canvas: React.FC<{}> = (props) => {
                         onLoad={onLoad}
                         onDragOver={onDragOver}
                         onDrop={onDrop}
+                        deleteKeyCode="Delete"
+                        multiSelectionKeyCode="Control"
                         snapToGrid
                         snapGrid={[15, 15]}
                         style={{ height: '100%', width: '100%', zIndex: 0 }}
