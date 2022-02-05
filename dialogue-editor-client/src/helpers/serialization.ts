@@ -5,7 +5,7 @@ import { Edge, FlowExportObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
 import BasicNode from './BasicNode'
 
-export interface ISceneData{
+export interface ISceneData {
     nodes: Array<any>
     edges: Array<any>
     zoom: number
@@ -14,7 +14,7 @@ export interface ISceneData{
 
 export function LoadScene(scene: string): FlowExportObject {
     // https://www.thomasmaximini.com/json-stringify-symbols-and-react-components
-    // in order to properly stringafy & parse generic react components 
+    // in order to properly stringafy & parse generic react components
     const data: ISceneData = JSON.parse(scene, (k, v) => {
         const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
@@ -30,7 +30,7 @@ export function LoadScene(scene: string): FlowExportObject {
     out.elements = [...data.edges]
 
     // for every element in our node list, if the fields key exists
-    // we create a basic node, otherwise just push the raw react component 
+    // we create a basic node, otherwise just push the raw react component
     data.nodes.forEach((node) => {
         if (node.fields) {
             const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)

@@ -86,6 +86,7 @@ class BasicNode {
     id: string
 
     fields: iFieldData[]
+
     data: object = {}
 
     nodeData: any
