@@ -5,103 +5,103 @@ import { Edge, FlowExportObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
 import BasicNode from './BasicNode'
 
-export interface ISceneData{
-    nodes: Array<any>
-    edges: Array<any>
-    zoom: number
-    position: [number, number]
+export interface ISceneData {
+	nodes: Array<any>
+	edges: Array<any>
+	zoom: number
+	position: [number, number]
 }
 
 export function LoadScene(scene: string): FlowExportObject {
-    // https://www.thomasmaximini.com/json-stringify-symbols-and-react-components
-    // in order to properly stringafy & parse generic react components 
-    const data: ISceneData = JSON.parse(scene, (k, v) => {
-        const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
+	// https://www.thomasmaximini.com/json-stringify-symbols-and-react-components
+	// in order to properly stringafy & parse generic react components
+	const data: ISceneData = JSON.parse(scene, (k, v) => {
+		const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
-        return matches ? Symbol.for(matches[1]) : v
-    })
+		return matches ? Symbol.for(matches[1]) : v
+	})
 
-    const out: FlowExportObject = {
-        elements: [],
-        position: [data.position[0], data.position[1]],
-        zoom: data.zoom,
-    }
+	const out: FlowExportObject = {
+		elements: [],
+		position: [data.position[0], data.position[1]],
+		zoom: data.zoom,
+	}
 
-    out.elements = [...data.edges]
+	out.elements = [...data.edges]
 
-    // for every element in our node list, if the fields key exists
-    // we create a basic node, otherwise just push the raw react component 
-    data.nodes.forEach((node) => {
-        if (node.fields) {
-            const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
-            out.elements.push(newBasic)
-        } else {
-            out.elements.push(node)
-        }
-    })
+	// for every element in our node list, if the fields key exists
+	// we create a basic node, otherwise just push the raw react component
+	data.nodes.forEach((node) => {
+		if (node.fields) {
+			const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
+			out.elements.push(newBasic)
+		} else {
+			out.elements.push(node)
+		}
+	})
 
-    return out
+	return out
 }
 
 export function SaveScene(scene: FlowExportObject) {
-    const out: ISceneData = {
-        nodes: [],
-        edges: [],
-        zoom: 0,
-        position: [0, 0],
-    }
+	const out: ISceneData = {
+		nodes: [],
+		edges: [],
+		zoom: 0,
+		position: [0, 0],
+	}
 
-    // for every element, add nodes to the nodes list and edges
-    // to the edges
-    scene.elements.forEach((element) => {
-        const node = element as BasicNode
-        const edge = element as Edge
+	// for every element, add nodes to the nodes list and edges
+	// to the edges
+	scene.elements.forEach((element) => {
+		const node = element as BasicNode
+		const edge = element as Edge
 
-        // check if it's a BasicNode, edge or generic
-        if (typeof node.getFieldData === 'function') {
-            const tmp: any = {}
+		// check if it's a BasicNode, edge or generic
+		if (typeof node.getFieldData === 'function') {
+			const tmp: any = {}
 
-            tmp.fields = node.getFieldData()
-            tmp.x = node.position.x
-            tmp.y = node.position.y
-            tmp.id = node.id
+			tmp.fields = node.getFieldData()
+			tmp.x = node.position.x
+			tmp.y = node.position.y
+			tmp.id = node.id
 
-            out.nodes.push(tmp)
-        } else if (edge.source) {
-            out.edges.push(edge)
-        } else {
-            out.nodes.push(element)
-        }
-    })
+			out.nodes.push(tmp)
+		} else if (edge.source) {
+			out.edges.push(edge)
+		} else {
+			out.nodes.push(element)
+		}
+	})
 
-    out.zoom = scene.zoom
-    out.position = scene.position
+	out.zoom = scene.zoom
+	out.position = scene.position
 
-    // to allow for encoding of general react components
-    return JSON.stringify(out, (k, v) =>
-        typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
-    )
+	// to allow for encoding of general react components
+	return JSON.stringify(out, (k, v) =>
+		typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
+	)
 }
 
 export function SerializeScene(scene: IReactFlow) {
-    console.log(scene)
-    const out: any = {}
-    const edges: Edge[] = []
+	console.log(scene)
+	const out: any = {}
+	const edges: Edge[] = []
 
-    scene.elements.forEach((element) => {
-        const node = element as BasicNode
-        const edge = element as Edge
-        if (typeof node.serialize === 'function') {
-            const tmp = node.serialize()
-            out[element.id] = tmp[element.id]
-        } else if (edge.source) {
-            edges.push(edge)
-        }
-    })
+	scene.elements.forEach((element) => {
+		const node = element as BasicNode
+		const edge = element as Edge
+		if (typeof node.serialize === 'function') {
+			const tmp = node.serialize()
+			out[element.id] = tmp[element.id]
+		} else if (edge.source) {
+			edges.push(edge)
+		}
+	})
 
-    edges.forEach((edge) => {
-        out[edge.source].next = edge.target
-    })
+	edges.forEach((edge) => {
+		out[edge.source].next = edge.target
+	})
 
-    return JSON.stringify(out)
+	return JSON.stringify(out)
 }
