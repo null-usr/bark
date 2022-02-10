@@ -41,6 +41,7 @@ class DialogueNode {
 	sourcePosition: Position
 
 	targetPosition: Position
+
 	edit: Function
 
 	update: React.Dispatch<React.SetStateAction<string>> | null

@@ -6,7 +6,6 @@ import { IReactFlow } from '../contexts/FlowContext'
 import BasicNode from './BasicNode'
 
 export interface ISceneData {
-<<<<<<< HEAD
 	nodes: Array<any>
 	edges: Array<any>
 	zoom: number
@@ -42,43 +41,6 @@ export function LoadScene(scene: string): FlowExportObject {
 	})
 
 	return out
-=======
-    nodes: Array<any>
-    edges: Array<any>
-    zoom: number
-    position: [number, number]
-}
-
-export function LoadScene(scene: string): FlowExportObject {
-    // https://www.thomasmaximini.com/json-stringify-symbols-and-react-components
-    // in order to properly stringafy & parse generic react components
-    const data: ISceneData = JSON.parse(scene, (k, v) => {
-        const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
-
-        return matches ? Symbol.for(matches[1]) : v
-    })
-
-    const out: FlowExportObject = {
-        elements: [],
-        position: [data.position[0], data.position[1]],
-        zoom: data.zoom,
-    }
-
-    out.elements = [...data.edges]
-
-    // for every element in our node list, if the fields key exists
-    // we create a basic node, otherwise just push the raw react component
-    data.nodes.forEach((node) => {
-        if (node.fields) {
-            const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
-            out.elements.push(newBasic)
-        } else {
-            out.elements.push(node)
-        }
-    })
-
-    return out
->>>>>>> 249017d338a0f99628d0dddf94bc86e382dcbef1
 }
 
 export function SaveScene(scene: FlowExportObject) {

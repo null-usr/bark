@@ -29,5 +29,5 @@ export const PaletteContainer = styled.div`
 `
 
 export const Group = styled.div`
-    // pointer-events: none;
+	// pointer-events: none;
 `
