@@ -21,8 +21,8 @@ export const IncNode: React.FC<{
 	id: string
 }> = ({ isConnectable, sourcePosition, targetPosition, data, id }) => {
 	const nodeRef: any = useRef()
-	const [targetArray, setTargetArray] = useState<any>([])
-	const [sourceArray, setSourceArray] = useState<any>([])
+	const [targetArray, setTargetArray] = useState<any[]>([])
+	const [sourceArray, setSourceArray] = useState<any[]>([])
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
 	// when updating handles programmatically, this is needed
@@ -42,26 +42,41 @@ export const IncNode: React.FC<{
 		updateNodeInternals(id)
 	}, [sourceArray, targetArray])
 
-	const addTarget = (type: string) => {
-		if (type === 'T' && targetArray.length < 4) {
+	const add = (type: string) => {
+		if (type === 'T' && targetArray.length < 10) {
 			const tmp = targetArray.length + 1
 			setTargetArray([...targetArray, tmp])
 		}
-	}
-	const addSource = (type: string) => {
-		if (type === 'T' && sourceArray.length < 4) {
+		if (type === 'S' && sourceArray.length < 10) {
 			const tmp = sourceArray.length + 1
-			setTargetArray([...sourceArray, tmp])
+			setSourceArray([...sourceArray, tmp])
+		}
+	}
+	const remove = (type: string) => {
+		if (type === 'T') {
+			let tmp = [...targetArray]
+			tmp = targetArray.slice(0, -1)
+			setTargetArray(tmp)
+		}
+		if (type === 'S') {
+			let tmp = [...sourceArray]
+			tmp = sourceArray.slice(0, -1)
+			setSourceArray(tmp)
 		}
 	}
 
+	// designed to order 4 handles
+	// const positionHandle = (index: number) => {
+	// 	if (index === 1 || index === 2) {
+	// 		return (dimensions.height / 3) * index
+	// 	} else if (index === 3) {
+	// 		return 0
+	// 	}
+	// 	return dimensions.height
+	// }
+
 	const positionHandle = (index: number) => {
-		if (index === 1 || index === 2) {
-			return (dimensions.height / 3) * index
-		} else if (index === 3) {
-			return 0
-		}
-		return dimensions.height
+		return 13 + 18 * index
 	}
 
 	const targetHandles = useMemo(
@@ -74,7 +89,7 @@ export const IncNode: React.FC<{
 						type="target"
 						position={Position.Left}
 						id={handleId}
-						style={{ top: positionHandle(i + 1) }}
+						style={{ top: positionHandle(i) }}
 					/>
 				)
 			}),
@@ -91,7 +106,7 @@ export const IncNode: React.FC<{
 						type="source"
 						position={Position.Right}
 						id={handleId}
-						style={{ top: positionHandle(i + 1) }}
+						style={{ top: positionHandle(i) }}
 					/>
 				)
 			}),
@@ -100,7 +115,16 @@ export const IncNode: React.FC<{
 
 	return (
 		<>
-			<div ref={nodeRef}>
+			<div
+				style={{
+					minHeight: `${
+						(Math.max(targetArray.length, sourceArray.length) - 1) *
+							18 +
+						6
+					}px`,
+				}}
+				ref={nodeRef}
+			>
 				{targetHandles}
 				<div
 					style={{
@@ -110,17 +134,30 @@ export const IncNode: React.FC<{
 					}}
 				>
 					<div style={{ flex: 1 }}>
-						<div>
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+							}}
+						>
 							{/* <ButtonGroup
 							orientation="vertical"
 							aria-label="vertical outlined button group"
 							size="small"
 						> */}
 							<button
+								className="nodrag"
 								key="targetMore"
-								onClick={() => addTarget('T')}
+								onClick={() => add('T')}
 							>
 								+
+							</button>
+							<button
+								className="nodrag"
+								key="targetLess"
+								onClick={() => remove('T')}
+							>
+								-
 							</button>
 							{/* <Button key="targetMore" onClick={() => add('T')}>
 								+
@@ -134,17 +171,30 @@ export const IncNode: React.FC<{
 						</div>
 					</div>
 					<div style={{ flex: 1 }}>
-						<div>
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+							}}
+						>
 							{/* <ButtonGroup
 							orientation="vertical"
 							aria-label="vertical outlined button group"
 							size="small"
 						> */}
 							<button
+								className="nodrag"
 								key="sourceMore"
-								onClick={() => addSource('T')}
+								onClick={() => add('S')}
 							>
 								+
+							</button>
+							<button
+								className="nodrag"
+								key="sourceLess"
+								onClick={() => remove('S')}
+							>
+								-
 							</button>
 							{/* <Button key="targetMore" onClick={() => add('T')}>
 								+
@@ -172,7 +222,7 @@ class RootNode {
 				isConnectable
 				sourcePosition={Position.Left}
 				targetPosition={Position.Right}
-				data={{ label: <p>djkojfpwd</p> }}
+				data={{ label: <p>ROOT</p> }}
 				id={this.id}
 			/>
 		),
