@@ -16,6 +16,7 @@ import DialogueForm from '../../../../helpers/DialogueForm'
 import { AddButton, CanvasContainer } from './styles'
 import { FlowContext } from '../../../../contexts/FlowContext'
 import BasicNode from '../../../../helpers/BasicNode'
+import Detail from '../../detail/Detail'
 
 // styles for the modal
 const customModalStyles = {
@@ -35,6 +36,7 @@ const getNodeId = () => `randomnode_${+new Date()}`
 const Canvas: React.FC<{}> = (props) => {
 	// for modal
 	const [modalIsOpen, setIsOpen] = React.useState(false)
+	const [selected, setSelected] = useState<DialogueNode | null>(null)
 
 	// we used our shared rflow instance so that our toolbar can
 	// access the nodes as well
@@ -75,6 +77,7 @@ const Canvas: React.FC<{}> = (props) => {
 		const newNode = new DialogueNode(
 			event.character_name,
 			event.dialog,
+			setSelected,
 			250,
 			250
 		)
@@ -122,6 +125,7 @@ const Canvas: React.FC<{}> = (props) => {
 				newNode = new DialogueNode(
 					'character name',
 					'sample dialogue',
+					setSelected,
 					position.x,
 					position.y
 				)
@@ -130,6 +134,9 @@ const Canvas: React.FC<{}> = (props) => {
 				newNode = {}
 				break
 			case 'base':
+				newNode = new BasicNode(position.x, position.y, uuid())
+				break
+			case 'custom':
 				newNode = new BasicNode(position.x, position.y, uuid())
 				break
 			default:
@@ -174,6 +181,8 @@ const Canvas: React.FC<{}> = (props) => {
 						onLoad={onLoad}
 						onDragOver={onDragOver}
 						onDrop={onDrop}
+						deleteKeyCode="Delete"
+						multiSelectionKeyCode="Control"
 						snapToGrid
 						snapGrid={[15, 15]}
 						style={{ height: '100%', width: '100%', zIndex: 0 }}
@@ -204,6 +213,21 @@ const Canvas: React.FC<{}> = (props) => {
 			<AddButton z={1} onClick={addOption}>
 				Add Dialogue Option
 			</AddButton>
+			{selected && (
+				<Detail
+					dialogueNode={selected}
+					isOpen
+					close={() => setSelected(null)}
+				/>
+			)}
+			{/* {selected && (
+				<Detail
+					dialogue={selected.dialogue}
+					setDialogue={selected.setDialogue}
+					isOpen
+					close={() => setSelected(null)}
+				/>
+			)} */}
 		</CanvasContainer>
 	)
 }
