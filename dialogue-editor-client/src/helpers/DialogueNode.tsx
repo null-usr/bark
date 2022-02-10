@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { XYPosition } from 'react-flow-renderer'
+import { Position, XYPosition } from 'react-flow-renderer'
 import Detail from '../components/page/detail/Detail'
 
 const DialogueNodeContent: React.FC<{
@@ -37,6 +37,10 @@ class DialogueNode {
 	private static last_id: number = 1
 
 	id: string
+
+	sourcePosition: Position
+
+	targetPosition: Position
 
 	edit: Function
 
@@ -90,12 +94,21 @@ class DialogueNode {
 		dialogue: string,
 		edit: Function,
 		x: number,
-		y: number
+		y: number,
+		TB?: boolean
 	) {
 		this.character_name = character_name
 		this.dialogue = dialogue
 		this.id = (DialogueNode.last_id++).toString()
 		this.position = { x, y }
+		if (TB) {
+			this.sourcePosition = Position.Bottom
+			this.targetPosition = Position.Top
+		} else {
+			this.sourcePosition = Position.Right
+			this.targetPosition = Position.Left
+		}
+		this._set_data()
 		this.edit = edit
 		this.update = null
 		this._set_data()
