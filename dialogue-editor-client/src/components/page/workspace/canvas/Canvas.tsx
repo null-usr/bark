@@ -8,15 +8,26 @@ import ReactFlow, {
 	Controls,
 	Background,
 	Elements,
+	Connection,
+	Edge,
+	OnConnectStartParams,
+	Position,
+	EdgeTypesType,
+	NodeTypesType,
 } from 'react-flow-renderer'
 import { v4 as uuid } from 'uuid'
-import DialogueNode from '../../../../helpers/DialogueNode'
+import DialogueNodeType, {
+	DialogueNode,
+} from '../../../../helpers/DialogueNode'
 import DialogueForm from '../../../../helpers/DialogueForm'
 // import initialElements from './initial-elements'
 import { AddButton, CanvasContainer } from './styles'
 import { FlowContext } from '../../../../contexts/FlowContext'
-import BasicNode from '../../../../helpers/BasicNode'
+import BasicNodeType, { BasicNode } from '../../../../helpers/BasicNode'
 import Detail from '../../detail/Detail'
+import { IEdgeParams } from '../../../../helpers/types'
+import DataEdge, { DataEdgeType } from '../../../../helpers/DataEdge'
+import RootNodeType from '../../../../helpers/RootNode'
 
 // styles for the modal
 const customModalStyles = {
@@ -29,6 +40,16 @@ const customModalStyles = {
 		transform: 'translate(-50%, -50%)',
 		zIndex: 100,
 	},
+}
+
+const edgeTypes: EdgeTypesType = {
+	data: DataEdgeType,
+}
+
+const nodeTypes: NodeTypesType = {
+	basic: BasicNodeType,
+	root: RootNodeType,
+	dialogue: DialogueNodeType,
 }
 
 const getNodeId = () => `randomnode_${+new Date()}`
@@ -59,40 +80,83 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const onElementsRemove = (elementsToRemove: Elements<any>) =>
 		rFlow.setElements((els: any) => removeElements(elementsToRemove, els))
-	const onConnect = (params: any) =>
-		rFlow.setElements((els: any) => addEdge(params, els))
 
-	const submitModal = (event: any) => {
-		closeModal()
-		if (
-			event == null ||
-			event.character_name == null ||
-			event.character_name === '' ||
-			event.dialog == null ||
-			event.dialog === ''
-		) {
+	// ================= CONNECTION BEHAVIOR ================================
+	let connectionAttempt: OnConnectStartParams | null = null
+
+	const onConnect = (params: Edge<any> | Connection) => {
+		if (params.sourceHandle) {
+			const edge: Edge = new DataEdge(
+				params.source!,
+				params.target!,
+				connectionAttempt!.handleId,
+				null // not dealing with that lol
+			)
+			rFlow.setElements((els: any) => addEdge(edge, els))
+		} else {
+			rFlow.setElements((els: any) =>
+				addEdge({ ...params, type: 'step' }, els)
+			)
+		}
+		connectionAttempt = null
+	}
+
+	const onConnectStart = (
+		event: React.MouseEvent,
+		params: OnConnectStartParams
+	) => {
+		if (event.button !== 2 && params.handleType === 'source') {
+			connectionAttempt = params
+		}
+		// console.log('on connect start', { nodeId, handleId, handleType })
+	}
+	const onConnectStop = (event: MouseEvent) => {
+		// console.log('on connect stop', event)
+	}
+
+	// we've dragged a node into an empty spot
+	const onConnectEnd = (event: MouseEvent) => {
+		if (!connectionAttempt) {
 			return
 		}
 
-		const newNode = new DialogueNode(
-			event.character_name,
-			event.dialog,
-			setSelected,
-			250,
-			250
-		)
+		event.preventDefault()
+
+		if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
+			return
+		}
+
+		const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
+		// const type = event.dataTransfer.getData('application/reactflow')
+		const position = rFlow.reactFlowInstance.project({
+			x: event.clientX - reactFlowBounds.left,
+			y: event.clientY - reactFlowBounds.top,
+		})
+		const id = uuid()
+		const newNode = {
+			id: uuid(),
+			type: 'default',
+			position,
+			data: { label: `default node` },
+			sourcePosition: Position.Right,
+			targetPosition: Position.Left,
+		}
 
 		rFlow.setElements((els: any[]) => {
 			return els.concat(newNode)
 		})
+		const edge: Edge = new DataEdge(
+			connectionAttempt!.nodeId!,
+			newNode.id,
+			connectionAttempt!.handleId,
+			null
+		)
+		rFlow.setElements((els: any) => addEdge(edge, els))
+
+		connectionAttempt = null
 	}
 
-	function onLoad(_reactFlowInstance: any) {
-		_reactFlowInstance.fitView()
-		rFlow.setReactFlowInstance(_reactFlowInstance)
-	}
-
-	// ====================== DRAG & DROP BEHAVIOUR ===============================
+	// ====================== DRAG & DROP BEHAVIOUR ===========================
 	const onDragOver = (event: {
 		preventDefault: () => void
 		dataTransfer: { dropEffect: string }
@@ -145,6 +209,8 @@ const Canvas: React.FC<{}> = (props) => {
 					type,
 					position,
 					data: { label: `${type} node` },
+					sourcePosition: Position.Right,
+					targetPosition: Position.Left,
 				}
 				break
 		}
@@ -152,6 +218,36 @@ const Canvas: React.FC<{}> = (props) => {
 		rFlow.setElements((els: any[]) => {
 			return els.concat(newNode)
 		})
+	}
+
+	const submitModal = (event: any) => {
+		closeModal()
+		if (
+			event == null ||
+			event.character_name == null ||
+			event.character_name === '' ||
+			event.dialog == null ||
+			event.dialog === ''
+		) {
+			return
+		}
+
+		const newNode = new DialogueNode(
+			event.character_name,
+			event.dialog,
+			setSelected,
+			250,
+			250
+		)
+
+		rFlow.setElements((els: any[]) => {
+			return els.concat(newNode)
+		})
+	}
+
+	function onLoad(_reactFlowInstance: any) {
+		_reactFlowInstance.fitView()
+		rFlow.setReactFlowInstance(_reactFlowInstance)
 	}
 
 	Modal.setAppElement('#root')
@@ -176,8 +272,13 @@ const Canvas: React.FC<{}> = (props) => {
 				>
 					<ReactFlow
 						elements={rFlow.elements}
+						edgeTypes={edgeTypes}
+						nodeTypes={nodeTypes}
 						onElementsRemove={onElementsRemove}
 						onConnect={onConnect}
+						onConnectStart={onConnectStart}
+						onConnectStop={onConnectStop}
+						onConnectEnd={onConnectEnd}
 						onLoad={onLoad}
 						onDragOver={onDragOver}
 						onDrop={onDrop}

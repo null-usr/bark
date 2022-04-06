@@ -1,6 +1,6 @@
 import React, { MouseEventHandler, useState } from 'react'
 import BasicNode from '../../../helpers/BasicNode'
-import DialogueNode from '../../../helpers/DialogueNode'
+import { DialogueNode } from '../../../helpers/DialogueNode'
 import Dimmer from '../../modal/Dimmer'
 import { Container } from './styles'
 

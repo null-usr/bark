@@ -1,4 +1,6 @@
 import React, {
+	memo,
+	useContext,
 	useEffect,
 	useLayoutEffect,
 	useMemo,
@@ -6,23 +8,52 @@ import React, {
 	useState,
 } from 'react'
 import {
+	Connection,
+	Edge,
+	FlowElement,
+	getConnectedEdges,
 	Handle,
+	isEdge,
 	Position,
+	removeElements,
 	useUpdateNodeInternals,
 	XYPosition,
 } from 'react-flow-renderer'
+import { v4 as uuidv4 } from 'uuid'
+import { FlowContext } from '../contexts/FlowContext'
+
+export class RootNode {
+	readonly id: string = uuidv4()
+
+	readonly type: string = 'root'
+
+	readonly selectable: boolean = false
+
+	readonly data: object = {
+		label: 'ROOT',
+		sources: [],
+		targets: [],
+	}
+
+	position: XYPosition = { x: 100, y: 100 }
+	sourcePosition = Position.Left
+	targetPosition = Position.Right
+}
 
 // https://github.com/wbkd/react-flow/issues/1641
-export const IncNode: React.FC<{
+export default memo<{
+	data: any
+	id: string
 	isConnectable: boolean
 	sourcePosition: Position
 	targetPosition: Position
-	data: any
-	id: string
-}> = ({ isConnectable, sourcePosition, targetPosition, data, id }) => {
+}>(({ data, id, isConnectable, sourcePosition, targetPosition }) => {
 	const nodeRef: any = useRef()
-	const [targetArray, setTargetArray] = useState<any[]>([])
-	const [sourceArray, setSourceArray] = useState<any[]>([])
+	const rFlow = useContext(FlowContext)
+	const [targetArray, setTargetArray] = useState<any[]>(data.targets || [])
+	const [sourceArray, setSourceArray] = useState<any[]>(
+		data.sources || [`source-handle-1`]
+	)
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
 	// when updating handles programmatically, this is needed
@@ -44,36 +75,60 @@ export const IncNode: React.FC<{
 
 	const add = (type: string) => {
 		if (type === 'T' && targetArray.length < 10) {
-			const tmp = targetArray.length + 1
+			const tmp = `target-handle-${targetArray.length + 1}`
 			setTargetArray([...targetArray, tmp])
 		}
 		if (type === 'S' && sourceArray.length < 10) {
-			const tmp = sourceArray.length + 1
+			const tmp = `source-handle-${sourceArray.length + 1}`
 			setSourceArray([...sourceArray, tmp])
 		}
 	}
-	const remove = (type: string) => {
+
+	useEffect(() => {
+		data.sources = sourceArray
+	}, [sourceArray])
+
+	useEffect(() => {
+		data.targets = targetArray
+	}, [targetArray])
+
+	// need to make sure we also remove the edges from our flow
+	const remove = (type: string, index: number) => {
 		if (type === 'T') {
-			let tmp = [...targetArray]
-			tmp = targetArray.slice(0, -1)
-			setTargetArray(tmp)
+			let tmp = targetArray
+			if (rFlow.elements) {
+				const edges = rFlow.elements.filter((element) => {
+					return (
+						isEdge(element) &&
+						element.target === data.id &&
+						element.targetHandle === targetArray.at(index)
+					)
+				})
+				if (edges) {
+					rFlow.setElements((els: any) => removeElements(edges!, els))
+				}
+			}
+			tmp = targetArray.splice(index, 1)
+			setTargetArray(targetArray)
 		}
 		if (type === 'S') {
-			let tmp = [...sourceArray]
-			tmp = sourceArray.slice(0, -1)
-			setSourceArray(tmp)
+			let tmp = sourceArray
+			if (rFlow.elements) {
+				const edges = rFlow.elements.filter((element) => {
+					return (
+						isEdge(element) &&
+						element.source === data.id &&
+						element.sourceHandle === sourceArray.at(index)
+					)
+				})
+				if (edges) {
+					rFlow.setElements((els: any) => removeElements(edges!, els))
+				}
+			}
+			tmp = sourceArray.splice(index, 1)
+			setSourceArray(sourceArray)
 		}
 	}
-
-	// designed to order 4 handles
-	// const positionHandle = (index: number) => {
-	// 	if (index === 1 || index === 2) {
-	// 		return (dimensions.height / 3) * index
-	// 	} else if (index === 3) {
-	// 		return 0
-	// 	}
-	// 	return dimensions.height
-	// }
 
 	const positionHandle = (index: number) => {
 		return 13 + 18 * index
@@ -107,6 +162,10 @@ export const IncNode: React.FC<{
 						position={Position.Right}
 						id={handleId}
 						style={{ top: positionHandle(i) }}
+						onContextMenu={(event) => {
+							event.preventDefault()
+							remove('S', i)
+						}}
 					/>
 				)
 			}),
@@ -155,7 +214,7 @@ export const IncNode: React.FC<{
 							<button
 								className="nodrag"
 								key="targetLess"
-								onClick={() => remove('T')}
+								onClick={() => remove('T', -1)}
 							>
 								-
 							</button>
@@ -192,7 +251,7 @@ export const IncNode: React.FC<{
 							<button
 								className="nodrag"
 								key="sourceLess"
-								onClick={() => remove('S')}
+								onClick={() => remove('S', -1)}
 							>
 								-
 							</button>
@@ -207,28 +266,4 @@ export const IncNode: React.FC<{
 			</div>
 		</>
 	)
-}
-
-class RootNode {
-	readonly id: string = 'root'
-
-	readonly type: string = 'input'
-
-	readonly selectable: boolean = false
-
-	readonly data: object = {
-		label: (
-			<IncNode
-				isConnectable
-				sourcePosition={Position.Left}
-				targetPosition={Position.Right}
-				data={{ label: <p>ROOT</p> }}
-				id={this.id}
-			/>
-		),
-	}
-
-	position: XYPosition = { x: 100, y: 100 }
-}
-
-export default RootNode
+})
