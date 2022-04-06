@@ -3,7 +3,8 @@
 
 import { Edge, FlowExportObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
-import BasicNode from './BasicNode'
+import { BasicNode } from './BasicNode'
+import DataEdge from './DataEdge'
 
 export interface ISceneData {
 	nodes: Array<any>
@@ -27,18 +28,18 @@ export function LoadScene(scene: string): FlowExportObject {
 		zoom: data.zoom,
 	}
 
-	out.elements = [...data.edges]
+	out.elements = [...data.nodes, ...data.edges]
 
 	// for every element in our node list, if the fields key exists
 	// we create a basic node, otherwise just push the raw react component
-	data.nodes.forEach((node) => {
-		if (node.fields) {
-			const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
-			out.elements.push(newBasic)
-		} else {
-			out.elements.push(node)
-		}
-	})
+	// data.nodes.forEach((node) => {
+	// 	if (node.fields) {
+	// 		const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
+	// 		out.elements.push(newBasic)
+	// 	} else {
+	// 		out.elements.push(node)
+	// 	}
+	// })
 
 	return out
 }
@@ -54,20 +55,9 @@ export function SaveScene(scene: FlowExportObject) {
 	// for every element, add nodes to the nodes list and edges
 	// to the edges
 	scene.elements.forEach((element) => {
-		const node = element as BasicNode
 		const edge = element as Edge
 
-		// check if it's a BasicNode, edge or generic
-		if (typeof node.getFieldData === 'function') {
-			const tmp: any = {}
-
-			tmp.fields = node.getFieldData()
-			tmp.x = node.position.x
-			tmp.y = node.position.y
-			tmp.id = node.id
-
-			out.nodes.push(tmp)
-		} else if (edge.source) {
+		if (edge.source) {
 			out.edges.push(edge)
 		} else {
 			out.nodes.push(element)
@@ -100,7 +90,12 @@ export function SerializeScene(scene: IReactFlow) {
 	})
 
 	edges.forEach((edge) => {
-		out[edge.source].next = edge.target
+		if (edge.type !== 'data') {
+			out[edge.source].next = edge.target
+		} else {
+			const dataEdge = edge as DataEdge
+			out[edge.source][dataEdge.name] = dataEdge.target
+		}
 	})
 
 	return JSON.stringify(out)

@@ -3,6 +3,7 @@
 
 import React, { createContext, useMemo, useState } from 'react'
 import { Elements } from 'react-flow-renderer'
+import initialElements from '../components/page/workspace/canvas/initial-elements'
 
 // Move to new folder/find type definition from react-flow
 type reactFlowInstance = {
@@ -34,7 +35,7 @@ export const FlowContext = createContext<IReactFlow>(null!)
 
 export const FlowProvider: React.FC<{}> = ({ children }) => {
 	const [rfInstance, setRFInstance] = useState<reactFlowInstance>()
-	const [elements, setElements] = useState<Elements<any>>([])
+	const [elements, setElements] = useState<Elements<any>>(initialElements)
 
 	// https://blog.agney.dev/useMemo-inside-context/
 	const inst = useMemo(
