@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 
 interface IProps {
-    callback: (data: object) => void
+	callback: (data: object) => void
 }
 
 interface IState {
