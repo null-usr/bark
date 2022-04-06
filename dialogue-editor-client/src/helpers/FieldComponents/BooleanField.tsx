@@ -1,12 +1,12 @@
 import React from 'react'
 
 export const BooleanField: React.FC<{ key: string; value?: boolean }> = ({
-    key,
-    value,
+	key,
+	value,
 }) => {
-    return (
-        <div>
-            {key}:{value}
-        </div>
-    )
+	return (
+		<div>
+			{key}:{value}
+		</div>
+	)
 }

@@ -11,9 +11,9 @@ export const CanvasContainer = styled.div`
 export const AddButton = styled.button<{
     z?: number
 }>`
-    position: absolute;
-    z-index: ${({ z }) => z || '1000'};
+	position: absolute;
+	z-index: ${({ z }) => z || '1000'};
 
-    left: 10px;
-    top: 10px;
+	left: 10px;
+	top: 10px;
 `

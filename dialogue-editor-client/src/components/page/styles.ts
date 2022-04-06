@@ -4,6 +4,6 @@ export const PageContainer = styled.div`
     display: flex;
     flex-direction: column;
 
-    // width: 100vw;
-    height: 100%;
+	// width: 100vw;
+	height: 100%;
 `

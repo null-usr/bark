@@ -1,0 +1,29 @@
+{
+	"nodes": [
+		{
+			"name": "input",
+			"type": "input",
+			"classname": "node react-flow__node-input"
+		},
+		{
+			"name": "default",
+			"type": "default",
+			"classname": "node react-flow__node-default"
+		},
+		{
+			"name": "output",
+			"type": "output",
+			"classname": "node react-flow__node-output"
+		},
+		{
+			"name": "dialogue",
+			"type": "dialogue",
+			"classname": "node react-flow__node-default"
+		},
+		{
+			"name": "base",
+			"type": "base",
+			"classname": "node react-flow__node-default"
+		}
+	]
+}

@@ -5,12 +5,12 @@
 import React from 'react'
 
 export const ObjectField: React.FC<{ key: string; value?: string }> = ({
-    key,
-    value,
+	key,
+	value,
 }) => {
-    return (
-        <div>
-            {key}:{value}
-        </div>
-    )
+	return (
+		<div>
+			{key}:{value}
+		</div>
+	)
 }
