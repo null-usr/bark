@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const HeaderContainer = styled.div<{
-	background?: string
+    background?: string
 }>`
 	// width: 100%;
 	background: ${({ background }) => background || 'grey'};
