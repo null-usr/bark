@@ -1,19 +1,26 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, {
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react'
 import Modal from 'react-modal'
 import ReactFlow, {
 	ReactFlowProvider,
-	removeElements,
 	addEdge,
 	MiniMap,
 	Controls,
 	Background,
-	Elements,
 	Connection,
 	Edge,
 	OnConnectStartParams,
 	Position,
-	EdgeTypesType,
-	NodeTypesType,
+	applyNodeChanges,
+	applyEdgeChanges,
+	useNodesState,
+	useEdgesState,
 } from 'react-flow-renderer'
 import { v4 as uuid } from 'uuid'
 import DialogueNodeType, {
@@ -28,6 +35,7 @@ import Detail from '../../detail/Detail'
 import { IEdgeParams } from '../../../../helpers/types'
 import DataEdge, { DataEdgeType } from '../../../../helpers/DataEdge'
 import RootNodeType from '../../../../helpers/RootNode'
+import initialElements from './initial-elements'
 
 // styles for the modal
 const customModalStyles = {
@@ -42,22 +50,31 @@ const customModalStyles = {
 	},
 }
 
-const edgeTypes: EdgeTypesType = {
-	data: DataEdgeType,
-}
-
-const nodeTypes: NodeTypesType = {
-	basic: BasicNodeType,
-	root: RootNodeType,
-	dialogue: DialogueNodeType,
-}
-
 const getNodeId = () => `randomnode_${+new Date()}`
 
 const Canvas: React.FC<{}> = (props) => {
 	// for modal
 	const [modalIsOpen, setIsOpen] = React.useState(false)
 	const [selected, setSelected] = useState<DialogueNode | null>(null)
+
+	const [nodes, setNodes, onNodesChange] = useNodesState(initialElements)
+	const [edges, setEdges, onEdgesChange] = useEdgesState([])
+
+	const edgeTypes = useMemo(
+		() => ({
+			data: DataEdgeType,
+		}),
+		[]
+	)
+
+	const nodeTypes = useMemo(
+		() => ({
+			basic: BasicNodeType,
+			root: RootNodeType,
+			dialogue: DialogueNodeType,
+		}),
+		[]
+	)
 
 	// we used our shared rflow instance so that our toolbar can
 	// access the nodes as well
@@ -69,7 +86,7 @@ const Canvas: React.FC<{}> = (props) => {
 			Math.random() * window.innerWidth - 100,
 			Math.random() * window.innerHeight
 		)
-		rFlow.setElements((els) => els.concat(newNode))
+		setNodes((els) => els.concat(newNode))
 	}
 
 	function closeModal() {
@@ -78,13 +95,32 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const reactFlowWrapper = useRef<any>(null)
 
-	const onElementsRemove = (elementsToRemove: Elements<any>) =>
-		rFlow.setElements((els: any) => removeElements(elementsToRemove, els))
+	// const onNodesChange = useCallback(
+	// 	(changes) =>
+	// 		rFlow.reactFlowInstance?.setNodes((ns) =>
+	// 			applyNodeChanges(changes, ns)
+	// 		),
+	// 	[]
+	// )
+	// const onEdgesChange = useCallback(
+	// 	(changes) =>
+	// 		rFlow.reactFlowInstance?.setEdges((es) =>
+	// 			applyEdgeChanges(changes, es)
+	// 		),
+	// 	[]
+	// )
 
 	// ================= CONNECTION BEHAVIOR ================================
+
+	// for whatever reason when i try useState with this along with useCallback
+	// it just isn't having it.
 	let connectionAttempt: OnConnectStartParams | null = null
 
-	const onConnect = (params: Edge<any> | Connection) => {
+	// useEffect(() => {
+	// 	console.log(connectionAttempt)
+	// }, [connectionAttempt])
+
+	const onConnect = (params: Connection) => {
 		if (params.sourceHandle) {
 			const edge: Edge = new DataEdge(
 				params.source!,
@@ -92,11 +128,9 @@ const Canvas: React.FC<{}> = (props) => {
 				connectionAttempt!.handleId,
 				null // not dealing with that lol
 			)
-			rFlow.setElements((els: any) => addEdge(edge, els))
+			setEdges((els: any) => addEdge(edge, els))
 		} else {
-			rFlow.setElements((els: any) =>
-				addEdge({ ...params, type: 'step' }, els)
-			)
+			setEdges((els: any) => addEdge({ ...params, type: 'step' }, els))
 		}
 		connectionAttempt = null
 	}
@@ -108,14 +142,16 @@ const Canvas: React.FC<{}> = (props) => {
 		if (event.button !== 2 && params.handleType === 'source') {
 			connectionAttempt = params
 		}
-		// console.log('on connect start', { nodeId, handleId, handleType })
 	}
-	const onConnectStop = (event: MouseEvent) => {
-		// console.log('on connect stop', event)
-	}
+
+	// const onConnectStop = useCallback((event: MouseEvent) => {
+	// 	console.log('on connect stop', event)
+	// }, [])
 
 	// we've dragged a node into an empty spot
 	const onConnectEnd = (event: MouseEvent) => {
+		// console.log('connectEnd')
+		// console.log(connectionAttempt)
 		if (!connectionAttempt) {
 			return
 		}
@@ -142,83 +178,90 @@ const Canvas: React.FC<{}> = (props) => {
 			targetPosition: Position.Left,
 		}
 
-		rFlow.setElements((els: any[]) => {
-			return els.concat(newNode)
-		})
 		const edge: Edge = new DataEdge(
 			connectionAttempt!.nodeId!,
 			newNode.id,
 			connectionAttempt!.handleId,
 			null
 		)
-		rFlow.setElements((els: any) => addEdge(edge, els))
 
+		setNodes((els: any[]) => {
+			return els.concat(newNode)
+		})
+		setEdges((els: any) => addEdge(edge, els))
 		connectionAttempt = null
 	}
 
 	// ====================== DRAG & DROP BEHAVIOUR ===========================
-	const onDragOver = (event: {
-		preventDefault: () => void
-		dataTransfer: { dropEffect: string }
-	}) => {
-		event.preventDefault()
-		event.dataTransfer.dropEffect = 'move'
-	}
+	const onDragOver = useCallback(
+		(event: {
+			preventDefault: () => void
+			dataTransfer: { dropEffect: string }
+		}) => {
+			event.preventDefault()
+			event.dataTransfer.dropEffect = 'move'
+		},
+		[]
+	)
 
-	const onDrop = (event: {
-		preventDefault: () => void
-		dataTransfer: { getData: (arg0: string) => any }
-		clientX: number
-		clientY: number
-	}) => {
-		event.preventDefault()
+	const onDrop = useCallback(
+		(event: {
+			preventDefault: () => void
+			dataTransfer: { getData: (arg0: string) => any }
+			clientX: number
+			clientY: number
+		}) => {
+			event.preventDefault()
 
-		if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
-			return
-		}
+			if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
+				return
+			}
 
-		const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
-		const type = event.dataTransfer.getData('application/reactflow')
-		const position = rFlow.reactFlowInstance.project({
-			x: event.clientX - reactFlowBounds.left,
-			y: event.clientY - reactFlowBounds.top,
-		})
-		let newNode: any
-		switch (type) {
-			case 'dialogue':
-				newNode = new DialogueNode(
-					'character name',
-					'sample dialogue',
-					setSelected,
-					position.x,
-					position.y
-				)
-				break
-			case 'option 2':
-				newNode = {}
-				break
-			case 'base':
-				newNode = new BasicNode(position.x, position.y, uuid())
-				break
-			case 'custom':
-				newNode = new BasicNode(position.x, position.y, uuid())
-				break
-			default:
-				newNode = {
-					id: uuid(),
-					type,
-					position,
-					data: { label: `${type} node` },
-					sourcePosition: Position.Right,
-					targetPosition: Position.Left,
-				}
-				break
-		}
+			const reactFlowBounds =
+				reactFlowWrapper.current.getBoundingClientRect()
+			const type = event.dataTransfer.getData('application/reactflow')
+			const position = rFlow.reactFlowInstance.project({
+				x: event.clientX - reactFlowBounds.left,
+				y: event.clientY - reactFlowBounds.top,
+			})
+			let newNode: any
+			switch (type) {
+				case 'dialogue':
+					newNode = new DialogueNode(
+						'character name',
+						'sample dialogue',
+						setSelected,
+						position.x,
+						position.y
+					)
+					break
+				case 'option 2':
+					newNode = {}
+					break
+				case 'base':
+					newNode = new BasicNode(position.x, position.y, uuid())
+					break
+				case 'custom':
+					newNode = new BasicNode(position.x, position.y, uuid())
+					break
+				default:
+					newNode = {
+						id: uuid(),
+						type,
+						position,
+						data: { label: `${type} node` },
+						sourcePosition: Position.Right,
+						targetPosition: Position.Left,
+					}
+					break
+			}
 
-		rFlow.setElements((els: any[]) => {
-			return els.concat(newNode)
-		})
-	}
+			setNodes((els: any[]) => {
+				return els.concat(newNode)
+			})
+		},
+		[rFlow.reactFlowInstance]
+	)
 
 	const submitModal = (event: any) => {
 		closeModal()
@@ -240,12 +283,12 @@ const Canvas: React.FC<{}> = (props) => {
 			250
 		)
 
-		rFlow.setElements((els: any[]) => {
+		setNodes((els: any[]) => {
 			return els.concat(newNode)
 		})
 	}
 
-	function onLoad(_reactFlowInstance: any) {
+	function onInit(_reactFlowInstance: any) {
 		_reactFlowInstance.fitView()
 		rFlow.setReactFlowInstance(_reactFlowInstance)
 	}
@@ -271,15 +314,17 @@ const Canvas: React.FC<{}> = (props) => {
 					ref={reactFlowWrapper}
 				>
 					<ReactFlow
-						elements={rFlow.elements}
+						nodes={nodes}
+						edges={edges}
 						edgeTypes={edgeTypes}
 						nodeTypes={nodeTypes}
-						onElementsRemove={onElementsRemove}
+						onNodesChange={onNodesChange}
+						onEdgesChange={onEdgesChange}
 						onConnect={onConnect}
 						onConnectStart={onConnectStart}
-						onConnectStop={onConnectStop}
+						// onConnectStop={onConnectStop}
 						onConnectEnd={onConnectEnd}
-						onLoad={onLoad}
+						onInit={onInit}
 						onDragOver={onDragOver}
 						onDrop={onDrop}
 						deleteKeyCode="Delete"

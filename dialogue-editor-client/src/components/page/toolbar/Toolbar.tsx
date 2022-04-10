@@ -1,10 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import {
-	useStoreState,
-	useStoreActions,
-	FlowExportObject,
-	useZoomPanHelper,
-} from 'react-flow-renderer'
+import { ReactFlowJsonObject, useReactFlow } from 'react-flow-renderer'
 import { FlowContext } from '../../../contexts/FlowContext'
 import { Dropdown } from '../../dropdown/Dropdown'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
@@ -26,16 +21,15 @@ function buildFileSelector() {
 function Toolbar() {
 	const fileReader = new FileReader()
 	const rFlow = useContext(FlowContext)
-	const { transform } = useZoomPanHelper()
 
 	const handleFileRead = (e: any) => {
 		const content = fileReader.result
-		const flow: FlowExportObject | null = LoadScene(content as string)
+		const flow: ReactFlowJsonObject | null = LoadScene(content as string)
 
 		if (flow) {
-			const [x = 0, y = 0] = flow.position
-			rFlow.setElements(flow.elements)
-			transform({ x, y, zoom: flow.zoom || 0 })
+			rFlow.reactFlowInstance?.setEdges(flow.edges)
+			rFlow.reactFlowInstance?.setNodes(flow.nodes)
+			rFlow.reactFlowInstance?.setViewport(flow.viewport)
 		}
 	}
 
@@ -67,7 +61,7 @@ function Toolbar() {
 
 	const onExport = () => {
 		if (rFlow.reactFlowInstance) {
-			const out = SerializeScene(rFlow)
+			const out = SerializeScene(rFlow.reactFlowInstance.toObject())
 
 			const blob = new Blob([out], { type: 'application/json' })
 			const href = URL.createObjectURL(blob)
@@ -82,8 +76,9 @@ function Toolbar() {
 
 	// load our initial elemnets up
 	const onNew = () => {
-		rFlow.setElements(initialElements)
-		transform({ x: 0, y: 0, zoom: 1 })
+		rFlow.reactFlowInstance?.setNodes(initialElements)
+		rFlow.reactFlowInstance?.setViewport({ x: 100, y: 100, zoom: 1 })
+		rFlow.reactFlowInstance?.fitView()
 	}
 
 	const handleFileSelect = (e: { preventDefault: () => void }) => {

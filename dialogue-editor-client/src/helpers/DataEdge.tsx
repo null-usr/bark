@@ -8,7 +8,7 @@ import React, {
 	useEffect,
 } from 'react'
 import {
-	ArrowHeadType,
+	applyEdgeChanges,
 	Connection,
 	Edge,
 	EdgeProps,
@@ -16,7 +16,6 @@ import {
 	getEdgeCenter,
 	getMarkerEnd,
 	getSmoothStepPath,
-	removeElements,
 } from 'react-flow-renderer'
 import { StringField } from './FieldComponents/StringField'
 import { Container } from './styles'
@@ -66,8 +65,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 	sourcePosition,
 	targetPosition,
 	data,
-	arrowHeadType,
-	markerEndId,
+	markerEnd,
 }) => {
 	const edgePath = getSmoothStepPath({
 		sourceX,
@@ -77,7 +75,6 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		targetY,
 		targetPosition,
 	})
-	const markerEnd = getMarkerEnd(arrowHeadType, markerEndId)
 	const [centerX, centerY] = getEdgeCenter({
 		sourceX,
 		sourceY,
@@ -101,12 +98,12 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		edgeID: string
 	) => {
 		evt.stopPropagation()
-		const edge = rFlow.elements.find(
-			(el: { id: string }) => el.id === edgeID
-		)
+		const edge = rFlow.reactFlowInstance
+			?.getEdges()
+			.find((el: { id: string }) => el.id === edgeID)
 		if (edge) {
-			rFlow.setElements((els: any) =>
-				removeElements([edge], rFlow.elements)
+			rFlow.reactFlowInstance?.setEdges((els: any) =>
+				applyEdgeChanges([{ id, type: 'remove' }], els)
 			)
 		}
 	}

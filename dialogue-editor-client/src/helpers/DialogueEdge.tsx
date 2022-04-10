@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowHeadType } from 'react-flow-renderer'
+import { MarkerType } from 'react-flow-renderer'
 
 class DialogueEdge {
 	readonly id: string
@@ -8,7 +8,7 @@ class DialogueEdge {
 
 	readonly target: string
 
-	readonly arrowHeadType: ArrowHeadType = ArrowHeadType.ArrowClosed
+	readonly markerType: MarkerType = MarkerType.ArrowClosed
 
 	constructor(source: string, target: string) {
 		this.source = source
