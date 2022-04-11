@@ -114,83 +114,92 @@ const Canvas: React.FC<{}> = (props) => {
 
 	// for whatever reason when i try useState with this along with useCallback
 	// it just isn't having it.
-	let connectionAttempt: OnConnectStartParams | null = null
+	const [connectionAttempt, setConnectionAttempt] =
+		useState<OnConnectStartParams | null>(null)
+	const connection = useRef(connectionAttempt)
 
-	// useEffect(() => {
-	// 	console.log(connectionAttempt)
-	// }, [connectionAttempt])
+	useEffect(() => {
+		connection.current = connectionAttempt
+	}, [connectionAttempt])
 
-	const onConnect = (params: Connection) => {
-		if (params.sourceHandle) {
-			const edge: Edge = new DataEdge(
-				params.source!,
-				params.target!,
-				connectionAttempt!.handleId,
-				null // not dealing with that lol
-			)
-			setEdges((els: any) => addEdge(edge, els))
-		} else {
-			setEdges((els: any) => addEdge({ ...params, type: 'step' }, els))
-		}
-		connectionAttempt = null
-	}
+	const onConnect = useCallback(
+		(params: Connection) => {
+			if (params.sourceHandle) {
+				const edge: Edge = new DataEdge(
+					params.source!,
+					params.target!,
+					connection.current!.handleId,
+					null // not dealing with that lol
+				)
+				setEdges((els: any) => addEdge(edge, els))
+			} else {
+				setEdges((els: any) =>
+					addEdge({ ...params, type: 'step' }, els)
+				)
+			}
+			setConnectionAttempt(null)
+		},
+		[connectionAttempt]
+	)
 
-	const onConnectStart = (
-		event: React.MouseEvent,
-		params: OnConnectStartParams
-	) => {
-		if (event.button !== 2 && params.handleType === 'source') {
-			connectionAttempt = params
-		}
-	}
+	const onConnectStart = useCallback(
+		(event: React.MouseEvent, params: OnConnectStartParams) => {
+			if (event.button !== 2 && params.handleType === 'source') {
+				setConnectionAttempt(params)
+			}
+		},
+		[connectionAttempt]
+	)
 
 	// const onConnectStop = useCallback((event: MouseEvent) => {
 	// 	console.log('on connect stop', event)
 	// }, [])
 
 	// we've dragged a node into an empty spot
-	const onConnectEnd = (event: MouseEvent) => {
-		// console.log('connectEnd')
-		// console.log(connectionAttempt)
-		if (!connectionAttempt) {
-			return
-		}
+	const onConnectEnd = useCallback(
+		(event: MouseEvent) => {
+			if (!connection.current) {
+				return
+			}
 
-		event.preventDefault()
+			event.preventDefault()
 
-		if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
-			return
-		}
+			if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
+				return
+			}
 
-		const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect()
-		// const type = event.dataTransfer.getData('application/reactflow')
-		const position = rFlow.reactFlowInstance.project({
-			x: event.clientX - reactFlowBounds.left,
-			y: event.clientY - reactFlowBounds.top,
-		})
-		const id = uuid()
-		const newNode = {
-			id: uuid(),
-			type: 'default',
-			position,
-			data: { label: `default node` },
-			sourcePosition: Position.Right,
-			targetPosition: Position.Left,
-		}
+			const reactFlowBounds =
+				reactFlowWrapper.current.getBoundingClientRect()
+			// const type = event.dataTransfer.getData('application/reactflow')
+			const position = rFlow.reactFlowInstance.project({
+				x: event.clientX - reactFlowBounds.left,
+				y: event.clientY - reactFlowBounds.top,
+			})
+			const id = uuid()
+			const newNode = {
+				id: uuid(),
+				type: 'default',
+				position,
+				data: { label: `default node` },
+				sourcePosition: Position.Right,
+				targetPosition: Position.Left,
+			}
 
-		const edge: Edge = new DataEdge(
-			connectionAttempt!.nodeId!,
-			newNode.id,
-			connectionAttempt!.handleId,
-			null
-		)
+			const edge: Edge = new DataEdge(
+				connection.current!.nodeId!,
+				newNode.id,
+				connection.current!.handleId,
+				null
+			)
 
-		setNodes((els: any[]) => {
-			return els.concat(newNode)
-		})
-		setEdges((els: any) => addEdge(edge, els))
-		connectionAttempt = null
-	}
+			setNodes((els: any[]) => {
+				return els.concat(newNode)
+			})
+			setEdges((els: any) => addEdge(edge, els))
+			setConnectionAttempt(null)
+		},
+		[rFlow.reactFlowInstance, connectionAttempt]
+	)
 
 	// ====================== DRAG & DROP BEHAVIOUR ===========================
 	const onDragOver = useCallback(
