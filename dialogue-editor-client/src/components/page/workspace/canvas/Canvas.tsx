@@ -139,7 +139,7 @@ const Canvas: React.FC<{}> = (props) => {
 			}
 			setConnectionAttempt(null)
 		},
-		[connectionAttempt]
+		[rFlow.reactFlowInstance, connectionAttempt]
 	)
 
 	const onConnectStart = useCallback(
