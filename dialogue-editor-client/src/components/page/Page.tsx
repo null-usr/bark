@@ -1,7 +1,7 @@
 import React from 'react'
 import { ReactFlowProvider } from 'react-flow-renderer'
 import Workspace from './workspace/Workspace'
-import Toolbar from './header/Toolbar'
+import Toolbar from './toolbar/Toolbar'
 import { PageContainer } from './styles'
 import { FlowProvider } from '../../contexts/FlowContext'
 

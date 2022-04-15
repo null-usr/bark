@@ -1,7 +1,7 @@
-export interface IEdgeParams{
-	source: string,
-	sourceHandle: string | null,
-	target: string,
+export interface IEdgeParams {
+	source: string
+	sourceHandle: string | null
+	target: string
 	targetHandle: string | null
 }
 
