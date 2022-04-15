@@ -8,14 +8,9 @@ import React, {
 	useState,
 } from 'react'
 import {
-	Connection,
-	Edge,
-	FlowElement,
-	getConnectedEdges,
 	Handle,
 	isEdge,
 	Position,
-	removeElements,
 	useUpdateNodeInternals,
 	XYPosition,
 } from 'react-flow-renderer'
@@ -70,6 +65,14 @@ export default memo<{
 	}, [])
 
 	useEffect(() => {
+		data.sources = sourceArray
+	}, [sourceArray])
+
+	useEffect(() => {
+		data.targets = targetArray
+	}, [targetArray])
+
+	useEffect(() => {
 		updateNodeInternals(id)
 	}, [sourceArray, targetArray])
 
@@ -84,49 +87,43 @@ export default memo<{
 		}
 	}
 
-	useEffect(() => {
-		data.sources = sourceArray
-	}, [sourceArray])
-
-	useEffect(() => {
-		data.targets = targetArray
-	}, [targetArray])
-
 	// need to make sure we also remove the edges from our flow
 	const remove = (type: string, index: number) => {
 		if (type === 'T') {
-			let tmp = targetArray
-			if (rFlow.elements) {
-				const edges = rFlow.elements.filter((element) => {
-					return (
-						isEdge(element) &&
-						element.target === data.id &&
-						element.targetHandle === targetArray.at(index)
-					)
-				})
+			const tmp = [...targetArray]
+			if (rFlow.reactFlowInstance) {
+				const edges = rFlow.reactFlowInstance
+					.getEdges()
+					.filter((element) => {
+						return (
+							element.target !== data.id ||
+							element.targetHandle === targetArray.at(index)
+						)
+					})
 				if (edges) {
-					rFlow.setElements((els: any) => removeElements(edges!, els))
+					rFlow.reactFlowInstance?.setEdges(edges)
 				}
 			}
-			tmp = targetArray.splice(index, 1)
-			setTargetArray(targetArray)
+			tmp.splice(index, 1)
+			setTargetArray(tmp)
 		}
 		if (type === 'S') {
-			let tmp = sourceArray
-			if (rFlow.elements) {
-				const edges = rFlow.elements.filter((element) => {
-					return (
-						isEdge(element) &&
-						element.source === data.id &&
-						element.sourceHandle === sourceArray.at(index)
-					)
-				})
+			const tmp = [...sourceArray]
+			if (rFlow.reactFlowInstance) {
+				const edges = rFlow.reactFlowInstance
+					.getEdges()
+					.filter((element) => {
+						return (
+							element.source !== data.id ||
+							element.sourceHandle !== sourceArray.at(index)
+						)
+					})
 				if (edges) {
-					rFlow.setElements((els: any) => removeElements(edges!, els))
+					rFlow.reactFlowInstance?.setEdges(edges)
 				}
 			}
-			tmp = sourceArray.splice(index, 1)
-			setSourceArray(sourceArray)
+			tmp.splice(index, 1)
+			setSourceArray(tmp)
 		}
 	}
 
