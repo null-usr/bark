@@ -16,6 +16,7 @@ import {
 	getEdgeCenter,
 	getMarkerEnd,
 	getSmoothStepPath,
+	useReactFlow,
 } from 'react-flow-renderer'
 import { StringField } from './FieldComponents/StringField'
 import { Container } from './styles'
@@ -86,6 +87,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 
 	// shared flow context
 	const rFlow = useContext(FlowContext)
+	const { setEdges, getEdges } = useReactFlow()
 
 	const [name, setName] = useState(data.name || 'placeholder')
 
@@ -93,7 +95,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		setName(newName)
 	}
 
-	const onEdgeClick = (
+	const onCloseClick = (
 		evt: { stopPropagation: () => void },
 		edgeID: string
 	) => {
@@ -102,9 +104,10 @@ export const DataEdgeType: FC<EdgeProps> = ({
 			?.getEdges()
 			.find((el: { id: string }) => el.id === edgeID)
 		if (edge) {
-			rFlow.reactFlowInstance?.setEdges((els: any) =>
-				applyEdgeChanges([{ id, type: 'remove' }], els)
+			const out = getEdges().filter(
+				(e: { id: string }) => e.id !== edgeID
 			)
+			data.delete(out)
 		}
 	}
 
@@ -145,7 +148,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 				<div>
 					<button
 						className="edgebutton"
-						onClick={(event) => onEdgeClick(event, id)}
+						onClick={(event) => onCloseClick(event, id)}
 					>
 						×
 					</button>
@@ -167,12 +170,14 @@ class DataEdge implements Connection {
 	name: string
 	edgeData: any
 	data: any = {}
+	deleteEdge: Function
 
 	constructor(
 		source: string,
 		target: string,
 		sourceHandle: string | null,
 		targetHandle: string | null,
+		cb: Function,
 		name?: string
 	) {
 		this.id = `${source}-${sourceHandle}-${target}`
@@ -189,12 +194,14 @@ class DataEdge implements Connection {
 		this.targetHandle = targetHandle
 
 		this.edgeData = createRef()
+		this.deleteEdge = cb
 		this._set_data()
 	}
 
 	_set_data() {
 		this.data = {
 			name: this.name,
+			delete: this.deleteEdge,
 		}
 	}
 }

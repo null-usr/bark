@@ -17,8 +17,6 @@ import ReactFlow, {
 	Edge,
 	OnConnectStartParams,
 	Position,
-	applyNodeChanges,
-	applyEdgeChanges,
 	useNodesState,
 	useEdgesState,
 } from 'react-flow-renderer'
@@ -59,6 +57,10 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialElements)
 	const [edges, setEdges, onEdgesChange] = useEdgesState([])
+
+	// useEffect(() => {
+	// 	console.log(edges)
+	// }, [edges])
 
 	const edgeTypes = useMemo(
 		() => ({
@@ -112,8 +114,9 @@ const Canvas: React.FC<{}> = (props) => {
 
 	// ================= CONNECTION BEHAVIOR ================================
 
-	// for whatever reason when i try useState with this along with useCallback
-	// it just isn't having it.
+	// useState gives us an old refernce inside of the useCallback
+	// but not inside of useEffect, so we use this hack to get the correct
+	// connection attempt
 	const [connectionAttempt, setConnectionAttempt] =
 		useState<OnConnectStartParams | null>(null)
 	const connection = useRef(connectionAttempt)
@@ -129,7 +132,8 @@ const Canvas: React.FC<{}> = (props) => {
 					params.source!,
 					params.target!,
 					connection.current!.handleId,
-					null // not dealing with that lol
+					null,
+					setEdges
 				)
 				setEdges((els: any) => addEdge(edge, els))
 			} else {
@@ -189,7 +193,8 @@ const Canvas: React.FC<{}> = (props) => {
 				connection.current!.nodeId!,
 				newNode.id,
 				connection.current!.handleId,
-				null
+				null,
+				setEdges
 			)
 
 			setNodes((els: any[]) => {
@@ -367,6 +372,12 @@ const Canvas: React.FC<{}> = (props) => {
 			</ReactFlowProvider>
 			<AddButton z={1} onClick={addOption}>
 				Add Dialogue Option
+			</AddButton>
+			<AddButton
+				z={1}
+				onClick={() => rFlow.reactFlowInstance?.setEdges([])}
+			>
+				Nuke
 			</AddButton>
 			{selected && (
 				<Detail
