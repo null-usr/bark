@@ -18,9 +18,6 @@ import {
 	getSmoothStepPath,
 	useReactFlow,
 } from 'react-flow-renderer'
-import { StringField } from './FieldComponents/StringField'
-import { Container } from './styles'
-import { iFieldData } from './types'
 
 import './style.css'
 import { FlowContext } from '../contexts/FlowContext'
