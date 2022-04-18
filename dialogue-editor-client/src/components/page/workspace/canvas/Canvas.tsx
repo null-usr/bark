@@ -21,6 +21,7 @@ import ReactFlow, {
 	useEdgesState,
 } from 'react-flow-renderer'
 import { v4 as uuid } from 'uuid'
+import create from 'zustand'
 import DialogueNodeType, {
 	DialogueNode,
 } from '../../../../helpers/DialogueNode'
@@ -34,6 +35,7 @@ import { IEdgeParams } from '../../../../helpers/types'
 import DataEdge, { DataEdgeType } from '../../../../helpers/DataEdge'
 import RootNodeType from '../../../../helpers/RootNode'
 import initialElements from './initial-elements'
+import useStore, { State, types } from '../../../../store/store'
 
 // styles for the modal
 const customModalStyles = {
@@ -48,8 +50,6 @@ const customModalStyles = {
 	},
 }
 
-const getNodeId = () => `randomnode_${+new Date()}`
-
 const Canvas: React.FC<{}> = (props) => {
 	// for modal
 	const [modalIsOpen, setIsOpen] = React.useState(false)
@@ -58,9 +58,15 @@ const Canvas: React.FC<{}> = (props) => {
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialElements)
 	const [edges, setEdges, onEdgesChange] = useEdgesState([])
 
-	// useEffect(() => {
-	// 	console.log(edges)
-	// }, [edges])
+	const edgeID = useStore((state: State) => state.edgeID)
+	const dispatch = useStore((store: State) => store.dispatch)
+
+	useEffect(() => {
+		if (edgeID) {
+			const out = edges.filter((e: { id: string }) => e.id !== edgeID)
+			setEdges(out)
+		}
+	}, [edgeID])
 
 	const edgeTypes = useMemo(
 		() => ({
@@ -200,7 +206,7 @@ const Canvas: React.FC<{}> = (props) => {
 			setNodes((els: any[]) => {
 				return els.concat(newNode)
 			})
-			setEdges((els: any) => addEdge(edge, els))
+			rFlow.reactFlowInstance?.setEdges((els: any) => addEdge(edge, els))
 			setConnectionAttempt(null)
 		},
 		[rFlow.reactFlowInstance, connectionAttempt]
@@ -375,7 +381,9 @@ const Canvas: React.FC<{}> = (props) => {
 			</AddButton>
 			<AddButton
 				z={1}
-				onClick={() => rFlow.reactFlowInstance?.setEdges([])}
+				onClick={() => {
+					rFlow.reactFlowInstance?.setEdges((es) => [])
+				}}
 			>
 				Nuke
 			</AddButton>

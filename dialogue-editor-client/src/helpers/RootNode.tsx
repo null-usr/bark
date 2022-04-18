@@ -45,6 +45,7 @@ export default memo<{
 }>(({ data, id, isConnectable, sourcePosition, targetPosition }) => {
 	const nodeRef: any = useRef()
 	const rFlow = useContext(FlowContext)
+
 	const [targetArray, setTargetArray] = useState<any[]>(data.targets || [])
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.sources || [`source-handle-1`]
