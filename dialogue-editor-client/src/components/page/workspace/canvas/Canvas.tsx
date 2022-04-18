@@ -133,6 +133,7 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const onConnect = useCallback(
 		(params: Connection) => {
+			setConnectionAttempt(null)
 			if (params.sourceHandle) {
 				const edge: Edge = new DataEdge(
 					params.source!,
@@ -147,7 +148,6 @@ const Canvas: React.FC<{}> = (props) => {
 					addEdge({ ...params, type: 'step' }, els)
 				)
 			}
-			setConnectionAttempt(null)
 		},
 		[rFlow.reactFlowInstance, connectionAttempt]
 	)
