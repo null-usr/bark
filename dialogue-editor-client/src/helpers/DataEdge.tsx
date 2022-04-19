@@ -21,6 +21,7 @@ import {
 
 import './style.css'
 import { FlowContext } from '../contexts/FlowContext'
+import useStore, { State, types } from '../store/store'
 
 // export const VariableEdge = forwardRef<
 // 	{ getEdgeName(): string },
@@ -84,7 +85,8 @@ export const DataEdgeType: FC<EdgeProps> = ({
 
 	// shared flow context
 	const rFlow = useContext(FlowContext)
-	const { setEdges, getEdges } = useReactFlow()
+	const { getEdges } = useReactFlow()
+	const dispatch = useStore((store: State) => store.dispatch)
 
 	const [name, setName] = useState(data.name || 'placeholder')
 
@@ -104,7 +106,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 			const out = getEdges().filter(
 				(e: { id: string }) => e.id !== edgeID
 			)
-			data.delete(out)
+			dispatch({ type: types.deleteEdge, data: edgeID })
 		}
 	}
 
