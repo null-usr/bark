@@ -65,6 +65,7 @@ const Canvas: React.FC<{}> = (props) => {
 		if (edgeID) {
 			const out = edges.filter((e: { id: string }) => e.id !== edgeID)
 			setEdges(out)
+			dispatch({ type: types.deleteEdge, data: null })
 		}
 	}, [edgeID])
 
