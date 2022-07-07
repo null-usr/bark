@@ -21,9 +21,9 @@ import {
 
 import { render } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
-import { StringField } from './FieldComponents/StringField'
-import { Container } from './styles'
-import { iFieldData } from './types'
+import { StringField } from '../FieldComponents/StringField'
+import { Container } from '../styles'
+import { iFieldData } from '../types'
 
 export class BasicNode {
 	id: string
@@ -104,71 +104,67 @@ export class BasicNode {
 // https://www.carlrippon.com/react-forwardref-typescript/
 // https://stackoverflow.com/questions/37949981/call-child-method-from-parent
 // need to do a check that all the keys are unique
-export default memo<{ data: any; isConnectable: boolean }>(
-	({ data, isConnectable }) => {
-		const [fields, setFields] = useState<iFieldData[]>(data.fields || [])
-		const [count, setCount] = useState(1)
+export default ({
+	data,
+	isConnectable,
+}: NodeProps<{ fields: iFieldData[] }>) => {
+	const [fields, setFields] = useState<iFieldData[]>(data.fields || [])
+	const [count, setCount] = useState(1)
 
-		const addField = () => {
-			setFields([
-				...fields,
-				{ key: `key ${count}`, value: `value ${count}` },
-			])
-			setCount(count + 1)
-		}
-
-		const updateField = (index: number, k: string, v: string) => {
-			const f = [...fields]
-			const item = { ...f[index] }
-			item.key = k
-			item.value = v
-			f[index] = item
-			setFields(f)
-		}
-
-		// https://stackoverflow.com/questions/43230622/reactjs-how-to-delete-item-from-list/43230714
-		const deleteField = (id: string) => {
-			setFields(fields.filter((el) => el.key !== id))
-		}
-
-		useEffect(() => {
-			data.fields = fields
-		}, [fields])
-
-		return (
-			<>
-				<Handle
-					type="target"
-					position={Position.Left}
-					style={{ background: '#555' }}
-					onConnect={(params) =>
-						console.log('handle onConnect', params)
-					}
-					isConnectable={isConnectable}
-				/>
-				<Container>
-					<button onClick={addField}>Add Text Field</button>
-					<div className="nodrag">
-						{fields.map((field, index) => (
-							<StringField
-								updateField={updateField}
-								del={deleteField}
-								index={index}
-								key={field.key}
-								k={field.key}
-								v={field.value}
-							/>
-						))}
-					</div>
-				</Container>
-				<Handle
-					type="source"
-					position={Position.Right}
-					// id="b"
-					style={{ background: '#555' }}
-					isConnectable={isConnectable}
-				/>
-			</>
-		)
+	const addField = () => {
+		setFields([...fields, { key: `key ${count}`, value: `value ${count}` }])
+		setCount(count + 1)
 	}
-)
+
+	const updateField = (index: number, k: string, v: string) => {
+		const f = [...fields]
+		const item = { ...f[index] }
+		item.key = k
+		item.value = v
+		f[index] = item
+		setFields(f)
+	}
+
+	// https://stackoverflow.com/questions/43230622/reactjs-how-to-delete-item-from-list/43230714
+	const deleteField = (id: string) => {
+		setFields(fields.filter((el) => el.key !== id))
+	}
+
+	useEffect(() => {
+		data.fields = fields
+	}, [fields])
+
+	return (
+		<>
+			<Handle
+				type="target"
+				position={Position.Left}
+				style={{ background: '#555' }}
+				onConnect={(params) => console.log('handle onConnect', params)}
+				isConnectable={isConnectable}
+			/>
+			<Container>
+				<button onClick={addField}>Add Text Field</button>
+				<div className="nodrag">
+					{fields.map((field, index) => (
+						<StringField
+							updateField={updateField}
+							del={deleteField}
+							index={index}
+							key={field.key}
+							k={field.key}
+							v={field.value}
+						/>
+					))}
+				</div>
+			</Container>
+			<Handle
+				type="source"
+				position={Position.Right}
+				// id="b"
+				style={{ background: '#555' }}
+				isConnectable={isConnectable}
+			/>
+		</>
+	)
+}

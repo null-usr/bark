@@ -3,7 +3,7 @@
 
 import { Edge, ReactFlowJsonObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
-import { BasicNode } from './BasicNode'
+import { BasicNode } from './nodes/BasicNode'
 import DataEdge from './DataEdge'
 
 export interface ISceneData extends ReactFlowJsonObject {
