@@ -3,7 +3,7 @@
 
 import React, { createContext, useMemo, useState } from 'react'
 import { ReactFlowInstance } from 'react-flow-renderer'
-import initialElements from '../components/page/workspace/canvas/initial-elements'
+import initialElements from '../helpers/initial-elements'
 
 // Interface available to the palette & canvas in order to share data
 export interface IReactFlow {

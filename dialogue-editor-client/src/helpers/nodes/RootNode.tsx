@@ -10,12 +10,14 @@ import React, {
 import {
 	Handle,
 	isEdge,
+	NodeProps,
 	Position,
+	useReactFlow,
 	useUpdateNodeInternals,
 	XYPosition,
 } from 'react-flow-renderer'
 import { v4 as uuidv4 } from 'uuid'
-import { FlowContext } from '../contexts/FlowContext'
+import { FlowContext } from '../../contexts/FlowContext'
 
 export class RootNode {
 	readonly id: string = uuidv4()
@@ -36,15 +38,17 @@ export class RootNode {
 }
 
 // https://github.com/wbkd/react-flow/issues/1641
-export default memo<{
-	data: any
+export default ({
+	data,
+	id,
+}: NodeProps<{
+	sources: string[]
+	targets: string[]
 	id: string
-	isConnectable: boolean
-	sourcePosition: Position
-	targetPosition: Position
-}>(({ data, id, isConnectable, sourcePosition, targetPosition }) => {
+	label: string
+}>) => {
 	const nodeRef: any = useRef()
-	const rFlow = useContext(FlowContext)
+	const reactFlowInstance = useReactFlow()
 
 	const [targetArray, setTargetArray] = useState<any[]>(data.targets || [])
 	const [sourceArray, setSourceArray] = useState<any[]>(
@@ -92,36 +96,28 @@ export default memo<{
 	const remove = (type: string, index: number) => {
 		if (type === 'T') {
 			const tmp = [...targetArray]
-			if (rFlow.reactFlowInstance) {
-				const edges = rFlow.reactFlowInstance
-					.getEdges()
-					.filter((element) => {
-						return (
-							element.target !== data.id ||
-							element.targetHandle === targetArray.at(index)
-						)
-					})
-				if (edges) {
-					rFlow.reactFlowInstance?.setEdges(edges)
-				}
+			const edges = reactFlowInstance.getEdges().filter((element) => {
+				return (
+					element.target !== data.id ||
+					element.targetHandle === targetArray.at(index)
+				)
+			})
+			if (edges) {
+				reactFlowInstance.setEdges(edges)
 			}
 			tmp.splice(index, 1)
 			setTargetArray(tmp)
 		}
 		if (type === 'S') {
 			const tmp = [...sourceArray]
-			if (rFlow.reactFlowInstance) {
-				const edges = rFlow.reactFlowInstance
-					.getEdges()
-					.filter((element) => {
-						return (
-							element.source !== data.id ||
-							element.sourceHandle !== sourceArray.at(index)
-						)
-					})
-				if (edges) {
-					rFlow.reactFlowInstance?.setEdges(edges)
-				}
+			const edges = reactFlowInstance.getEdges().filter((element) => {
+				return (
+					element.source !== data.id ||
+					element.sourceHandle !== sourceArray.at(index)
+				)
+			})
+			if (edges) {
+				reactFlowInstance?.setEdges(edges)
 			}
 			tmp.splice(index, 1)
 			setSourceArray(tmp)
@@ -264,4 +260,4 @@ export default memo<{
 			</div>
 		</>
 	)
-})
+}
