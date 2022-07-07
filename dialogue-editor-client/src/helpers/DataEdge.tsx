@@ -84,7 +84,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 	})
 
 	// shared flow context
-	const rFlow = useContext(FlowContext)
+	const reactFlowInstance = useReactFlow()
 	const { getEdges } = useReactFlow()
 	const dispatch = useStore((store: State) => store.dispatch)
 
@@ -99,8 +99,8 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		edgeID: string
 	) => {
 		evt.stopPropagation()
-		const edge = rFlow.reactFlowInstance
-			?.getEdges()
+		const edge = reactFlowInstance
+			.getEdges()
 			.find((el: { id: string }) => el.id === edgeID)
 		if (edge) {
 			const out = getEdges().filter(

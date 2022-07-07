@@ -10,14 +10,12 @@ import './Page.css'
 
 function Page() {
 	return (
-		<FlowProvider>
+		<PageContainer>
 			<ReactFlowProvider>
-				<PageContainer>
-					<Toolbar />
-					<Workspace />
-				</PageContainer>
+				<Toolbar />
+				<Workspace />
 			</ReactFlowProvider>
-		</FlowProvider>
+		</PageContainer>
 	)
 }
 

@@ -15,27 +15,30 @@ import ReactFlow, {
 	Background,
 	Connection,
 	Edge,
+	Node,
 	OnConnectStartParams,
 	Position,
 	useNodesState,
 	useEdgesState,
+	useReactFlow,
 } from 'react-flow-renderer'
 import { v4 as uuid } from 'uuid'
 import create from 'zustand'
 import DialogueNodeType, {
 	DialogueNode,
-} from '../../../../helpers/DialogueNode'
+} from '../../../../helpers/nodes/DialogueNode'
 import DialogueForm from '../../../../helpers/DialogueForm'
 // import initialElements from './initial-elements'
 import { AddButton, CanvasContainer } from './styles'
 import { FlowContext } from '../../../../contexts/FlowContext'
-import BasicNodeType, { BasicNode } from '../../../../helpers/BasicNode'
+import BasicNodeType, { BasicNode } from '../../../../helpers/nodes/BasicNode'
 import Detail from '../../detail/Detail'
 import { IEdgeParams } from '../../../../helpers/types'
 import DataEdge, { DataEdgeType } from '../../../../helpers/DataEdge'
-import RootNodeType from '../../../../helpers/RootNode'
-import initialElements from './initial-elements'
+import RootNodeType from '../../../../helpers/nodes/RootNode'
+import initialElements from '../../../../helpers/initial-elements'
 import useStore, { State, types } from '../../../../store/store'
+import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
 
 // styles for the modal
 const customModalStyles = {
@@ -51,14 +54,25 @@ const customModalStyles = {
 }
 
 const Canvas: React.FC<{}> = (props) => {
+	const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } =
+		useStore()
+
 	// for modal
 	const [modalIsOpen, setIsOpen] = React.useState(false)
-	const [selected, setSelected] = useState<DialogueNode | null>(null)
+	const [selected, setSelected] = useState<Node | null>(null)
 
-	const [nodes, setNodes, onNodesChange] = useNodesState(initialElements)
-	const [edges, setEdges, onEdgesChange] = useEdgesState([])
+	const [, setNodes] = useNodesState(nodes)
+	const [, setEdges] = useEdgesState(edges)
+
+	const reactFlowInstance = useReactFlow()
+
+	// call your hook here
+	// const forceUpdate = useForceUpdate()
 
 	const edgeID = useStore((state: State) => state.edgeID)
+	const nodeID = useStore((state: State) => state.nodeID)
+
+	// zustand store
 	const dispatch = useStore((store: State) => store.dispatch)
 
 	useEffect(() => {
@@ -68,6 +82,12 @@ const Canvas: React.FC<{}> = (props) => {
 			dispatch({ type: types.deleteEdge, data: null })
 		}
 	}, [edgeID])
+
+	useEffect(() => {
+		if (nodeID) {
+			setSelected(nodes.filter((node) => node.id === nodeID)[0])
+		}
+	}, [nodeID])
 
 	const edgeTypes = useMemo(
 		() => ({
@@ -81,13 +101,10 @@ const Canvas: React.FC<{}> = (props) => {
 			basic: BasicNodeType,
 			root: RootNodeType,
 			dialogue: DialogueNodeType,
+			colorChooser: ColorChooserNode,
 		}),
 		[]
 	)
-
-	// we used our shared rflow instance so that our toolbar can
-	// access the nodes as well
-	const rFlow = useContext(FlowContext)
 
 	// on add option click, open the modal
 	function addOption(event: any) {
@@ -95,7 +112,8 @@ const Canvas: React.FC<{}> = (props) => {
 			Math.random() * window.innerWidth - 100,
 			Math.random() * window.innerHeight
 		)
-		setNodes((els) => els.concat(newNode))
+		// setNodes((els) => els.concat(newNode))
+		addNode(newNode)
 	}
 
 	function closeModal() {
@@ -132,7 +150,7 @@ const Canvas: React.FC<{}> = (props) => {
 		connection.current = connectionAttempt
 	}, [connectionAttempt])
 
-	const onConnect = useCallback(
+	const onCustomConnect = useCallback(
 		(params: Connection) => {
 			setConnectionAttempt(null)
 			if (params.sourceHandle) {
@@ -150,7 +168,7 @@ const Canvas: React.FC<{}> = (props) => {
 				)
 			}
 		},
-		[rFlow.reactFlowInstance, connectionAttempt]
+		[reactFlowInstance, connectionAttempt]
 	)
 
 	const onConnectStart = useCallback(
@@ -175,14 +193,10 @@ const Canvas: React.FC<{}> = (props) => {
 
 			event.preventDefault()
 
-			if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
-				return
-			}
-
 			const reactFlowBounds =
 				reactFlowWrapper.current.getBoundingClientRect()
 			// const type = event.dataTransfer.getData('application/reactflow')
-			const position = rFlow.reactFlowInstance.project({
+			const position = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
@@ -204,13 +218,14 @@ const Canvas: React.FC<{}> = (props) => {
 				setEdges
 			)
 
-			setNodes((els: any[]) => {
-				return els.concat(newNode)
-			})
-			rFlow.reactFlowInstance?.setEdges((els: any) => addEdge(edge, els))
+			// setNodes((els: any[]) => {
+			// 	return els.concat(newNode)
+			// })
+			addNode(newNode)
+			reactFlowInstance.setEdges((els: any) => addEdge(edge, els))
 			setConnectionAttempt(null)
 		},
-		[rFlow.reactFlowInstance, connectionAttempt]
+		[reactFlowInstance, connectionAttempt]
 	)
 
 	// ====================== DRAG & DROP BEHAVIOUR ===========================
@@ -234,14 +249,10 @@ const Canvas: React.FC<{}> = (props) => {
 		}) => {
 			event.preventDefault()
 
-			if (reactFlowWrapper == null || rFlow.reactFlowInstance == null) {
-				return
-			}
-
 			const reactFlowBounds =
 				reactFlowWrapper.current.getBoundingClientRect()
 			const type = event.dataTransfer.getData('application/reactflow')
-			const position = rFlow.reactFlowInstance.project({
+			const position = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
@@ -251,7 +262,8 @@ const Canvas: React.FC<{}> = (props) => {
 					newNode = new DialogueNode(
 						'character name',
 						'sample dialogue',
-						setSelected,
+						null,
+						// setSelected,
 						position.x,
 						position.y
 					)
@@ -277,11 +289,12 @@ const Canvas: React.FC<{}> = (props) => {
 					break
 			}
 
-			setNodes((els: any[]) => {
-				return els.concat(newNode)
-			})
+			// setNodes((els: any[]) => {
+			// 	return els.concat(newNode)
+			// })
+			addNode(newNode)
 		},
-		[rFlow.reactFlowInstance]
+		[reactFlowInstance]
 	)
 
 	const submitModal = (event: any) => {
@@ -299,20 +312,22 @@ const Canvas: React.FC<{}> = (props) => {
 		const newNode = new DialogueNode(
 			event.character_name,
 			event.dialog,
-			setSelected,
+			null,
+			// setSelected,
 			250,
 			250
 		)
 
-		setNodes((els: any[]) => {
-			return els.concat(newNode)
-		})
+		// setNodes((els: any[]) => {
+		// 	return els.concat(newNode)
+		// })
+		addNode(newNode)
 	}
 
-	function onInit(_reactFlowInstance: any) {
-		_reactFlowInstance.fitView()
-		rFlow.setReactFlowInstance(_reactFlowInstance)
-	}
+	// function onInit(_reactFlowInstance: any) {
+	// 	_reactFlowInstance.fitView()
+	// 	rFlow.setReactFlowInstance(_reactFlowInstance)
+	// }
 
 	Modal.setAppElement('#root')
 
@@ -328,71 +343,70 @@ const Canvas: React.FC<{}> = (props) => {
 				<button onClick={closeModal}>close</button>
 				<DialogueForm callback={submitModal} />
 			</Modal>
-			<ReactFlowProvider>
-				<div
-					style={{ width: '100%', height: '100%' }}
-					className="reactflow-wrapper"
-					ref={reactFlowWrapper}
+			<div
+				style={{ width: '100%', height: '100%' }}
+				className="reactflow-wrapper"
+				ref={reactFlowWrapper}
+			>
+				<ReactFlow
+					nodes={nodes}
+					edges={edges}
+					edgeTypes={edgeTypes}
+					nodeTypes={nodeTypes}
+					onNodesChange={onNodesChange}
+					onEdgesChange={onEdgesChange}
+					// onConnect={onConnect}
+					onConnect={onCustomConnect}
+					onConnectStart={onConnectStart}
+					// onConnectStop={onConnectStop}
+					onConnectEnd={onConnectEnd}
+					// onInit={onInit}
+					onDragOver={onDragOver}
+					onDrop={onDrop}
+					deleteKeyCode="Delete"
+					multiSelectionKeyCode="Control"
+					snapToGrid
+					snapGrid={[15, 15]}
+					style={{ height: '100%', width: '100%', zIndex: 0 }}
 				>
-					<ReactFlow
-						nodes={nodes}
-						edges={edges}
-						edgeTypes={edgeTypes}
-						nodeTypes={nodeTypes}
-						onNodesChange={onNodesChange}
-						onEdgesChange={onEdgesChange}
-						onConnect={onConnect}
-						onConnectStart={onConnectStart}
-						// onConnectStop={onConnectStop}
-						onConnectEnd={onConnectEnd}
-						onInit={onInit}
-						onDragOver={onDragOver}
-						onDrop={onDrop}
-						deleteKeyCode="Delete"
-						multiSelectionKeyCode="Control"
-						snapToGrid
-						snapGrid={[15, 15]}
-						style={{ height: '100%', width: '100%', zIndex: 0 }}
-					>
-						<MiniMap
-							nodeStrokeColor={(n) => {
-								if (n.style?.background)
-									return n.style.background as string
-								if (n.type === 'input') return '#0041d0'
-								if (n.type === 'output') return '#ff0072'
-								if (n.type === 'default') return '#1a192b'
+					<MiniMap
+						nodeStrokeColor={(n) => {
+							if (n.style?.background)
+								return n.style.background as string
+							if (n.type === 'input') return '#0041d0'
+							if (n.type === 'output') return '#ff0072'
+							if (n.type === 'default') return '#1a192b'
 
-								return '#1a192b'
-							}}
-							nodeColor={(n) => {
-								if (n.style?.background)
-									return n.style.background as string
+							return '#1a192b'
+						}}
+						nodeColor={(n) => {
+							if (n.style?.background)
+								return n.style.background as string
 
-								return '#fff'
-							}}
-							nodeBorderRadius={2}
-						/>
-						<Controls />
-						<Background color="#aaa" gap={16} />
-					</ReactFlow>
-				</div>
-			</ReactFlowProvider>
+							return '#fff'
+						}}
+						nodeBorderRadius={2}
+					/>
+					<Controls />
+					<Background color="#aaa" gap={16} />
+				</ReactFlow>
+			</div>
 			<AddButton z={1} onClick={addOption}>
 				Add Dialogue Option
 			</AddButton>
 			<AddButton
 				z={1}
 				onClick={() => {
-					rFlow.reactFlowInstance?.setEdges((es) => [])
+					setEdges([])
 				}}
 			>
 				Nuke
 			</AddButton>
-			{selected && (
+			{nodeID && (
 				<Detail
-					dialogueNode={selected}
+					nodeID={nodeID}
 					isOpen
-					close={() => setSelected(null)}
+					close={() => dispatch({ type: types.setNode, data: null })}
 				/>
 			)}
 			{/* {selected && (
