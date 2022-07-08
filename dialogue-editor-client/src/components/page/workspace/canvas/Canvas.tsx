@@ -32,13 +32,14 @@ import DialogueForm from '../../../../helpers/DialogueForm'
 import { AddButton, CanvasContainer } from './styles'
 import { FlowContext } from '../../../../contexts/FlowContext'
 import BasicNodeType, { BasicNode } from '../../../../helpers/nodes/BasicNode'
-import Detail from '../../detail/Detail'
+import NodeDetail from '../../detail/NodeDetail'
 import { IEdgeParams } from '../../../../helpers/types'
 import DataEdge, { DataEdgeType } from '../../../../helpers/DataEdge'
 import RootNodeType from '../../../../helpers/nodes/RootNode'
 import initialElements from '../../../../helpers/initial-elements'
 import useStore, { State, types } from '../../../../store/store'
 import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
+import EdgeDetail from '../../detail/EdgeDetail'
 
 // styles for the modal
 const customModalStyles = {
@@ -54,40 +55,29 @@ const customModalStyles = {
 }
 
 const Canvas: React.FC<{}> = (props) => {
-	const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } =
-		useStore()
+	const {
+		nodes,
+		edges,
+		onNodesChange,
+		onEdgesChange,
+		onConnect,
+		addNode,
+		setEdges,
+	} = useStore()
 
 	// for modal
 	const [modalIsOpen, setIsOpen] = React.useState(false)
-	const [selected, setSelected] = useState<Node | null>(null)
-
-	const [, setNodes] = useNodesState(nodes)
-	const [, setEdges] = useEdgesState(edges)
 
 	const reactFlowInstance = useReactFlow()
 
 	// call your hook here
 	// const forceUpdate = useForceUpdate()
 
-	const edgeID = useStore((state: State) => state.edgeID)
 	const nodeID = useStore((state: State) => state.nodeID)
+	const edgeID = useStore((state: State) => state.edgeID)
 
 	// zustand store
 	const dispatch = useStore((store: State) => store.dispatch)
-
-	useEffect(() => {
-		if (edgeID) {
-			const out = edges.filter((e: { id: string }) => e.id !== edgeID)
-			setEdges(out)
-			dispatch({ type: types.deleteEdge, data: null })
-		}
-	}, [edgeID])
-
-	useEffect(() => {
-		if (nodeID) {
-			setSelected(nodes.filter((node) => node.id === nodeID)[0])
-		}
-	}, [nodeID])
 
 	const edgeTypes = useMemo(
 		() => ({
@@ -158,14 +148,15 @@ const Canvas: React.FC<{}> = (props) => {
 					params.source!,
 					params.target!,
 					connection.current!.handleId,
-					null,
-					setEdges
+					null
+					// setEdges
 				)
-				setEdges((els: any) => addEdge(edge, els))
+				onConnect(edge)
 			} else {
-				setEdges((els: any) =>
-					addEdge({ ...params, type: 'step' }, els)
-				)
+				onConnect({ ...params, type: 'step' })
+				// setEdges((els: any) =>
+				// 	addEdge({ ...params, type: 'step' }, els)
+				// )
 			}
 		},
 		[reactFlowInstance, connectionAttempt]
@@ -214,8 +205,8 @@ const Canvas: React.FC<{}> = (props) => {
 				connection.current!.nodeId!,
 				newNode.id,
 				connection.current!.handleId,
-				null,
-				setEdges
+				null
+				// setEdges
 			)
 
 			// setNodes((els: any[]) => {
@@ -263,7 +254,6 @@ const Canvas: React.FC<{}> = (props) => {
 						'character name',
 						'sample dialogue',
 						null,
-						// setSelected,
 						position.x,
 						position.y
 					)
@@ -403,20 +393,19 @@ const Canvas: React.FC<{}> = (props) => {
 				Nuke
 			</AddButton>
 			{nodeID && (
-				<Detail
+				<NodeDetail
 					nodeID={nodeID}
 					isOpen
 					close={() => dispatch({ type: types.setNode, data: null })}
 				/>
 			)}
-			{/* {selected && (
-				<Detail
-					dialogue={selected.dialogue}
-					setDialogue={selected.setDialogue}
+			{edgeID && (
+				<EdgeDetail
+					edgeID={edgeID}
 					isOpen
-					close={() => setSelected(null)}
+					close={() => dispatch({ type: types.setEdge, data: null })}
 				/>
-			)} */}
+			)}
 		</CanvasContainer>
 	)
 }
