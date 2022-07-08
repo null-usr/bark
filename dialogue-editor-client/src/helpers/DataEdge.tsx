@@ -94,22 +94,6 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		setName(newName)
 	}
 
-	const onCloseClick = (
-		evt: { stopPropagation: () => void },
-		edgeID: string
-	) => {
-		evt.stopPropagation()
-		const edge = reactFlowInstance
-			.getEdges()
-			.find((el: { id: string }) => el.id === edgeID)
-		if (edge) {
-			const out = getEdges().filter(
-				(e: { id: string }) => e.id !== edgeID
-			)
-			dispatch({ type: types.deleteEdge, data: edgeID })
-		}
-	}
-
 	useEffect(() => {
 		data.name = name
 	}, [name])
@@ -123,14 +107,33 @@ export const DataEdgeType: FC<EdgeProps> = ({
 				markerEnd={markerEnd}
 			/>
 			<foreignObject
+				width={foreignObjectSize}
+				height={foreignObjectSize}
+				x={centerX - foreignObjectSize / 2}
+				y={centerY - foreignObjectSize / 2 + 50}
+				className="edgebutton-foreignobject"
+				requiredExtensions="http://www.w3.org/1999/xhtml"
+			>
+				<div>
+					<button
+						className="edgebutton"
+						onClick={(event) =>
+							dispatch({ type: types.setEdge, data: id })
+						}
+					>
+						o
+					</button>
+				</div>
+			</foreignObject>
+			<foreignObject
 				width={200}
-				height={200}
+				height={25}
 				x={centerX - 100}
 				y={centerY}
 			>
 				<input
 					className="nodrag"
-					value={name}
+					value={data.name}
 					onChange={(e) => {
 						updateName(e.target.value)
 					}}
@@ -147,7 +150,9 @@ export const DataEdgeType: FC<EdgeProps> = ({
 				<div>
 					<button
 						className="edgebutton"
-						onClick={(event) => onCloseClick(event, id)}
+						onClick={(event) =>
+							dispatch({ type: types.deleteEdge, data: id })
+						}
 					>
 						×
 					</button>
@@ -169,14 +174,12 @@ class DataEdge implements Connection {
 	name: string
 	edgeData: any
 	data: any = {}
-	deleteEdge: Function
 
 	constructor(
 		source: string,
 		target: string,
 		sourceHandle: string | null,
 		targetHandle: string | null,
-		cb: Function,
 		name?: string
 	) {
 		this.id = `${source}-${sourceHandle}-${target}`
@@ -193,14 +196,12 @@ class DataEdge implements Connection {
 		this.targetHandle = targetHandle
 
 		this.edgeData = createRef()
-		this.deleteEdge = cb
 		this._set_data()
 	}
 
 	_set_data() {
 		this.data = {
 			name: this.name,
-			delete: this.deleteEdge,
 		}
 	}
 }
