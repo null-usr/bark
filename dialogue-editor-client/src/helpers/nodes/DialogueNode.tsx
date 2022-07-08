@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react'
 import { Handle, NodeProps, Position, XYPosition } from 'react-flow-renderer'
 import { v4 as uuidv4 } from 'uuid'
-import Detail from '../../components/page/detail/Detail'
+import Detail from '../../components/page/detail/NodeDetail'
 
 import useStore, { RFState, State, types } from '../../store/store'
 
@@ -112,9 +112,6 @@ export default ({
 	sourcePosition = Position.Right,
 	targetPosition = Position.Left,
 }: NodeProps<{ characterName: string; dialogue: string; id: string }>) => {
-	// const [selected, setSelected] = useState(false)
-	const [name] = useState(data.characterName)
-
 	const dispatch = useStore((store: RFState) => store.dispatch)
 	const updateDialogueData = useStore(
 		(state: RFState) => state.updateDialogueData
@@ -131,7 +128,7 @@ export default ({
 				onConnect={(params) => console.log('handle onConnect', params)}
 				isConnectable={isConnectable}
 			/>
-			<h2>{name}</h2>
+			<h2>{data.characterName}</h2>
 			<p>{data.dialogue}</p>
 			{/* transition to dispatch? */}
 			{/* <button onClick={() => setSelected(true)}>Edit</button> */}
