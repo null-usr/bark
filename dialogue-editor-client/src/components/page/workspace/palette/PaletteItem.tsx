@@ -1,5 +1,4 @@
 import React from 'react'
-// import { PaletteContainer } from './styles'
 
 const PaletteItem: React.FC<{
 	classname: string

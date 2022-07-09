@@ -12,9 +12,6 @@ export const StringField: React.FC<{
 	updateField(index: number, k: string, v: string): void
 	del?(k: string): void
 }> = ({ k, v, index, updateField, del }) => {
-	// const [key, setKey] = useState<string>(k)
-	// const [value, setValue] = useState<string | undefined>(v)
-
 	return (
 		<FieldContainer>
 			<input

@@ -1,7 +1,4 @@
 import { Node, Position } from 'react-flow-renderer'
-import DialogueNode from './nodes/DialogueNode'
-import DialogueEdge from './DialogueEdge'
-import { RootNode } from './nodes/RootNode'
 
 const initialElements: Node[] = [
 	{
