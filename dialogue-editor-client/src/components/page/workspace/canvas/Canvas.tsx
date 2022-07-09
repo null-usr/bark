@@ -28,18 +28,15 @@ import DialogueNodeType, {
 	DialogueNode,
 } from '../../../../helpers/nodes/DialogueNode'
 import DialogueForm from '../../../../helpers/DialogueForm'
-// import initialElements from './initial-elements'
 import { AddButton, CanvasContainer } from './styles'
-import { FlowContext } from '../../../../contexts/FlowContext'
 import BasicNodeType, { BasicNode } from '../../../../helpers/nodes/BasicNode'
 import NodeDetail from '../../detail/NodeDetail'
-import { IEdgeParams } from '../../../../helpers/types'
-import DataEdge, { DataEdgeType } from '../../../../helpers/DataEdge'
+import DataEdge, { DataEdgeType } from '../../../../helpers/edges/DataEdge'
 import RootNodeType from '../../../../helpers/nodes/RootNode'
-import initialElements from '../../../../helpers/initial-elements'
 import useStore, { State, types } from '../../../../store/store'
 import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
 import EdgeDetail from '../../detail/EdgeDetail'
+import BasicNodeDetail from '../../detail/BasicNodeDetail'
 
 // styles for the modal
 const customModalStyles = {
@@ -102,7 +99,6 @@ const Canvas: React.FC<{}> = (props) => {
 			Math.random() * window.innerWidth - 100,
 			Math.random() * window.innerHeight
 		)
-		// setNodes((els) => els.concat(newNode))
 		addNode(newNode)
 	}
 
@@ -111,21 +107,6 @@ const Canvas: React.FC<{}> = (props) => {
 	}
 
 	const reactFlowWrapper = useRef<any>(null)
-
-	// const onNodesChange = useCallback(
-	// 	(changes) =>
-	// 		rFlow.reactFlowInstance?.setNodes((ns) =>
-	// 			applyNodeChanges(changes, ns)
-	// 		),
-	// 	[]
-	// )
-	// const onEdgesChange = useCallback(
-	// 	(changes) =>
-	// 		rFlow.reactFlowInstance?.setEdges((es) =>
-	// 			applyEdgeChanges(changes, es)
-	// 		),
-	// 	[]
-	// )
 
 	// ================= CONNECTION BEHAVIOR ================================
 
@@ -149,14 +130,10 @@ const Canvas: React.FC<{}> = (props) => {
 					params.target!,
 					connection.current!.handleId,
 					null
-					// setEdges
 				)
 				onConnect(edge)
 			} else {
 				onConnect({ ...params, type: 'step' })
-				// setEdges((els: any) =>
-				// 	addEdge({ ...params, type: 'step' }, els)
-				// )
 			}
 		},
 		[reactFlowInstance, connectionAttempt]
@@ -186,7 +163,6 @@ const Canvas: React.FC<{}> = (props) => {
 
 			const reactFlowBounds =
 				reactFlowWrapper.current.getBoundingClientRect()
-			// const type = event.dataTransfer.getData('application/reactflow')
 			const position = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
@@ -206,12 +182,7 @@ const Canvas: React.FC<{}> = (props) => {
 				newNode.id,
 				connection.current!.handleId,
 				null
-				// setEdges
 			)
-
-			// setNodes((els: any[]) => {
-			// 	return els.concat(newNode)
-			// })
 			addNode(newNode)
 			reactFlowInstance.setEdges((els: any) => addEdge(edge, els))
 			setConnectionAttempt(null)
@@ -278,10 +249,6 @@ const Canvas: React.FC<{}> = (props) => {
 					}
 					break
 			}
-
-			// setNodes((els: any[]) => {
-			// 	return els.concat(newNode)
-			// })
 			addNode(newNode)
 		},
 		[reactFlowInstance]
@@ -303,21 +270,11 @@ const Canvas: React.FC<{}> = (props) => {
 			event.character_name,
 			event.dialog,
 			null,
-			// setSelected,
 			250,
 			250
 		)
-
-		// setNodes((els: any[]) => {
-		// 	return els.concat(newNode)
-		// })
 		addNode(newNode)
 	}
-
-	// function onInit(_reactFlowInstance: any) {
-	// 	_reactFlowInstance.fitView()
-	// 	rFlow.setReactFlowInstance(_reactFlowInstance)
-	// }
 
 	Modal.setAppElement('#root')
 
@@ -393,7 +350,7 @@ const Canvas: React.FC<{}> = (props) => {
 				Nuke
 			</AddButton>
 			{nodeID && (
-				<NodeDetail
+				<BasicNodeDetail
 					nodeID={nodeID}
 					isOpen
 					close={() => dispatch({ type: types.setNode, data: null })}

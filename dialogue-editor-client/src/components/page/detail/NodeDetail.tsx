@@ -1,10 +1,5 @@
-import React, { MouseEventHandler, useContext, useState } from 'react'
-import {
-	Node,
-	useNodesState,
-	useReactFlow,
-	useUpdateNodeInternals,
-} from 'react-flow-renderer'
+import React, { useState } from 'react'
+import { useReactFlow, useUpdateNodeInternals } from 'react-flow-renderer'
 import { FlowContext } from '../../../contexts/FlowContext'
 import { getCount } from '../../../helpers/getCount'
 import BasicNode from '../../../helpers/nodes/BasicNode'
@@ -17,9 +12,7 @@ const Detail: React.FC<{
 	close: () => void
 	isOpen: boolean
 	nodeID: string
-	// dialogue: string
-	// setDialogue: Function
-}> = ({ close, /* dialogue */ nodeID, isOpen /* , setDialogue */ }) => {
+}> = ({ close, nodeID, isOpen }) => {
 	const reactFlowInstance = useReactFlow()
 
 	const { nodes, dispatch, updateDialogueData } = useStore()
@@ -31,8 +24,6 @@ const Detail: React.FC<{
 	const [characterName, setCharacterName] = useState(
 		editNode.data?.characterName || ''
 	)
-
-	const updateNodeInternals = useUpdateNodeInternals()
 
 	if (!editNode) return null
 
@@ -75,13 +66,6 @@ const Detail: React.FC<{
 						setDialogue(e.target.value)
 					}}
 				/>
-				{/* <textarea
-					value={dialogue}
-					onChange={(e) => {
-						setDialogue(e.target.value)
-					}}
-				/> */}
-				{/* {dialogueNode.dialogue} */}
 			</Container>
 		</>
 	)

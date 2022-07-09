@@ -4,7 +4,7 @@
 import { Edge, ReactFlowJsonObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
 import { BasicNode } from './nodes/BasicNode'
-import DataEdge from './DataEdge'
+import DataEdge from './edges/DataEdge'
 
 export interface ISceneData extends ReactFlowJsonObject {
 	scenes?: string[]
