@@ -12,16 +12,7 @@ export class DialogueNode {
 	id: string
 
 	sourcePosition: Position
-
 	targetPosition: Position
-
-	// edit: Function
-
-	update: React.Dispatch<React.SetStateAction<string>> | null
-
-	link(f: React.Dispatch<React.SetStateAction<string>>) {
-		this.update = f
-	}
 
 	isConnectable = true
 
@@ -33,7 +24,6 @@ export class DialogueNode {
 
 	set character_name(value: string) {
 		this._character_name = value
-		this._set_data()
 	}
 
 	_dialogue: string = ''
@@ -44,13 +34,6 @@ export class DialogueNode {
 
 	set dialogue(value: string) {
 		this._dialogue = value
-		this._set_data()
-	}
-
-	updateDialogue() {
-		if (this.update) {
-			this.update(this.dialogue)
-		}
 	}
 
 	type: string = 'dialogue'
@@ -90,9 +73,6 @@ export class DialogueNode {
 			this.targetPosition = Position.Left
 		}
 		this._set_data()
-		// this.edit = edit
-		this.update = null
-		this._set_data()
 	}
 
 	private _set_data() {
@@ -100,8 +80,6 @@ export class DialogueNode {
 			characterName: this.character_name,
 			dialogue: this.dialogue,
 			id: this.id,
-			// edit={() => this.edit(this)}
-			// link={this.link.bind(this)}
 		}
 	}
 }
@@ -117,8 +95,6 @@ export default ({
 		(state: RFState) => state.updateDialogueData
 	)
 
-	//
-	// link(setD)
 	return (
 		<>
 			<Handle
@@ -130,23 +106,11 @@ export default ({
 			/>
 			<h2>{data.characterName}</h2>
 			<p>{data.dialogue}</p>
-			{/* transition to dispatch? */}
-			{/* <button onClick={() => setSelected(true)}>Edit</button> */}
-			{/* <button onClick={edit}>Edit</button> */}
 			<button
 				onClick={() => dispatch({ type: types.setNode, data: data.id })}
 			>
 				Edit
 			</button>
-			{/* works but node styling messing up fullscreen view */}
-			{/* {selected && (
-				<Detail
-					isOpen={selected}
-					close={() => setSelected(false)}
-					dialogue={d}
-					setDialogue={setD}
-				/>
-			)} */}
 			<Handle
 				type="source"
 				position={sourcePosition}

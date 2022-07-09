@@ -19,9 +19,9 @@ import {
 	useReactFlow,
 } from 'react-flow-renderer'
 
-import './style.css'
-import { FlowContext } from '../contexts/FlowContext'
-import useStore, { State, types } from '../store/store'
+import '../style.css'
+import { FlowContext } from '../../contexts/FlowContext'
+import useStore, { State, types } from '../../store/store'
 
 // export const VariableEdge = forwardRef<
 // 	{ getEdgeName(): string },
@@ -202,6 +202,7 @@ class DataEdge implements Connection {
 	_set_data() {
 		this.data = {
 			name: this.name,
+			fields: [],
 		}
 	}
 }

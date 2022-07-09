@@ -6,12 +6,11 @@ import {
 	useUpdateNodeInternals,
 } from 'react-flow-renderer'
 import { FlowContext } from '../../../contexts/FlowContext'
-import DataEdge from '../../../helpers/edges/DataEdge'
 import { BooleanField } from '../../../helpers/FieldComponents/BooleanField'
 import { NumberField } from '../../../helpers/FieldComponents/NumberField'
 import { StringField } from '../../../helpers/FieldComponents/StringField'
 import { getCount } from '../../../helpers/getCount'
-import BasicNode from '../../../helpers/nodes/BasicNode'
+import { BasicNode } from '../../../helpers/nodes/BasicNode'
 import { DialogueNode } from '../../../helpers/nodes/DialogueNode'
 import { ButtonRow } from '../../../helpers/styles'
 import { Field } from '../../../helpers/types'
@@ -22,18 +21,16 @@ import { Container } from './styles'
 const Detail: React.FC<{
 	close: () => void
 	isOpen: boolean
-	edgeID: string
-	// dialogue: string
-	// setDialogue: Function
-}> = ({ close, /* dialogue */ edgeID, isOpen /* , setDialogue */ }) => {
+	nodeID: string
+}> = ({ close, nodeID, isOpen }) => {
 	const reactFlowInstance = useReactFlow()
+
 	const { nodes, dispatch, updateDialogueData } = useStore()
 
-	const editEdge = reactFlowInstance.getEdge(edgeID) as DataEdge
-	const [name, setName] = useState(editEdge.data.name)
-	const [id, setID] = useState(edgeID || '')
+	const editNode = reactFlowInstance.getNode(nodeID) as BasicNode
 
-	const [fields, setFields] = useState<Field[]>(editEdge.data.fields || [])
+	const [id, setID] = useState(nodeID || '')
+	const [fields, setFields] = useState<Field[]>(editNode.data.fields || [])
 	const [count, setCount] = useState(1)
 
 	const addField = (type: string) => {
@@ -58,37 +55,48 @@ const Detail: React.FC<{
 		setFields(fields.filter((el) => el.key !== fieldID))
 	}
 
-	if (!editEdge) return null
+	if (!editNode) return null
 
 	return (
 		<>
 			<Dimmer
 				isOpen={isOpen}
 				onClick={() => {
-					const edgeData = {
-						name,
+					const nodeData = {
 						id,
 						fields,
 					}
-					// in this case ID doesn't matter because when we export
-					// the ID will be whatever is in data (hopefully)
 
-					dispatch({
-						type: types.editEdge,
-						data: { edgeID, edgeData },
-					})
-					// updateDialogueData(nodeID, dialogue)
-					close()
+					const idCheck = getCount(nodes, 'id', id)
+
+					if (idCheck === 1 && id !== nodeID) {
+						/* vendors contains the element we're looking for */
+						console.log('node ID conflict')
+					} else {
+						dispatch({
+							type: types.editNode,
+							data: { nodeID, nodeData },
+						})
+						// updateDialogueData(nodeID, dialogue)
+						close()
+					}
 				}}
 			/>
 			<Container>
-				{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
-				<input value={name} onChange={(e) => setName(e.target.value)} />
+				<input value={id} onChange={(e) => setID(e.target.value)} />
 				<ButtonRow>
 					<button onClick={() => addField('string')}>Text</button>
 					<button onClick={() => addField('bool')}>Boolean</button>
 					<button onClick={() => addField('number')}>Number</button>
 				</ButtonRow>
+				{/*  */}
+				{/* <textarea
+					value={dialogue}
+					onChange={(e) => {
+						// editNode.data!.dialogue = e.target.value
+						setDialogue(e.target.value)
+					}}
+				/> */}
 				{fields.map((field, index) => {
 					switch (field.type) {
 						case 'string':
@@ -128,6 +136,14 @@ const Detail: React.FC<{
 							return <></>
 					}
 				})}
+
+				{/* <textarea
+					value={dialogue}
+					onChange={(e) => {
+						setDialogue(e.target.value)
+					}}
+				/> */}
+				{/* {dialogueNode.dialogue} */}
 			</Container>
 		</>
 	)
