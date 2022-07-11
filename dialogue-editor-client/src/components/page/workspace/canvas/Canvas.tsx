@@ -213,13 +213,17 @@ const Canvas: React.FC<{}> = (props) => {
 
 			const reactFlowBounds =
 				reactFlowWrapper.current.getBoundingClientRect()
-			const type = event.dataTransfer.getData('application/reactflow')
+
+			const data = event.dataTransfer.getData('application/reactflow')
+
+			const { nodeType, fields } = JSON.parse(data)
+
 			const position = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
 			let newNode: any
-			switch (type) {
+			switch (nodeType) {
 				case 'dialogue':
 					newNode = new DialogueNode(
 						'character name',
@@ -233,7 +237,12 @@ const Canvas: React.FC<{}> = (props) => {
 					newNode = {}
 					break
 				case 'base':
-					newNode = new BasicNode(position.x, position.y, uuid())
+					newNode = new BasicNode(
+						position.x,
+						position.y,
+						uuid(),
+						fields
+					)
 					break
 				case 'custom':
 					newNode = new BasicNode(position.x, position.y, uuid())
@@ -241,9 +250,9 @@ const Canvas: React.FC<{}> = (props) => {
 				default:
 					newNode = {
 						id: uuid(),
-						type,
+						nodeType,
 						position,
-						data: { label: `${type} node` },
+						data: { label: `${nodeType} node` },
 						sourcePosition: Position.Right,
 						targetPosition: Position.Left,
 					}

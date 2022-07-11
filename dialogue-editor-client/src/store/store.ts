@@ -14,6 +14,7 @@ import {
 } from 'react-flow-renderer'
 import create from 'zustand'
 import initialElements from '../helpers/initial-elements'
+import { Schema } from '../helpers/types'
 
 export const types = {
 	setNode: 'SET_NODE',
@@ -25,6 +26,10 @@ export const types = {
 	editEdge: 'EDIT_EDGE',
 	addEdge: 'ADD_EDGE',
 	deleteEdge: 'DELETE_EDGE',
+
+	loadBuiltInNodes: 'DEFAULT',
+	loadCustomNodes: 'CUSTOM',
+	addCustomNode: 'ADD_CUSTOM',
 }
 
 export type RFState = {
@@ -32,6 +37,8 @@ export type RFState = {
 	edgeID: string | null
 	nodes: Node[]
 	edges: Edge[]
+	builtInNodes: Schema[]
+	customNodes: Schema[]
 	setNodes: (newNodes: Node[]) => void
 	setEdges: (newEdges: Edge[]) => void
 	onNodesChange: OnNodesChange
@@ -98,8 +105,28 @@ const reducer = (
 			return {}
 		}
 		case types.setEdge: {
-			return { edgeID: data }
+			return { edgeID: data.nodes }
 		}
+
+		case types.loadCustomNodes: {
+			return {
+				customNodes: data.nodes,
+			}
+		}
+
+		case types.loadBuiltInNodes: {
+			return {
+				builtInNodes: data.nodes,
+			}
+		}
+
+		case types.addCustomNode: {
+			console.log(data)
+			return {
+				customNodes: [...state.customNodes, data],
+			}
+		}
+
 		default:
 			return {}
 	}
@@ -111,6 +138,8 @@ const useStore = create<RFState>((set, get) => ({
 	edgeID: null,
 	nodes: initialElements,
 	edges: [],
+	builtInNodes: [],
+	customNodes: [],
 	setNodes: (newNodes: Node[]) => {
 		set({ nodes: newNodes })
 	},

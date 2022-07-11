@@ -4,12 +4,14 @@ const PaletteItem: React.FC<{
 	classname: string
 	name: string
 	type: string
-}> = ({ classname, name, type, ...props }) => {
-	const onDragStart = (
-		event: React.DragEvent<HTMLDivElement>,
-		nodeType: string
-	) => {
-		event.dataTransfer.setData('application/reactflow', nodeType)
+	fields?: any[]
+}> = ({ classname, name, type, fields, ...props }) => {
+	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
+		const data = JSON.stringify({
+			nodeType: type,
+			fields,
+		})
+		event.dataTransfer.setData('application/reactflow', data)
 		event.dataTransfer.effectAllowed = 'move'
 	}
 
@@ -17,7 +19,7 @@ const PaletteItem: React.FC<{
 		<div
 			draggable="true"
 			className={classname}
-			onDragStart={(event) => onDragStart(event, type)}
+			onDragStart={(event) => onDragStart(event)}
 		>
 			{name}
 		</div>

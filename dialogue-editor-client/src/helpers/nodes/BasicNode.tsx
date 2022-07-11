@@ -29,7 +29,13 @@ export class BasicNode {
 	targetPosition: Position
 	position: XYPosition
 
-	constructor(x: number, y: number, id?: string, data?: [], TB?: boolean) {
+	constructor(
+		x: number,
+		y: number,
+		id?: string,
+		data?: Field[],
+		TB?: boolean
+	) {
 		this.id = id || uuidv4()
 		this.position = { x, y }
 		this.fields = data || []
@@ -71,6 +77,22 @@ export class BasicNode {
 	}
 }
 
+// example function
+export function CreateDialogueNode(x: number, y: number) {
+	return new BasicNode(x, y, undefined, [
+		{
+			key: 'characterName',
+			type: 'string',
+			value: '',
+		},
+		{
+			key: 'dialogue',
+			type: 'text',
+			value: '',
+		},
+	])
+}
+
 // https://www.carlrippon.com/react-forwardref-typescript/
 // https://stackoverflow.com/questions/37949981/call-child-method-from-parent
 // need to do a check that all the keys are unique
@@ -83,6 +105,22 @@ export default ({
 	const [count, setCount] = useState(1)
 
 	const dispatch = useStore((store: RFState) => store.dispatch)
+
+	function SerializeNode(
+		name: string,
+		type: string,
+		f: Field[],
+		className: string
+	) {
+		const out = {
+			name,
+			type,
+			className,
+			fields: f,
+		}
+
+		dispatch({ type: types.addCustomNode, data: out })
+	}
 
 	const addField = (type: string) => {
 		let value
@@ -126,11 +164,27 @@ export default ({
 			/>
 			<Container>
 				<p>{id}</p>
-				<button
-					onClick={() => dispatch({ type: types.setNode, data: id })}
-				>
-					Edit
-				</button>
+				<ButtonRow>
+					<button
+						onClick={() =>
+							dispatch({ type: types.setNode, data: id })
+						}
+					>
+						Edit
+					</button>
+					<button
+						onClick={() =>
+							SerializeNode(
+								'placeholder',
+								'base',
+								fields,
+								'node react-flow__node-default'
+							)
+						}
+					>
+						Save
+					</button>
+				</ButtonRow>
 				<ButtonRow>
 					<button onClick={() => addField('string')}>Text</button>
 					<button onClick={() => addField('bool')}>Boolean</button>
@@ -140,6 +194,17 @@ export default ({
 					{data.fields.map((field, index) => {
 						switch (field.type) {
 							case 'string':
+								return (
+									<StringField
+										updateField={updateField}
+										del={deleteField}
+										index={index}
+										key={field.key}
+										k={field.key}
+										v={field.value}
+									/>
+								)
+							case 'text':
 								return (
 									<StringField
 										updateField={updateField}

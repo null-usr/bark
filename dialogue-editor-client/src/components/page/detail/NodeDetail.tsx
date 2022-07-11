@@ -19,10 +19,12 @@ const Detail: React.FC<{
 
 	const editNode = reactFlowInstance.getNode(nodeID) as DialogueNode
 
-	const [dialogue, setDialogue] = useState(editNode.data?.dialogue || '')
+	const [dialogue, setDialogue] = useState(
+		/* editNode.data?.dialogue || */ ''
+	)
 	const [id, setID] = useState(nodeID || '')
 	const [characterName, setCharacterName] = useState(
-		editNode.data?.characterName || ''
+		/* editNode.data?.characterName  || */ ''
 	)
 
 	if (!editNode) return null
