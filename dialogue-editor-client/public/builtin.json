@@ -1,29 +1,44 @@
 {
-	"nodes": [
-		{
+	"nodes": [{
 			"name": "input",
 			"type": "input",
-			"classname": "node react-flow__node-input"
+			"className": "node react-flow__node-input"
 		},
 		{
 			"name": "default",
 			"type": "default",
-			"classname": "node react-flow__node-default"
+			"className": "node react-flow__node-default"
 		},
 		{
 			"name": "output",
 			"type": "output",
-			"classname": "node react-flow__node-output"
+			"className": "node react-flow__node-output"
 		},
 		{
 			"name": "dialogue",
 			"type": "dialogue",
-			"classname": "node react-flow__node-default"
+			"className": "node react-flow__node-default"
 		},
 		{
 			"name": "base",
 			"type": "base",
-			"classname": "node react-flow__node-default"
+			"className": "node react-flow__node-default"
+		},
+		{
+			"name": "NewBase",
+			"type": "base",
+			"className": "node react-flow__node-default",
+			"fields": [{
+					"key": "characterName",
+					"type": "string",
+					"value": ""
+				},
+				{
+					"key": "dialogue",
+					"type": "text",
+					"value": ""
+				}
+			]
 		}
 	]
 }
