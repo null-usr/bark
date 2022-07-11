@@ -7,3 +7,10 @@ export type Field = {
 	type: string
 	value?: any
 }
+
+export interface Schema {
+	name: string
+	type: string
+	className: string
+	fields?: any[]
+}
