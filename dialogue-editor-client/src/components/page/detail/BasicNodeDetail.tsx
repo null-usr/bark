@@ -1,11 +1,21 @@
-import React, { MouseEventHandler, useContext, useState } from 'react'
+import React, {
+	MouseEventHandler,
+	useContext,
+	useEffect,
+	useState,
+} from 'react'
 import {
+	Edge,
 	Node,
 	useNodesState,
 	useReactFlow,
 	useUpdateNodeInternals,
 } from 'react-flow-renderer'
 import { FlowContext } from '../../../contexts/FlowContext'
+import {
+	getIncomingEdges,
+	getOutgoingEdges,
+} from '../../../helpers/edgeHelpers'
 import { BooleanField } from '../../../helpers/FieldComponents/BooleanField'
 import { NumberField } from '../../../helpers/FieldComponents/NumberField'
 import { StringField } from '../../../helpers/FieldComponents/StringField'
@@ -21,17 +31,25 @@ import { Container } from './styles'
 const Detail: React.FC<{
 	close: () => void
 	isOpen: boolean
-	nodeID: string
-}> = ({ close, nodeID, isOpen }) => {
+}> = ({ close, isOpen }) => {
 	const reactFlowInstance = useReactFlow()
 
-	const { nodes, dispatch, updateDialogueData } = useStore()
+	const { nodes, edges, nodeID, dispatch, updateDialogueData } = useStore()
+
+	if (!nodeID) return null
 
 	const editNode = reactFlowInstance.getNode(nodeID) as BasicNode
 
+	if (!editNode) return null
+
+	const edgesOut = getOutgoingEdges(nodeID, edges)
+	const edgesIn = getIncomingEdges(nodeID, edges)
+
+	const [name, setName] = useState(editNode.data.name)
 	const [id, setID] = useState(nodeID || '')
+	const [color, setColor] = useState(editNode.data.color)
 	const [fields, setFields] = useState<Field[]>(editNode.data.fields || [])
-	const [count, setCount] = useState(1)
+	const [count, setCount] = useState(fields.length)
 
 	const addField = (type: string) => {
 		setFields([
@@ -42,9 +60,28 @@ const Detail: React.FC<{
 	}
 
 	const updateField = (index: number, k: string, v: any) => {
+		const c = fields.filter((f) => f.key === k)
+		if (c.length > 1) {
+			console.log('duplicate key values')
+			return
+		}
 		const f = [...fields]
 		const item = { ...f[index] }
 		item.key = k
+		item.value = v
+		f[index] = item
+		setFields(f)
+	}
+
+	const updateDataField = (index: number, v: string) => {
+		const c = fields.filter((f) => f.key === v)
+		if (c.length > 0) {
+			console.log('duplicate key values')
+			return
+		}
+		// console.log(v)
+		const f = [...fields]
+		const item = { ...f[index] }
 		item.value = v
 		f[index] = item
 		setFields(f)
@@ -55,7 +92,12 @@ const Detail: React.FC<{
 		setFields(fields.filter((el) => el.key !== fieldID))
 	}
 
-	if (!editNode) return null
+	useEffect(() => {
+		setID(nodeID)
+		setName(editNode.data.name)
+		setFields(editNode.data.fields || [])
+		setCount(fields.length)
+	}, [nodeID])
 
 	return (
 		<>
@@ -64,6 +106,8 @@ const Detail: React.FC<{
 				onClick={() => {
 					const nodeData = {
 						id,
+						name,
+						color,
 						fields,
 					}
 
@@ -83,11 +127,19 @@ const Detail: React.FC<{
 				}}
 			/>
 			<Container>
+				<input value={name} onChange={(e) => setName(e.target.value)} />
 				<input value={id} onChange={(e) => setID(e.target.value)} />
+				<input
+					type="color"
+					defaultValue={color}
+					onChange={(evt) => setColor(evt.target.value)}
+					className="nodrag"
+				/>
 				<ButtonRow>
 					<button onClick={() => addField('string')}>Text</button>
 					<button onClick={() => addField('bool')}>Boolean</button>
 					<button onClick={() => addField('number')}>Number</button>
+					<button onClick={() => addField('data')}>data</button>
 				</ButtonRow>
 				{/*  */}
 				{/* <textarea
@@ -110,6 +162,9 @@ const Detail: React.FC<{
 									v={field.value}
 								/>
 							)
+						// TODO: proper implementation
+						case 'text':
+							return <textarea />
 						case 'bool':
 							return (
 								<BooleanField
@@ -132,6 +187,41 @@ const Detail: React.FC<{
 									v={field.value}
 								/>
 							)
+						case 'data':
+							return (
+								<div>
+									<input
+										type="text"
+										value={field.value}
+										onChange={(e) => {
+											updateField(
+												index,
+												field.key,
+												e.target.value
+											)
+										}}
+									/>
+									:
+									{/* TODO: this may have multiple target nodes, think of a UI/UX for this */}
+									<button
+										onClick={() => {
+											const targetNodeID =
+												edgesOut.filter(
+													(e) =>
+														e.sourceHandle ===
+														field.key
+												)[0]?.target
+
+											dispatch({
+												type: types.setNode,
+												data: targetNodeID,
+											})
+										}}
+									>
+										Go
+									</button>
+								</div>
+							)
 						default:
 							return <></>
 					}
@@ -144,6 +234,21 @@ const Detail: React.FC<{
 					}}
 				/> */}
 				{/* {dialogueNode.dialogue} */}
+
+				{edgesIn.map((e) => {
+					return (
+						<button
+							onClick={() =>
+								dispatch({
+									type: types.setNode,
+									data: e.source,
+								})
+							}
+						>
+							{e.source}
+						</button>
+					)
+				})}
 			</Container>
 		</>
 	)

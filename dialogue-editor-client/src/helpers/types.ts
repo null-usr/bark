@@ -8,9 +8,13 @@ export type Field = {
 	value?: any
 }
 
+// Schema for drag & drop nodes
 export interface Schema {
 	name: string
 	type: string
 	className: string
 	fields?: any[]
+	// our schema can also represent a group of nodes
+	nodes?: any[]
+	edges?: any[]
 }
