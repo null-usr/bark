@@ -33,10 +33,12 @@ import BasicNodeType, { BasicNode } from '../../../../helpers/nodes/BasicNode'
 import NodeDetail from '../../detail/NodeDetail'
 import DataEdge, { DataEdgeType } from '../../../../helpers/edges/DataEdge'
 import RootNodeType from '../../../../helpers/nodes/RootNode'
-import useStore, { State, types } from '../../../../store/store'
+import useStore, { RFState, types } from '../../../../store/store'
 import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
 import EdgeDetail from '../../detail/EdgeDetail'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
+import { SerializeNode } from '../../../../helpers/serialization'
+import { getOutgoingEdges } from '../../../../helpers/edgeHelpers'
 
 // styles for the modal
 const customModalStyles = {
@@ -70,11 +72,17 @@ const Canvas: React.FC<{}> = (props) => {
 	// call your hook here
 	// const forceUpdate = useForceUpdate()
 
-	const nodeID = useStore((state: State) => state.nodeID)
-	const edgeID = useStore((state: State) => state.edgeID)
+	const nodeID = useStore((state: RFState) => state.nodeID)
+	const edgeID = useStore((state: RFState) => state.edgeID)
 
 	// zustand store
-	const dispatch = useStore((store: State) => store.dispatch)
+	const dispatch = useStore((store: RFState) => store.dispatch)
+
+	const serializeNodeGroup = (groupNodes: Node[]) => {
+		// get all outgoing edges
+		// filter edges by ids of node in this group
+		// the to and from
+	}
 
 	const edgeTypes = useMemo(
 		() => ({
@@ -85,7 +93,7 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const nodeTypes = useMemo(
 		() => ({
-			basic: BasicNodeType,
+			base: BasicNodeType,
 			root: RootNodeType,
 			dialogue: DialogueNodeType,
 			colorChooser: ColorChooserNode,
@@ -96,6 +104,7 @@ const Canvas: React.FC<{}> = (props) => {
 	// on add option click, open the modal
 	function addOption(event: any) {
 		const newNode = new BasicNode(
+			'basic',
 			Math.random() * window.innerWidth - 100,
 			Math.random() * window.innerHeight
 		)
@@ -152,7 +161,7 @@ const Canvas: React.FC<{}> = (props) => {
 	// 	console.log('on connect stop', event)
 	// }, [])
 
-	// we've dragged a node into an empty spot
+	// we've dragged a handle into an empty spot
 	const onConnectEnd = useCallback(
 		(event: MouseEvent) => {
 			if (!connection.current) {
@@ -216,52 +225,217 @@ const Canvas: React.FC<{}> = (props) => {
 
 			const data = event.dataTransfer.getData('application/reactflow')
 
-			const { nodeType, fields } = JSON.parse(data)
+			const paletteItem = JSON.parse(data)
+
+			const { name, type, fields } = paletteItem
 
 			const position = reactFlowInstance.project({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
-			let newNode: any
-			switch (nodeType) {
+			const newNodes: any[] = []
+			const newEdges: any[] = []
+
+			console.log(paletteItem)
+			switch (type) {
 				case 'dialogue':
-					newNode = new DialogueNode(
-						'character name',
-						'sample dialogue',
-						null,
-						position.x,
-						position.y
+					newNodes.push(
+						new DialogueNode(
+							'character name',
+							'sample dialogue',
+							null,
+							position.x,
+							position.y
+						)
 					)
 					break
-				case 'option 2':
-					newNode = {}
-					break
 				case 'base':
-					newNode = new BasicNode(
-						position.x,
-						position.y,
-						uuid(),
-						fields
+					newNodes.push(
+						new BasicNode(
+							name,
+							position.x,
+							position.y,
+							uuid(),
+							fields
+						)
 					)
 					break
 				case 'custom':
-					newNode = new BasicNode(position.x, position.y, uuid())
+					newNodes.push(
+						new BasicNode(name, position.x, position.y, uuid())
+					)
+					break
+				/*
+					With group we add the position to the 
+				*/
+				case 'group':
+					// eslint-disable-next-line no-case-declarations
+					const { nodes: groupNodes, edges: groupEdges } = paletteItem
+					groupNodes.forEach(
+						(n: {
+							name: string
+							type: any
+							fields: any
+							position: number[]
+						}) => {
+							switch (n.type) {
+								case 'dialogue':
+									newNodes.push(
+										new DialogueNode(
+											'character name',
+											'sample dialogue',
+											null,
+											n.position[0] + position.x,
+											n.position[1] + position.y
+										)
+									)
+									break
+								case 'base':
+									newNodes.push(
+										new BasicNode(
+											n.name,
+											n.position[0] + position.x,
+											n.position[1] + position.y,
+											uuid(),
+											n.fields
+										)
+									)
+									break
+								case 'custom':
+									newNodes.push(
+										new BasicNode(
+											n.name,
+											n.position[0] + position.x,
+											n.position[1] + position.y,
+											uuid()
+										)
+									)
+									break
+								default:
+									newNodes.push({
+										id: uuid(),
+										type,
+										position: {
+											x: n.position[0] + position.x,
+											y: n.position[1] + position.y,
+										},
+										data: { label: `${type} node` },
+										sourcePosition: Position.Right,
+										targetPosition: Position.Left,
+									})
+									break
+							}
+						}
+					)
+
+					groupEdges.forEach(
+						(e: {
+							from: number
+							to: number
+							handle: string | null
+						}) => {
+							newEdges.push(
+								new DataEdge(
+									newNodes[e.from].id,
+									newNodes[e.to].id,
+									e.handle,
+									null
+								)
+							)
+						}
+					)
 					break
 				default:
-					newNode = {
+					newNodes.push({
 						id: uuid(),
-						nodeType,
+						type,
 						position,
-						data: { label: `${nodeType} node` },
+						data: { label: `${type} node` },
 						sourcePosition: Position.Right,
 						targetPosition: Position.Left,
-					}
+					})
 					break
 			}
-			addNode(newNode)
+			newNodes.forEach((n) => addNode(n))
+			newEdges.forEach((e) => onConnect(e))
+			// addNode(newNode)
 		},
 		[reactFlowInstance]
 	)
+
+	const saveGroup = (
+		event: React.MouseEvent<Element, MouseEvent>,
+		groupNodes: Node<any>[]
+	) => {
+		event.preventDefault()
+
+		// const orderedNodes = groupNodes.sort((a, b) => {
+		// 	if (a.position.x < b.position.x) {
+		// 		return -1
+		// 	}
+		// 	if (b.position.x < a.position.x) {
+		// 		return 1
+		// 	}
+		// 	return 0
+		// })
+
+		// const basePosition = orderedNodes[0].position
+		const data = {
+			type: 'group',
+			name: 'sjdfoijwepfef',
+			className: 'node react-flow__node-default',
+			color: '#FFFFFF',
+			nodes: [],
+			edges: [],
+		}
+
+		const basePosition = groupNodes[0].position
+		const idMap: {
+			[key: string]: number
+		} = {} // string and index
+		const groupEdges: Edge[] = []
+
+		// encode nodes w/ base position offset
+		groupNodes.forEach((n) => {
+			const gN = SerializeNode(
+				n.data.name,
+				n.data.color,
+				'base',
+				n.data.fields
+			)
+			const o = {
+				...gN,
+				position: [
+					n.position.x - basePosition.x,
+					n.position.y - basePosition.y,
+				],
+			}
+
+			idMap[n.id] = data.nodes.length
+			// @ts-ignore
+			data.nodes.push(o)
+			groupEdges.push(...getOutgoingEdges(n.id, edges))
+		})
+
+		// filter & normalize edges
+		groupEdges.forEach((e) => {
+			// look into map, if the to and from both exist, use their
+			// ids & the to node's key for it
+			const from = idMap[e.source]
+			const handle = e.sourceHandle || ''
+			const to = idMap[e.target]
+
+			if (to !== undefined && from !== undefined) {
+				// @ts-ignore
+				data.edges.push({ handle, to, from })
+			}
+		})
+
+		dispatch({
+			type: types.addCustomNode,
+			data,
+		})
+	}
 
 	const submitModal = (event: any) => {
 		closeModal()
@@ -309,6 +483,7 @@ const Canvas: React.FC<{}> = (props) => {
 					edges={edges}
 					edgeTypes={edgeTypes}
 					nodeTypes={nodeTypes}
+					onSelectionContextMenu={saveGroup}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					// onConnect={onConnect}
@@ -324,6 +499,10 @@ const Canvas: React.FC<{}> = (props) => {
 					snapToGrid
 					snapGrid={[15, 15]}
 					style={{ height: '100%', width: '100%', zIndex: 0 }}
+					elevateEdgesOnSelect
+					// onEdgeContextMenu={}
+					// onEdgeMouseEnter={}
+					// onEdgeMouseLeave={}
 				>
 					<MiniMap
 						nodeStrokeColor={(n) => {
@@ -360,7 +539,6 @@ const Canvas: React.FC<{}> = (props) => {
 			</AddButton>
 			{nodeID && (
 				<BasicNodeDetail
-					nodeID={nodeID}
 					isOpen
 					close={() => dispatch({ type: types.setNode, data: null })}
 				/>

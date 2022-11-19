@@ -27,9 +27,9 @@ function buildFileSelector() {
 function Toolbar() {
 	const { setViewport, fitView } = useReactFlow()
 	const reactFlowInstance = useReactFlow()
-	const { nodes, edges } = useStore()
-	const [, setNodes] = useNodesState(nodes)
-	const [, setEdges] = useEdgesState(edges)
+	const { nodes, setNodes, setEdges, edges } = useStore()
+
+	const reset = useStore((state) => state.reset)
 
 	const fileReader = new FileReader()
 
@@ -83,7 +83,7 @@ function Toolbar() {
 
 	// load our initial elemnets up
 	const onNew = () => {
-		setNodes(initialElements)
+		reset()
 		setViewport({ x: 100, y: 100, zoom: 1 })
 		fitView()
 	}

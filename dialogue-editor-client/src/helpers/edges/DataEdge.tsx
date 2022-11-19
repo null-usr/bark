@@ -21,7 +21,7 @@ import {
 
 import '../style.css'
 import { FlowContext } from '../../contexts/FlowContext'
-import useStore, { State, types } from '../../store/store'
+import useStore, { RFState, types } from '../../store/store'
 
 // export const VariableEdge = forwardRef<
 // 	{ getEdgeName(): string },
@@ -63,6 +63,8 @@ export const DataEdgeType: FC<EdgeProps> = ({
 	targetY,
 	sourcePosition,
 	targetPosition,
+	sourceHandleId,
+	targetHandleId,
 	data,
 	markerEnd,
 }) => {
@@ -86,7 +88,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 	// shared flow context
 	const reactFlowInstance = useReactFlow()
 	const { getEdges } = useReactFlow()
-	const dispatch = useStore((store: State) => store.dispatch)
+	const dispatch = useStore((store: RFState) => store.dispatch)
 
 	const [name, setName] = useState(data.name || 'placeholder')
 
@@ -100,11 +102,24 @@ export const DataEdgeType: FC<EdgeProps> = ({
 
 	return (
 		<>
-			<path
+			{/* <path
 				id={id}
 				className="react-flow__edge-path"
 				d={edgePath}
 				markerEnd={markerEnd}
+			/> */}
+
+			<path
+				className="react-flow__edge-path-selector"
+				d={edgePath}
+				markerEnd={markerEnd}
+				fillRule="evenodd"
+			/>
+			<path
+				className="react-flow__edge-path"
+				d={edgePath}
+				markerEnd={markerEnd}
+				fillRule="evenodd"
 			/>
 			<foreignObject
 				width={foreignObjectSize}
@@ -127,7 +142,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 			</foreignObject>
 			<foreignObject
 				width={200}
-				height={25}
+				height={100}
 				x={centerX - 100}
 				y={centerY}
 			>
@@ -138,6 +153,8 @@ export const DataEdgeType: FC<EdgeProps> = ({
 						updateName(e.target.value)
 					}}
 				/>
+				{sourceHandleId}
+				{targetHandleId}
 			</foreignObject>
 			<foreignObject
 				width={foreignObjectSize}

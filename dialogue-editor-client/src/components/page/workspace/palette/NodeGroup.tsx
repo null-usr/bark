@@ -17,9 +17,11 @@ const NodeGroup: React.FC<{
 						<PaletteItem
 							key={node.name}
 							name={node.name}
-							classname={node.className}
+							className={node.className}
 							type={node.type}
 							fields={node.fields}
+							nodes={node.nodes}
+							edges={node.edges}
 						/>
 					)
 				})}

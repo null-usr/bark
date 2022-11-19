@@ -18,6 +18,7 @@ import {
 } from 'react-flow-renderer'
 import { v4 as uuidv4 } from 'uuid'
 import { FlowContext } from '../../contexts/FlowContext'
+import useStore from '../../store/store'
 
 export class RootNode {
 	readonly id: string = uuidv4()
@@ -28,6 +29,7 @@ export class RootNode {
 
 	readonly data: object = {
 		label: 'ROOT',
+		type: 'root',
 		sources: [],
 		targets: [],
 	}
@@ -49,11 +51,8 @@ export default ({
 }>) => {
 	const nodeRef: any = useRef()
 	const reactFlowInstance = useReactFlow()
+	const updateHandles = useStore((state) => state.updateNodeHandles)
 
-	const [targetArray, setTargetArray] = useState<any[]>(data.targets || [])
-	const [sourceArray, setSourceArray] = useState<any[]>(
-		data.sources || [`source-handle-1`]
-	)
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
 	// when updating handles programmatically, this is needed
@@ -69,58 +68,58 @@ export default ({
 		}
 	}, [])
 
-	useEffect(() => {
-		data.sources = sourceArray
-	}, [sourceArray])
+	// useEffect(() => {
+	// 	data.sources = sourceArray
+	// }, [sourceArray])
 
-	useEffect(() => {
-		data.targets = targetArray
-	}, [targetArray])
+	// useEffect(() => {
+	// 	data.targets = targetArray
+	// }, [targetArray])
 
-	useEffect(() => {
-		updateNodeInternals(id)
-	}, [sourceArray, targetArray])
+	// useEffect(() => {
+	// 	updateNodeInternals(id)
+	// }, [data.sources, data.targets])
 
 	const add = (type: string) => {
-		if (type === 'T' && targetArray.length < 10) {
-			const tmp = `target-handle-${targetArray.length + 1}`
-			setTargetArray([...targetArray, tmp])
+		if (type === 'T' && data.targets.length < 10) {
+			const tmp = `target-handle-${data.targets.length + 1}`
+			updateHandles(id, data.sources, [...data.targets, tmp])
 		}
-		if (type === 'S' && sourceArray.length < 10) {
-			const tmp = `source-handle-${sourceArray.length + 1}`
-			setSourceArray([...sourceArray, tmp])
+		if (type === 'S' && data.sources.length < 10) {
+			const tmp = `source-handle-${data.sources.length + 1}`
+			updateHandles(id, [...data.sources, tmp], data.targets)
 		}
 	}
 
 	// need to make sure we also remove the edges from our flow
 	const remove = (type: string, index: number) => {
 		if (type === 'T') {
-			const tmp = [...targetArray]
+			const tmp = [...data.targets]
 			const edges = reactFlowInstance.getEdges().filter((element) => {
 				return (
 					element.target !== data.id ||
-					element.targetHandle === targetArray.at(index)
+					element.targetHandle === data.targets.at(index)
 				)
 			})
 			if (edges) {
 				reactFlowInstance.setEdges(edges)
 			}
 			tmp.splice(index, 1)
-			setTargetArray(tmp)
+			updateHandles(id, data.sources, tmp)
 		}
 		if (type === 'S') {
-			const tmp = [...sourceArray]
+			const tmp = [...data.sources]
 			const edges = reactFlowInstance.getEdges().filter((element) => {
 				return (
 					element.source !== data.id ||
-					element.sourceHandle !== sourceArray.at(index)
+					element.sourceHandle !== data.sources.at(index)
 				)
 			})
 			if (edges) {
 				reactFlowInstance?.setEdges(edges)
 			}
 			tmp.splice(index, 1)
-			setSourceArray(tmp)
+			updateHandles(id, tmp, data.targets)
 		}
 	}
 
@@ -130,7 +129,7 @@ export default ({
 
 	const targetHandles = useMemo(
 		() =>
-			targetArray.map((x: any, i: number) => {
+			data.targets.map((x: any, i: number) => {
 				const handleId = `target-handle-${i + 1}`
 				return (
 					<Handle
@@ -142,12 +141,12 @@ export default ({
 					/>
 				)
 			}),
-		[targetArray, positionHandle]
+		[data.targets, positionHandle]
 	)
 
 	const sourceHandles = useMemo(
 		() =>
-			sourceArray.map((x: any, i: number) => {
+			data.sources.map((x: any, i: number) => {
 				const handleId = `source-handle-${i + 1}`
 				return (
 					<Handle
@@ -163,18 +162,25 @@ export default ({
 					/>
 				)
 			}),
-		[sourceArray, positionHandle]
+		[data.sources, positionHandle]
 	)
 
 	return (
 		<>
 			<div
 				style={{
-					minHeight: `${
-						(Math.max(targetArray.length, sourceArray.length) - 1) *
-							18 +
-						6
-					}px`,
+					minHeight:
+						data.targets.length > 0 || data.sources.length > 0
+							? `${
+									(Math.max(
+										data.targets.length,
+										data.sources.length
+									) -
+										1) *
+										18 +
+									6
+							  }px`
+							: ``,
 				}}
 				ref={nodeRef}
 			>
