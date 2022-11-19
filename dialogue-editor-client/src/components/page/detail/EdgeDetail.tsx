@@ -34,7 +34,7 @@ const Detail: React.FC<{
 	const [id, setID] = useState(edgeID || '')
 
 	const [fields, setFields] = useState<Field[]>(editEdge.data.fields || [])
-	const [count, setCount] = useState(1)
+	const [count, setCount] = useState(fields.length)
 
 	const addField = (type: string) => {
 		setFields([

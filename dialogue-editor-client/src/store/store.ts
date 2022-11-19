@@ -10,6 +10,7 @@ import {
 	OnConnect,
 	OnEdgesChange,
 	OnNodesChange,
+	Position,
 	useEdges,
 } from 'react-flow-renderer'
 import create from 'zustand'
@@ -22,10 +23,13 @@ export const types = {
 	addNode: 'ADD_NODE',
 	deleteNode: 'DELETE_NODE',
 	setNodes: 'SET_NODES',
+
 	setEdge: 'SET_EDGE',
 	editEdge: 'EDIT_EDGE',
 	addEdge: 'ADD_EDGE',
 	deleteEdge: 'DELETE_EDGE',
+	updateSourceHandle: 'UPDATE_SOURCE',
+	updateTargetHandle: 'UPDATE_SOURCE',
 
 	loadBuiltInNodes: 'DEFAULT',
 	loadCustomNodes: 'CUSTOM',
@@ -39,26 +43,33 @@ export type RFState = {
 	edges: Edge[]
 	builtInNodes: Schema[]
 	customNodes: Schema[]
+
+	// Reset
+	reset: () => void
+
+	// Nodes
 	setNodes: (newNodes: Node[]) => void
-	setEdges: (newEdges: Edge[]) => void
 	onNodesChange: OnNodesChange
-	onEdgesChange: OnEdgesChange
+	editNode: (id: string) => void
 	addNode: (newNode: Node<any>) => void
+	setSelectedNodes: (selected: Node[]) => void
 	updateDialogueData: (nodeID: string, d: string) => void
-	// setEdges: any
+	updateNodeHandles: (
+		nodeID: string,
+		sources: string[],
+		targets: string[]
+	) => void
+
+	// Edges
+	setEdges: (newEdges: Edge[]) => void
+	onEdgesChange: OnEdgesChange
 	onConnect: (edge: Edge | Connection) => void
 	deleteEdge: (id: string) => void
-	editNode: (id: string) => void
+
+	// Utility
 	dispatch: (args: { type: any; data: any }) => void
 	updateNodeColor: (nodeId: string, color: string) => void
-}
-
-export type State = {
-	nodeID: string | null
-	edgeID: string | null
-	deleteEdge: (id: string) => void
-	editNode: (id: string) => void
-	dispatch: (args: { type: any; data: any }) => void
+	updateNodeName: (nodeId: string, name: string) => void
 }
 
 const reducer = (
@@ -108,6 +119,27 @@ const reducer = (
 			return { edgeID: data.nodes }
 		}
 
+		case types.updateSourceHandle: {
+			const out = state.edges.map((e: Edge<any>) => {
+				if (e.sourceHandle === data.old) {
+					e.sourceHandle = data.new
+					e.data = { ...e.data }
+				}
+				return e
+			})
+			return {}
+		}
+		case types.updateTargetHandle: {
+			const out = state.edges.map((e: Edge<any>) => {
+				if (e.targetHandle === data.old) {
+					e.targetHandle = data.new
+					e.data = { ...e.data }
+				}
+				return e
+			})
+			return {}
+		}
+
 		case types.loadCustomNodes: {
 			return {
 				customNodes: data.nodes,
@@ -121,7 +153,6 @@ const reducer = (
 		}
 
 		case types.addCustomNode: {
-			console.log(data)
 			return {
 				customNodes: [...state.customNodes, data],
 			}
@@ -132,7 +163,8 @@ const reducer = (
 	}
 }
 
-// this is our useStore hook that we can use in our components to get parts of the store and call actions
+// this is our useStore hook that we can use in our components
+// to get parts of the store and call actions
 const useStore = create<RFState>((set, get) => ({
 	nodeID: null,
 	edgeID: null,
@@ -140,6 +172,41 @@ const useStore = create<RFState>((set, get) => ({
 	edges: [],
 	builtInNodes: [],
 	customNodes: [],
+	reset: () => {
+		set({
+			nodes: [
+				{
+					id: 'root',
+					type: 'root',
+					selectable: true,
+					position: { x: 100, y: 100 },
+					sourcePosition: Position.Left,
+					targetPosition: Position.Right,
+					data: {
+						label: 'ROOT',
+						sources: [],
+						targets: [],
+						id: 'root,',
+					},
+				},
+			],
+		})
+	},
+
+	updateNodeHandles: (nodeID, sources, targets) => {
+		set({
+			nodes: get().nodes.map((node) => {
+				if (node.id === nodeID) {
+					node.data = {
+						...node.data,
+						sources,
+						targets,
+					}
+				}
+				return node
+			}),
+		})
+	},
 	setNodes: (newNodes: Node[]) => {
 		set({ nodes: newNodes })
 	},
@@ -154,6 +221,14 @@ const useStore = create<RFState>((set, get) => ({
 	onNodesChange: (changes: NodeChange[]) => {
 		set({
 			nodes: applyNodeChanges(changes, get().nodes),
+		})
+	},
+	setSelectedNodes: (selected: Node[]) => {
+		set({
+			nodes: get().nodes.map((n) => {
+				if (selected.find((s) => s.id === n.id)) n.selected = true
+				return n
+			}),
 		})
 	},
 	onEdgesChange: (changes: EdgeChange[]) => {
@@ -187,6 +262,18 @@ const useStore = create<RFState>((set, get) => ({
 				if (node.id === nodeId) {
 					// it's important to create a new object here, to inform React Flow about the cahnges
 					node.data = { ...node.data, color }
+				}
+
+				return node
+			}),
+		})
+	},
+	updateNodeName: (nodeId: string, name: string) => {
+		set({
+			nodes: get().nodes.map((node) => {
+				if (node.id === nodeId) {
+					// it's important to create a new object here, to inform React Flow about the cahnges
+					node.data = { ...node.data, name }
 				}
 
 				return node

@@ -1,15 +1,21 @@
 import React from 'react'
 
 const PaletteItem: React.FC<{
-	classname: string
+	className: string
 	name: string
 	type: string
 	fields?: any[]
-}> = ({ classname, name, type, fields, ...props }) => {
+	nodes?: any[]
+	edges?: any[]
+}> = ({ className, name, type, fields, nodes, edges, ...props }) => {
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		const data = JSON.stringify({
-			nodeType: type,
+			name,
+			type,
 			fields,
+			nodes,
+			edges,
+			className,
 		})
 		event.dataTransfer.setData('application/reactflow', data)
 		event.dataTransfer.effectAllowed = 'move'
@@ -18,7 +24,7 @@ const PaletteItem: React.FC<{
 	return (
 		<div
 			draggable="true"
-			className={classname}
+			className="node react-flow__node-default"
 			onDragStart={(event) => onDragStart(event)}
 		>
 			{name}

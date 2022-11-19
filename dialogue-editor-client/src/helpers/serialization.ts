@@ -1,13 +1,49 @@
 // we'll want to save scenes to be loaded by our editor and
 // serialize lite versions to be loaded by the game engines
 
-import { Edge, ReactFlowJsonObject } from 'react-flow-renderer'
+import { Edge, Node, ReactFlowJsonObject } from 'react-flow-renderer'
 import { IReactFlow } from '../contexts/FlowContext'
 import { BasicNode } from './nodes/BasicNode'
 import DataEdge from './edges/DataEdge'
+import { Field } from './types'
 
 export interface ISceneData extends ReactFlowJsonObject {
 	scenes?: string[]
+}
+
+export const SerializeNode = (
+	name: string,
+	color: string,
+	type: string,
+	f: Field[]
+) => {
+	const out = {
+		name,
+		color,
+		type,
+		fields: f,
+	}
+	return out
+}
+
+export const SerializeGroup = (
+	name: string,
+	color: string,
+	nodes: Node[],
+	edges: Edge[]
+) => {
+	const mostLeftNode = nodes.reduce((min: Node, node) =>
+		min && min.position.x < node.position.x ? min : node
+	)
+	const out = {
+		name,
+		color,
+		type: 'group',
+		nodes: [],
+		edges: [],
+	}
+
+	return out
 }
 
 export function LoadScene(scene: string): ReactFlowJsonObject {
