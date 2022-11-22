@@ -15,7 +15,7 @@ import {
 	useReactFlow,
 	useUpdateNodeInternals,
 	XYPosition,
-} from 'react-flow-renderer'
+} from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 import { FlowContext } from '../../contexts/FlowContext'
 import useStore from '../../store/store'
@@ -56,7 +56,9 @@ export default ({
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
 	// when updating handles programmatically, this is needed
+	// have to update immediately or last handle isn't registered for some reason
 	const updateNodeInternals = useUpdateNodeInternals()
+	updateNodeInternals(id)
 
 	// get node dimensions
 	useLayoutEffect(() => {

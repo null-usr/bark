@@ -10,7 +10,7 @@ import {
 	useNodesState,
 	useReactFlow,
 	useUpdateNodeInternals,
-} from 'react-flow-renderer'
+} from 'reactflow'
 import { FlowContext } from '../../../contexts/FlowContext'
 import {
 	getIncomingEdges,
@@ -203,7 +203,14 @@ const Detail: React.FC<{
 									/>
 									:
 									{/* TODO: this may have multiple target nodes, think of a UI/UX for this */}
+									<button>Create</button>
 									<button
+										disabled={
+											edgesOut.filter(
+												(e) =>
+													e.sourceHandle === field.key
+											).length === 0
+										}
 										onClick={() => {
 											const targetNodeID =
 												edgesOut.filter(

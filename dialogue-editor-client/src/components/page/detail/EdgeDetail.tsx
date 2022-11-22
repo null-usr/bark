@@ -4,7 +4,7 @@ import {
 	useNodesState,
 	useReactFlow,
 	useUpdateNodeInternals,
-} from 'react-flow-renderer'
+} from 'reactflow'
 import { FlowContext } from '../../../contexts/FlowContext'
 import DataEdge from '../../../helpers/edges/DataEdge'
 import { BooleanField } from '../../../helpers/FieldComponents/BooleanField'

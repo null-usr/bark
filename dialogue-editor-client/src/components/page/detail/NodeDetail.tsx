@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useReactFlow, useUpdateNodeInternals } from 'react-flow-renderer'
+import { useReactFlow, useUpdateNodeInternals } from 'reactflow'
 import { FlowContext } from '../../../contexts/FlowContext'
 import { getCount } from '../../../helpers/getCount'
 import BasicNode from '../../../helpers/nodes/BasicNode'

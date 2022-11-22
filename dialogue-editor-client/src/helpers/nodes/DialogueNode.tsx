@@ -1,5 +1,5 @@
 import React, { memo, useState } from 'react'
-import { Handle, NodeProps, Position, XYPosition } from 'react-flow-renderer'
+import { Handle, NodeProps, Position, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
 import Detail from '../../components/page/detail/NodeDetail'
 
