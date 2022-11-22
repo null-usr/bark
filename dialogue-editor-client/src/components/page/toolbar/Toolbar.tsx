@@ -4,7 +4,7 @@ import {
 	useEdgesState,
 	useNodesState,
 	useReactFlow,
-} from 'react-flow-renderer'
+} from 'reactflow'
 import { FlowContext } from '../../../contexts/FlowContext'
 import { Dropdown } from '../../dropdown/Dropdown'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'

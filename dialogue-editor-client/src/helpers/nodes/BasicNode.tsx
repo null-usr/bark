@@ -7,7 +7,7 @@ import {
 	Edge,
 	XYPosition,
 	useUpdateNodeInternals,
-} from 'react-flow-renderer'
+} from 'reactflow'
 
 import { render } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'

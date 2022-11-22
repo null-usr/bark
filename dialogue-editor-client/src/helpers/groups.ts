@@ -1,6 +1,6 @@
 // functions for getting groups of nodes
 
-import { Edge, getIncomers, getOutgoers, Node } from 'react-flow-renderer'
+import { Edge, getIncomers, getOutgoers, Node } from 'reactflow'
 import { Queue } from './queue'
 
 export const getLinked = (

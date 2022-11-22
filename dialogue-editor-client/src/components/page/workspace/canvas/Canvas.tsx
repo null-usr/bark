@@ -21,13 +21,13 @@ import ReactFlow, {
 	useNodesState,
 	useEdgesState,
 	useReactFlow,
-} from 'react-flow-renderer'
+	BackgroundVariant,
+} from 'reactflow'
 import { v4 as uuid } from 'uuid'
 import create from 'zustand'
 import DialogueNodeType, {
 	DialogueNode,
 } from '../../../../helpers/nodes/DialogueNode'
-import DialogueForm from '../../../../helpers/DialogueForm'
 import { AddButton, CanvasContainer } from './styles'
 import BasicNodeType, { BasicNode } from '../../../../helpers/nodes/BasicNode'
 import NodeDetail from '../../detail/NodeDetail'
@@ -39,6 +39,8 @@ import EdgeDetail from '../../detail/EdgeDetail'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import { SerializeNode } from '../../../../helpers/serialization'
 import { getOutgoingEdges } from '../../../../helpers/edgeHelpers'
+import { encodeGroup } from '../../../../helpers/nodes/encodeGroup'
+import SaveNodeGroupForm from '../../../../helpers/SaveNodeGroupForm'
 
 // styles for the modal
 const customModalStyles = {
@@ -49,7 +51,7 @@ const customModalStyles = {
 		bottom: 'auto',
 		marginRight: '-50%',
 		transform: 'translate(-50%, -50%)',
-		zIndex: 100,
+		zIndex: 1001,
 	},
 }
 
@@ -65,7 +67,10 @@ const Canvas: React.FC<{}> = (props) => {
 	} = useStore()
 
 	// for modal
-	const [modalIsOpen, setIsOpen] = React.useState(false)
+	const [sgModalOpen, setSGModalOpen] = useState(false)
+	const [showSGButton, setShowSGButton] = useState(false)
+
+	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 
 	const reactFlowInstance = useReactFlow()
 
@@ -77,12 +82,6 @@ const Canvas: React.FC<{}> = (props) => {
 
 	// zustand store
 	const dispatch = useStore((store: RFState) => store.dispatch)
-
-	const serializeNodeGroup = (groupNodes: Node[]) => {
-		// get all outgoing edges
-		// filter edges by ids of node in this group
-		// the to and from
-	}
 
 	const edgeTypes = useMemo(
 		() => ({
@@ -101,18 +100,8 @@ const Canvas: React.FC<{}> = (props) => {
 		[]
 	)
 
-	// on add option click, open the modal
-	function addOption(event: any) {
-		const newNode = new BasicNode(
-			'basic',
-			Math.random() * window.innerWidth - 100,
-			Math.random() * window.innerHeight
-		)
-		addNode(newNode)
-	}
-
 	function closeModal() {
-		setIsOpen(false)
+		setSGModalOpen(false)
 	}
 
 	const reactFlowWrapper = useRef<any>(null)
@@ -156,10 +145,6 @@ const Canvas: React.FC<{}> = (props) => {
 		},
 		[connectionAttempt]
 	)
-
-	// const onConnectStop = useCallback((event: MouseEvent) => {
-	// 	console.log('on connect stop', event)
-	// }, [])
 
 	// we've dragged a handle into an empty spot
 	const onConnectEnd = useCallback(
@@ -236,7 +221,6 @@ const Canvas: React.FC<{}> = (props) => {
 			const newNodes: any[] = []
 			const newEdges: any[] = []
 
-			console.log(paletteItem)
 			switch (type) {
 				case 'dialogue':
 					newNodes.push(
@@ -365,98 +349,9 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const saveGroup = (
 		event: React.MouseEvent<Element, MouseEvent>,
-		groupNodes: Node<any>[]
+		gNds: Node<any>[]
 	) => {
 		event.preventDefault()
-
-		// const orderedNodes = groupNodes.sort((a, b) => {
-		// 	if (a.position.x < b.position.x) {
-		// 		return -1
-		// 	}
-		// 	if (b.position.x < a.position.x) {
-		// 		return 1
-		// 	}
-		// 	return 0
-		// })
-
-		// const basePosition = orderedNodes[0].position
-		const data = {
-			type: 'group',
-			name: 'sjdfoijwepfef',
-			className: 'node react-flow__node-default',
-			color: '#FFFFFF',
-			nodes: [],
-			edges: [],
-		}
-
-		const basePosition = groupNodes[0].position
-		const idMap: {
-			[key: string]: number
-		} = {} // string and index
-		const groupEdges: Edge[] = []
-
-		// encode nodes w/ base position offset
-		groupNodes.forEach((n) => {
-			const gN = SerializeNode(
-				n.data.name,
-				n.data.color,
-				'base',
-				n.data.fields
-			)
-			const o = {
-				...gN,
-				position: [
-					n.position.x - basePosition.x,
-					n.position.y - basePosition.y,
-				],
-			}
-
-			idMap[n.id] = data.nodes.length
-			// @ts-ignore
-			data.nodes.push(o)
-			groupEdges.push(...getOutgoingEdges(n.id, edges))
-		})
-
-		// filter & normalize edges
-		groupEdges.forEach((e) => {
-			// look into map, if the to and from both exist, use their
-			// ids & the to node's key for it
-			const from = idMap[e.source]
-			const handle = e.sourceHandle || ''
-			const to = idMap[e.target]
-
-			if (to !== undefined && from !== undefined) {
-				// @ts-ignore
-				data.edges.push({ handle, to, from })
-			}
-		})
-
-		dispatch({
-			type: types.addCustomNode,
-			data,
-		})
-	}
-
-	const submitModal = (event: any) => {
-		closeModal()
-		if (
-			event == null ||
-			event.character_name == null ||
-			event.character_name === '' ||
-			event.dialog == null ||
-			event.dialog === ''
-		) {
-			return
-		}
-
-		const newNode = new DialogueNode(
-			event.character_name,
-			event.dialog,
-			null,
-			250,
-			250
-		)
-		addNode(newNode)
 	}
 
 	Modal.setAppElement('#root')
@@ -464,14 +359,29 @@ const Canvas: React.FC<{}> = (props) => {
 	return (
 		<CanvasContainer>
 			<Modal
-				isOpen={modalIsOpen}
+				isOpen={sgModalOpen}
 				// react/jsx-no-bind, JSX props should not use functions
 				onRequestClose={closeModal}
 				style={customModalStyles}
 				contentLabel="Add Dialogue Option"
 			>
 				<button onClick={closeModal}>close</button>
-				<DialogueForm callback={submitModal} />
+				<SaveNodeGroupForm
+					submit={(name, color) => {
+						const data = encodeGroup(
+							name,
+							color,
+							selectedNodes,
+							edges
+						)
+						dispatch({
+							type: types.addCustomNode,
+							data,
+						})
+
+						setSGModalOpen(false)
+					}}
+				/>
 			</Modal>
 			<div
 				style={{ width: '100%', height: '100%' }}
@@ -483,13 +393,26 @@ const Canvas: React.FC<{}> = (props) => {
 					edges={edges}
 					edgeTypes={edgeTypes}
 					nodeTypes={nodeTypes}
-					onSelectionContextMenu={saveGroup}
+					// onSelectionContextMenu={saveGroup}
+					// looks like this is the only one that works
+					onSelectionChange={(params) => {
+						setSelectedNodes(params.nodes)
+						if (params.nodes.length > 1 && !showSGButton) {
+							setShowSGButton(true)
+						} else if (params.nodes.length < 1) {
+							setShowSGButton(false)
+						}
+					}}
+					// onSelectionDragStop={(e: React.MouseEvent, nds: Node[]) => {
+					// 	console.log('pong')
+					// }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
+					onNodeDragStart={(e, n, nds) => {}}
+					onNodeDragStop={(e, n, nds) => {}}
 					// onConnect={onConnect}
 					onConnect={onCustomConnect}
 					onConnectStart={onConnectStart}
-					// onConnectStop={onConnectStop}
 					onConnectEnd={onConnectEnd}
 					// onInit={onInit}
 					onDragOver={onDragOver}
@@ -499,7 +422,9 @@ const Canvas: React.FC<{}> = (props) => {
 					snapToGrid
 					snapGrid={[15, 15]}
 					style={{ height: '100%', width: '100%', zIndex: 0 }}
+					edgeUpdaterRadius={10}
 					elevateEdgesOnSelect
+					fitView
 					// onEdgeContextMenu={}
 					// onEdgeMouseEnter={}
 					// onEdgeMouseLeave={}
@@ -518,25 +443,29 @@ const Canvas: React.FC<{}> = (props) => {
 							if (n.style?.background)
 								return n.style.background as string
 
+							if (n.type === 'base')
+								return n.data.color ? n.data.color : '#1a192b'
+
 							return '#fff'
 						}}
 						nodeBorderRadius={2}
+						zoomable
+						pannable
 					/>
 					<Controls />
-					<Background color="#aaa" gap={16} />
+					<Background
+						color="#c0adf0"
+						gap={16}
+						size={3}
+						variant={BackgroundVariant.Cross}
+					/>
 				</ReactFlow>
 			</div>
-			<AddButton z={1} onClick={addOption}>
-				Add Dialogue Option
-			</AddButton>
-			<AddButton
-				z={1}
-				onClick={() => {
-					setEdges([])
-				}}
-			>
-				Nuke
-			</AddButton>
+			{showSGButton && (
+				<AddButton onClick={() => setSGModalOpen(true)}>
+					Save Group
+				</AddButton>
+			)}
 			{nodeID && (
 				<BasicNodeDetail
 					isOpen

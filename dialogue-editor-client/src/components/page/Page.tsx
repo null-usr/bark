@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReactFlowProvider } from 'react-flow-renderer'
+import { ReactFlowProvider } from 'reactflow'
 import Workspace from './workspace/Workspace'
 import Toolbar from './toolbar/Toolbar'
 import { PageContainer } from './styles'

@@ -12,7 +12,7 @@ import {
 	OnNodesChange,
 	Position,
 	useEdges,
-} from 'react-flow-renderer'
+} from 'reactflow'
 import create from 'zustand'
 import initialElements from '../helpers/initial-elements'
 import { Schema } from '../helpers/types'

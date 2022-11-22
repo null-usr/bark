@@ -1,4 +1,4 @@
-import { Edge } from 'react-flow-renderer'
+import { Edge } from 'reactflow'
 
 export const getOutgoingEdges = (id: string, edges: Edge<any>[]) => {
 	return edges.filter((edge) => edge.source === id)
