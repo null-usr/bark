@@ -1,5 +1,5 @@
 import React from 'react'
-import { XYPosition } from 'react-flow-renderer'
+import { XYPosition } from 'reactflow'
 
 class StartNode {
 	readonly id: string = '0'

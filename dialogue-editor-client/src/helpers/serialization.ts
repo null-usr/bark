@@ -1,7 +1,7 @@
 // we'll want to save scenes to be loaded by our editor and
 // serialize lite versions to be loaded by the game engines
 
-import { Edge, Node, ReactFlowJsonObject } from 'react-flow-renderer'
+import { Edge, Node, ReactFlowJsonObject } from 'reactflow'
 import { IReactFlow } from '../contexts/FlowContext'
 import { BasicNode } from './nodes/BasicNode'
 import DataEdge from './edges/DataEdge'

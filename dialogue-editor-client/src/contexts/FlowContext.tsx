@@ -2,7 +2,7 @@
 // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/37023
 
 import React, { createContext, useMemo, useState } from 'react'
-import { ReactFlowInstance } from 'react-flow-renderer'
+import { ReactFlowInstance } from 'reactflow'
 import initialElements from '../helpers/initial-elements'
 
 // Interface available to the palette & canvas in order to share data

@@ -1,14 +1,19 @@
 html,
 body {
-  padding: 0;
-  margin: 0;
+	padding: 0;
+	margin: 0;
 }
 
 .App {
-  height: 100vh;
+	height: 100vh;
 }
 
 /* override react-flow to force nodes to be below edges */
 .react-flow__node {
-  z-index: -1 !important;
+	/* z-index: -1 !important; */
+}
+
+.react-flow__edges,
+.react-flow__edge-path {
+  z-index: 1001 !important;
 }

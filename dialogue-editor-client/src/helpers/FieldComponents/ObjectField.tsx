@@ -3,12 +3,7 @@
 */
 
 import React, { useEffect, useRef, useState } from 'react'
-import {
-	Edge,
-	Handle,
-	Position,
-	useUpdateNodeInternals,
-} from 'react-flow-renderer'
+import { Edge, Handle, Position, useUpdateNodeInternals } from 'reactflow'
 import useStore, { RFState, types } from '../../store/store'
 
 export const ObjectField: React.FC<{
