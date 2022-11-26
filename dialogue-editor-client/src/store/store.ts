@@ -24,6 +24,8 @@ export const types = {
 	deleteNode: 'DELETE_NODE',
 	setNodes: 'SET_NODES',
 
+	customizeSchema: 'CUSTOMIZE',
+
 	setEdge: 'SET_EDGE',
 	editEdge: 'EDIT_EDGE',
 	addEdge: 'ADD_EDGE',
@@ -34,11 +36,16 @@ export const types = {
 	loadBuiltInNodes: 'DEFAULT',
 	loadCustomNodes: 'CUSTOM',
 	addCustomNode: 'ADD_CUSTOM',
+	deleteCustomNode: 'DELETE_CUSTOM',
 }
 
 export type RFState = {
 	nodeID: string | null
 	edgeID: string | null
+
+	mode: string
+	schema: string | null
+
 	nodes: Node[]
 	edges: Edge[]
 	builtInNodes: Schema[]
@@ -154,7 +161,25 @@ const reducer = (
 
 		case types.addCustomNode: {
 			return {
-				customNodes: [...state.customNodes, data],
+				customNodes: [
+					...state.customNodes.filter((n) => n.name !== data.name),
+					data,
+				],
+				schema: null,
+				mode: '',
+			}
+		}
+
+		case types.deleteCustomNode: {
+			return {
+				customNodes: state.customNodes.filter((n) => n.name !== data),
+			}
+		}
+
+		case types.customizeSchema: {
+			return {
+				mode: data.mode,
+				schema: data.schema,
 			}
 		}
 
@@ -169,6 +194,8 @@ const useStore = create<RFState>((set, get) => ({
 	nodeID: null,
 	edgeID: null,
 	nodes: initialElements,
+	mode: 'active',
+	schema: null,
 	edges: [],
 	builtInNodes: [],
 	customNodes: [],

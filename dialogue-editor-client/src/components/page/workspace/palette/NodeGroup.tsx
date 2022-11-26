@@ -6,7 +6,8 @@ import { Group } from './styles'
 const NodeGroup: React.FC<{
 	data: Schema[]
 	title: string
-}> = ({ data, title }) => {
+	modable?: boolean
+}> = ({ data, title, modable }) => {
 	return (
 		<Group draggable="false">
 			{title}
@@ -22,6 +23,7 @@ const NodeGroup: React.FC<{
 							fields={node.fields}
 							nodes={node.nodes}
 							edges={node.edges}
+							modable={modable}
 						/>
 					)
 				})}

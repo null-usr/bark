@@ -45,6 +45,10 @@ const Detail: React.FC<{
 	const edgesOut = getOutgoingEdges(nodeID, edges)
 	const edgesIn = getIncomingEdges(nodeID, edges)
 
+	const naturalOutgoingEdges = edgesOut.filter(
+		(e) => e.sourceHandle === null || e.sourceHandle === e.source
+	)
+
 	const [name, setName] = useState(editNode.data.name)
 	const [id, setID] = useState(nodeID || '')
 	const [color, setColor] = useState(editNode.data.color)
@@ -233,7 +237,6 @@ const Detail: React.FC<{
 							return <></>
 					}
 				})}
-
 				{/* <textarea
 					value={dialogue}
 					onChange={(e) => {
@@ -241,7 +244,7 @@ const Detail: React.FC<{
 					}}
 				/> */}
 				{/* {dialogueNode.dialogue} */}
-
+				Incoming
 				{edgesIn.map((e) => {
 					return (
 						<button
@@ -253,6 +256,21 @@ const Detail: React.FC<{
 							}
 						>
 							{e.source}
+						</button>
+					)
+				})}
+				Outgoing
+				{naturalOutgoingEdges.map((e) => {
+					return (
+						<button
+							onClick={() =>
+								dispatch({
+									type: types.setNode,
+									data: e.target,
+								})
+							}
+						>
+							{e.target}
 						</button>
 					)
 				})}

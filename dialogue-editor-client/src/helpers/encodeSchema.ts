@@ -1,8 +1,8 @@
 import { Edge, Node } from 'reactflow'
-import { getOutgoingEdges } from '../edgeHelpers'
-import { SerializeNode } from '../serialization'
+import { getOutgoingEdges } from './edgeHelpers'
+import { SerializeNode } from './serialization'
 
-export const encodeGroup = (
+export const encodeSchema = (
 	name: string,
 	color: string,
 	groupNodes: Node<any>[],
