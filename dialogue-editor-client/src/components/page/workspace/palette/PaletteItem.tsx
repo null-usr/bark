@@ -1,4 +1,5 @@
 import React from 'react'
+import useStore, { RFState, types } from '../../../../store/store'
 
 const PaletteItem: React.FC<{
 	className: string
@@ -7,7 +8,19 @@ const PaletteItem: React.FC<{
 	fields?: any[]
 	nodes?: any[]
 	edges?: any[]
-}> = ({ className, name, type, fields, nodes, edges, ...props }) => {
+	modable?: boolean
+}> = ({
+	className,
+	name,
+	type,
+	fields,
+	nodes,
+	edges,
+	modable = false,
+	...props
+}) => {
+	const dispatch = useStore((store: RFState) => store.dispatch)
+
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		const data = JSON.stringify({
 			name,
@@ -28,6 +41,30 @@ const PaletteItem: React.FC<{
 			onDragStart={(event) => onDragStart(event)}
 		>
 			{name}
+			{modable && (
+				<>
+					<button
+						onClick={() => {
+							dispatch({
+								type: types.customizeSchema,
+								data: { mode: 'customize', schema: name },
+							})
+						}}
+					>
+						E
+					</button>
+					<button
+						onClick={() =>
+							dispatch({
+								type: types.deleteCustomNode,
+								data: name,
+							})
+						}
+					>
+						X
+					</button>
+				</>
+			)}
 		</div>
 	)
 }

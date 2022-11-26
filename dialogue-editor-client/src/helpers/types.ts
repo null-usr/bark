@@ -13,6 +13,7 @@ export interface Schema {
 	name: string
 	type: string
 	className: string
+	color?: string
 	fields?: any[]
 	// our schema can also represent a group of nodes
 	nodes?: any[]

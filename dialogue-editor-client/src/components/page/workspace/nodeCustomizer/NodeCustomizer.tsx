@@ -22,6 +22,10 @@ import ReactFlow, {
 	useEdgesState,
 	useReactFlow,
 	BackgroundVariant,
+	applyNodeChanges,
+	NodeChange,
+	EdgeChange,
+	applyEdgeChanges,
 } from 'reactflow'
 import { v4 as uuid } from 'uuid'
 import DialogueNodeType, {
@@ -38,6 +42,7 @@ import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import { encodeSchema } from '../../../../helpers/encodeSchema'
 import SaveNodeGroupForm from '../../../../helpers/SaveNodeGroupForm'
 import { decodeSchema } from '../../../../helpers/decodeSchema'
+import { Schema } from '../../../../helpers/types'
 
 // styles for the modal
 const customModalStyles = {
@@ -52,30 +57,45 @@ const customModalStyles = {
 	},
 }
 
-const Canvas: React.FC<{}> = (props) => {
-	const {
-		nodes,
-		edges,
-		onNodesChange,
-		onEdgesChange,
-		onConnect,
-		addNode,
-		setEdges,
-	} = useStore()
+const nodeCustomizer: React.FC<{ schemaName?: string | null }> = ({
+	schemaName,
+}) => {
+	let initialNodes: Node<any>[] = []
+	let initialEdges: Edge<any>[] = []
+	let color
+	if (schemaName) {
+		// to deal with name overlap, we'll prepend the workspace custom nodes
+		// with @workspaceName/nodename
+		const custom = useStore((state: RFState) => state.customNodes)
+		const s = custom.filter((n) => n.name === schemaName)[0]
+
+		const out = decodeSchema({ x: 0, y: 0 }, s)
+		color = s.color
+		initialEdges = out.newEdges
+		initialNodes = out.newNodes
+	}
+	const [nodes, setNodes] = useState<Node<any>[]>(initialNodes)
+	const [edges, setEdges] = useState<Edge<any>[]>(initialEdges)
+
+	const onConnect = (connection: Connection | Edge) => {
+		setEdges(addEdge(connection, edges))
+	}
+
+	const addNode = (newNode: Node<any>) => {
+		setNodes([...nodes, newNode])
+	}
+
+	const onNodesChange = (changes: NodeChange[]) => {
+		setNodes(applyNodeChanges(changes, nodes))
+	}
+
+	const onEdgesChange = (changes: EdgeChange[]) => {
+		setEdges(applyEdgeChanges(changes, edges))
+	}
 
 	// for modal
 	const [sgModalOpen, setSGModalOpen] = useState(false)
-	const [showSGButton, setShowSGButton] = useState(false)
-
-	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
-
 	const reactFlowInstance = useReactFlow()
-
-	// call your hook here
-	// const forceUpdate = useForceUpdate()
-
-	const nodeID = useStore((state: RFState) => state.nodeID)
-	const edgeID = useStore((state: RFState) => state.edgeID)
 
 	// zustand store
 	const dispatch = useStore((store: RFState) => store.dispatch)
@@ -217,8 +237,6 @@ const Canvas: React.FC<{}> = (props) => {
 
 			newNodes.forEach((n) => addNode(n))
 			newEdges.forEach((e) => onConnect(e))
-
-			// addNode(newNode)
 		},
 		[reactFlowInstance]
 	)
@@ -236,13 +254,10 @@ const Canvas: React.FC<{}> = (props) => {
 			>
 				<button onClick={closeModal}>close</button>
 				<SaveNodeGroupForm
-					submit={(name, color) => {
-						const data = encodeSchema(
-							name,
-							color,
-							selectedNodes,
-							edges
-						)
+					name={schemaName}
+					color={color}
+					submit={(name, c) => {
+						const data = encodeSchema(name, c, nodes, edges)
 						dispatch({
 							type: types.addCustomNode,
 							data,
@@ -262,19 +277,6 @@ const Canvas: React.FC<{}> = (props) => {
 					edges={edges}
 					edgeTypes={edgeTypes}
 					nodeTypes={nodeTypes}
-					// onSelectionContextMenu={saveGroup}
-					// looks like this is the only one that works
-					onSelectionChange={(params) => {
-						setSelectedNodes(params.nodes)
-						if (params.nodes.length > 1 && !showSGButton) {
-							setShowSGButton(true)
-						} else if (params.nodes.length < 1) {
-							setShowSGButton(false)
-						}
-					}}
-					// onSelectionDragStop={(e: React.MouseEvent, nds: Node[]) => {
-					// 	console.log('pong')
-					// }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					onNodeDragStart={(e, n, nds) => {}}
@@ -330,26 +332,19 @@ const Canvas: React.FC<{}> = (props) => {
 					/>
 				</ReactFlow>
 			</div>
-			{showSGButton && (
-				<AddButton onClick={() => setSGModalOpen(true)}>
-					Save Group
-				</AddButton>
-			)}
-			{nodeID && (
-				<BasicNodeDetail
-					isOpen
-					close={() => dispatch({ type: types.setNode, data: null })}
-				/>
-			)}
-			{edgeID && (
-				<EdgeDetail
-					edgeID={edgeID}
-					isOpen
-					close={() => dispatch({ type: types.setEdge, data: null })}
-				/>
-			)}
+			<AddButton onClick={() => setSGModalOpen(true)}>Save</AddButton>
+			<AddButton
+				onClick={() => {
+					dispatch({
+						type: types.customizeSchema,
+						data: { mode: '', schema: null },
+					})
+				}}
+			>
+				Exit
+			</AddButton>
 		</CanvasContainer>
 	)
 }
 
-export default Canvas
+export default nodeCustomizer
