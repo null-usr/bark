@@ -1,10 +1,12 @@
 import React, { Component, useState } from 'react'
 
 const SaveNodeGroupForm: React.FC<{
+	name?: string | null
+	color?: string
 	submit: (name: string, color: string) => void
-}> = ({ submit }) => {
-	const [name, setName] = useState('')
-	const [color, setColor] = useState('#000')
+}> = ({ name, color, submit }) => {
+	const [formName, setName] = useState(name || '')
+	const [formColor, setColor] = useState(color || '#000')
 
 	return (
 		<form
@@ -16,14 +18,14 @@ const SaveNodeGroupForm: React.FC<{
 		>
 			<input
 				name="group_name"
-				value={name}
+				value={formName}
 				onChange={(e) => {
 					setName(e.target.value)
 				}}
 			/>
 			<input
 				type="color"
-				defaultValue={color}
+				defaultValue={formColor}
 				onChange={(e) => setColor(e.target.value)}
 				className="nodrag"
 			/>

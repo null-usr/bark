@@ -14,7 +14,7 @@ import {
 	SaveScene,
 	SerializeScene,
 } from '../../../helpers/serialization'
-import useStore from '../../../store/store'
+import useStore, { RFState, types } from '../../../store/store'
 
 // create an input which we then call click upon
 function buildFileSelector() {
@@ -30,6 +30,7 @@ function Toolbar() {
 	const { nodes, setNodes, setEdges, edges } = useStore()
 
 	const reset = useStore((state) => state.reset)
+	const dispatch = useStore((store: RFState) => store.dispatch)
 
 	const fileReader = new FileReader()
 
@@ -103,7 +104,16 @@ function Toolbar() {
 					<button onClick={onExport}>Export</button>
 					<div>File 3</div>
 				</Dropdown>
-				<button>Edit</button>
+				<button
+					onClick={() => {
+						dispatch({
+							type: types.customizeSchema,
+							data: { mode: 'customize', schema: null },
+						})
+					}}
+				>
+					Create Node
+				</button>
 				<button>Help</button>
 			</LeftButtonGroup>
 			<RightButtonGroup>
