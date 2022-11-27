@@ -3,17 +3,21 @@ import React, { Component, useState } from 'react'
 const SaveNodeGroupForm: React.FC<{
 	name?: string | null
 	color?: string
-	submit: (name: string, color: string) => void
-}> = ({ name, color, submit }) => {
+	saveToEditor?: boolean
+	submit: (name: string, color: string, saveEditor: boolean) => void
+}> = ({ name, color, saveToEditor, submit }) => {
 	const [formName, setName] = useState(name || '')
 	const [formColor, setColor] = useState(color || '#000')
+	const [saveEditor, setSaveEditor] = useState(
+		saveToEditor === undefined ? false : saveToEditor
+	)
 
 	return (
 		<form
 			onSubmit={(e) => {
 				e.preventDefault()
 				// @ts-ignore
-				submit(e.target[0].value, e.target[1].value)
+				submit(formName, formColor, saveEditor)
 			}}
 		>
 			<input
@@ -28,6 +32,12 @@ const SaveNodeGroupForm: React.FC<{
 				defaultValue={formColor}
 				onChange={(e) => setColor(e.target.value)}
 				className="nodrag"
+			/>
+			Save To Editor
+			<input
+				type="checkbox"
+				defaultChecked={false}
+				onChange={(e) => setSaveEditor(e.target.checked)}
 			/>
 			<button type="submit">Save</button>
 		</form>

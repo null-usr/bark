@@ -20,6 +20,7 @@ const PaletteItem: React.FC<{
 	...props
 }) => {
 	const dispatch = useStore((store: RFState) => store.dispatch)
+	const displayName = name.replace('@workspace/', '')
 
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		const data = JSON.stringify({
@@ -40,7 +41,7 @@ const PaletteItem: React.FC<{
 			className="node react-flow__node-default"
 			onDragStart={(event) => onDragStart(event)}
 		>
-			{name}
+			{displayName}
 			{modable && (
 				<>
 					<button
@@ -56,7 +57,10 @@ const PaletteItem: React.FC<{
 					<button
 						onClick={() =>
 							dispatch({
-								type: types.deleteCustomNode,
+								type:
+									displayName === name
+										? types.deleteCustomNode
+										: types.deleteCustomWorkspaceNode,
 								data: name,
 							})
 						}

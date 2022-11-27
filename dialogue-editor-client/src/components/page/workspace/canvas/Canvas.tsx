@@ -35,9 +35,9 @@ import useStore, { RFState, types } from '../../../../store/store'
 import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
 import EdgeDetail from '../../detail/EdgeDetail'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
-import { encodeSchema } from '../../../../helpers/encodeSchema'
-import SaveNodeGroupForm from '../../../../helpers/SaveNodeGroupForm'
-import { decodeSchema } from '../../../../helpers/decodeSchema'
+import { encodeSchema } from '../../../../helpers/serialization/encodeSchema'
+import SaveNodeGroupForm from '../../../../helpers/serialization/SaveNodeGroupForm'
+import { decodeSchema } from '../../../../helpers/serialization/decodeSchema'
 
 // styles for the modal
 const customModalStyles = {
@@ -61,7 +61,9 @@ const Canvas: React.FC<{}> = (props) => {
 		onConnect,
 		addNode,
 		setEdges,
+		activeScene,
 	} = useStore()
+	const { setViewport, fitView } = useReactFlow()
 
 	// for modal
 	const [sgModalOpen, setSGModalOpen] = useState(false)
@@ -102,6 +104,10 @@ const Canvas: React.FC<{}> = (props) => {
 	}
 
 	const reactFlowWrapper = useRef<any>(null)
+
+	useEffect(() => {
+		fitView()
+	}, [activeScene])
 
 	// ================= CONNECTION BEHAVIOR ================================
 
@@ -236,17 +242,27 @@ const Canvas: React.FC<{}> = (props) => {
 			>
 				<button onClick={closeModal}>close</button>
 				<SaveNodeGroupForm
-					submit={(name, color) => {
+					submit={(name, color, saveEditor) => {
 						const data = encodeSchema(
 							name,
 							color,
 							selectedNodes,
 							edges
 						)
-						dispatch({
-							type: types.addCustomNode,
-							data,
-						})
+						if (saveEditor) {
+							dispatch({
+								type: types.addCustomNode,
+								data,
+							})
+						} else {
+							dispatch({
+								type: types.addCustomWorkspaceNode,
+								data: {
+									...data,
+									name: `@workspace/${data.name}`,
+								},
+							})
+						}
 
 						setSGModalOpen(false)
 					}}
