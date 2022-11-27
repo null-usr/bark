@@ -15,7 +15,7 @@ import {
 } from 'reactflow'
 import create from 'zustand'
 import initialElements from '../helpers/initial-elements'
-import { Schema } from '../helpers/types'
+import { Schema, Workspace } from '../helpers/types'
 
 export const types = {
 	setNode: 'SET_NODE',
@@ -37,6 +37,16 @@ export const types = {
 	loadCustomNodes: 'CUSTOM',
 	addCustomNode: 'ADD_CUSTOM',
 	deleteCustomNode: 'DELETE_CUSTOM',
+
+	createScene: 'SCENE_CREATE',
+	deleteScene: 'SCENE_DELETE',
+	renameScene: 'SCENE_RENAME',
+	changeScene: 'SCENE_CHANGE',
+
+	loadWorkspace: 'WORKSPACE_LOAD',
+	renameWorkspace: 'WORKSPACE_RENAME',
+	addCustomWorkspaceNode: 'WORKSPACE_ADD_SCHEMA',
+	deleteCustomWorkspaceNode: 'WORKSPACE_DELETE_SCHEMA',
 }
 
 export type RFState = {
@@ -50,6 +60,9 @@ export type RFState = {
 	edges: Edge[]
 	builtInNodes: Schema[]
 	customNodes: Schema[]
+
+	activeScene: string
+	workspace: Workspace
 
 	// Reset
 	reset: () => void
@@ -183,6 +196,157 @@ const reducer = (
 			}
 		}
 
+		// WORKSPACE/SCENE =================================================
+
+		case types.createScene: {
+			const { scenes } = state.workspace
+			scenes[data] = {
+				name: data,
+				nodes: [
+					{
+						id: 'root',
+						type: 'root',
+						selectable: true,
+						position: { x: 100, y: 100 },
+						sourcePosition: Position.Left,
+						targetPosition: Position.Right,
+						data: {
+							label: 'ROOT',
+							sources: [],
+							targets: [],
+							id: 'root,',
+						},
+					},
+				],
+				edges: [],
+				viewport: { x: 0, y: 0, zoom: 100 },
+			}
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+				nodes: [
+					{
+						id: 'root',
+						type: 'root',
+						selectable: true,
+						position: { x: 100, y: 100 },
+						sourcePosition: Position.Left,
+						targetPosition: Position.Right,
+						data: {
+							label: 'ROOT',
+							sources: [],
+							targets: [],
+							id: 'root,',
+						},
+					},
+				],
+				edges: [],
+				activeScene: data,
+			}
+		}
+
+		case types.deleteScene: {
+			const { scenes } = state.workspace
+			delete scenes[data]
+
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
+		case types.renameScene: {
+			const { scenes } = state.workspace
+
+			// https://stackoverflow.com/questions/4647817/javascript-object-rename-key
+			delete Object.assign(scenes, {
+				[data.newName]: scenes[data.oldName],
+			})[data.oldName]
+
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
+		case types.changeScene: {
+			const { scenes } = state.workspace
+			const newScene = state.workspace.scenes[data]
+
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
+			}
+
+			return {
+				activeScene: data,
+				nodes: newScene.nodes,
+				edges: newScene.edges,
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
+		case types.loadWorkspace: {
+			let hasScenes = false
+			let sceneName = ''
+			if (data.scenes) {
+				;[sceneName] = Object.keys(data.scenes)
+				if (data.scenes[sceneName]) {
+					hasScenes = true
+				}
+			}
+			return {
+				workspace: data,
+				nodes: hasScenes ? data.scenes[sceneName].nodes : [],
+				edges: hasScenes ? data.scenes[sceneName].edges : [],
+				activeScene: hasScenes ? sceneName : 'untitled',
+			}
+		}
+
+		case types.renameWorkspace: {
+			return {
+				workspace: {
+					...state.workspace,
+					name: data.newName,
+				},
+			}
+		}
+
+		case types.addCustomWorkspaceNode: {
+			return {
+				workspace: {
+					...state.workspace,
+					schemas: [
+						...state.workspace.schemas.filter(
+							(n) => n.name !== data.name
+						),
+						data,
+					],
+				},
+			}
+		}
+
+		case types.deleteCustomWorkspaceNode: {
+			return {
+				workspace: {
+					...state.workspace,
+					schemas: [
+						state.workspace.schemas.filter((n) => n.name !== data),
+					],
+				},
+			}
+		}
+
 		default:
 			return {}
 	}
@@ -199,6 +363,19 @@ const useStore = create<RFState>((set, get) => ({
 	edges: [],
 	builtInNodes: [],
 	customNodes: [],
+	activeScene: 'untitled',
+	workspace: {
+		name: null,
+		scenes: {
+			default: {
+				name: 'default',
+				nodes: initialElements,
+				edges: [],
+				viewport: { x: 0, y: 0, zoom: 1 },
+			},
+		},
+		schemas: [],
+	},
 	reset: () => {
 		set({
 			nodes: [
@@ -217,6 +394,18 @@ const useStore = create<RFState>((set, get) => ({
 					},
 				},
 			],
+			workspace: {
+				name: null,
+				scenes: {
+					default: {
+						name: 'untitled',
+						nodes: initialElements,
+						edges: [],
+						viewport: { x: 0, y: 0, zoom: 1 },
+					},
+				},
+				schemas: [],
+			},
 		})
 	},
 

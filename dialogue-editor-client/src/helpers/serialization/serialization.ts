@@ -2,10 +2,10 @@
 // serialize lite versions to be loaded by the game engines
 
 import { Edge, Node, ReactFlowJsonObject } from 'reactflow'
-import { IReactFlow } from '../contexts/FlowContext'
-import { BasicNode } from './nodes/BasicNode'
-import DataEdge from './edges/DataEdge'
-import { Field } from './types'
+import { IReactFlow } from '../../contexts/FlowContext'
+import { BasicNode } from '../nodes/BasicNode'
+import DataEdge from '../edges/DataEdge'
+import { Field, Workspace } from '../types'
 
 export interface ISceneData extends ReactFlowJsonObject {
 	scenes?: string[]
@@ -102,6 +102,22 @@ export function SaveScene(scene: ReactFlowJsonObject) {
 	return JSON.stringify(scene, (k, v) =>
 		typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
 	)
+}
+
+export function SaveWorkspace(workspace: Workspace) {
+	return JSON.stringify(workspace, (k, v) =>
+		typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
+	)
+}
+
+export function LoadWorkspace(workspace: string) {
+	const data: Workspace = JSON.parse(workspace, (k, v) => {
+		const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
+
+		return matches ? Symbol.for(matches[1]) : v
+	})
+
+	return data
 }
 
 export function SerializeScene(scene: ReactFlowJsonObject) {

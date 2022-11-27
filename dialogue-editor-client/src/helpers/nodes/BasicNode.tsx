@@ -19,7 +19,7 @@ import { NumberField } from '../FieldComponents/NumberField'
 import useStore, { RFState, types } from '../../store/store'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { NodeHeader } from './styles'
-import { SerializeNode } from '../serialization'
+import { SerializeNode } from '../serialization/serialization'
 
 export class BasicNode {
 	id: string
@@ -71,7 +71,7 @@ export class BasicNode {
 			color: this.color,
 			name: this.name,
 			fields: this.fields,
-			type: 'baase',
+			type: 'base',
 		}
 	}
 

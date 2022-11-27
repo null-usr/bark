@@ -11,10 +11,13 @@ import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 import initialElements from '../../../helpers/initial-elements'
 import {
 	LoadScene,
+	LoadWorkspace,
 	SaveScene,
+	SaveWorkspace,
 	SerializeScene,
-} from '../../../helpers/serialization'
+} from '../../../helpers/serialization/serialization'
 import useStore, { RFState, types } from '../../../store/store'
+import { Workspace } from '../../../helpers/types'
 
 // create an input which we then call click upon
 function buildFileSelector() {
@@ -27,7 +30,8 @@ function buildFileSelector() {
 function Toolbar() {
 	const { setViewport, fitView } = useReactFlow()
 	const reactFlowInstance = useReactFlow()
-	const { nodes, setNodes, setEdges, edges } = useStore()
+	const { nodes, setNodes, setEdges, edges, workspace, activeScene } =
+		useStore()
 
 	const reset = useStore((state) => state.reset)
 	const dispatch = useStore((store: RFState) => store.dispatch)
@@ -36,12 +40,11 @@ function Toolbar() {
 
 	const handleFileRead = (e: any) => {
 		const content = fileReader.result
-		const flow: ReactFlowJsonObject | null = LoadScene(content as string)
 
-		if (flow) {
-			setEdges(flow.edges)
-			setNodes(flow.nodes)
-			setViewport(flow.viewport)
+		const data: Workspace | null = LoadWorkspace(content as string)
+
+		if (data) {
+			dispatch({ type: types.loadWorkspace, data })
 		}
 	}
 
@@ -54,20 +57,24 @@ function Toolbar() {
 		fileReader.readAsText((e.target as HTMLInputElement).files![0])
 	}
 
-	const onSave = useCallback(() => {
-		const flow = reactFlowInstance.toObject()
-
-		const out = SaveScene(flow)
+	const onSave = () => {
+		// const flow = reactFlowInstance.toObject()
+		// const out = SaveScene(flow)
+		workspace.scenes[activeScene] = {
+			name: activeScene,
+			...reactFlowInstance.toObject(),
+		}
+		const out = SaveWorkspace(workspace)
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
 		const link = document.createElement('a')
 		link.href = href
-		link.download = 'file.json'
+		link.download = `${workspace.name ? workspace.name : 'file'}.json`
 		document.body.appendChild(link)
 		link.click()
 		document.body.removeChild(link)
-	}, [reactFlowInstance])
+	}
 
 	const onExport = () => {
 		const out = SerializeScene(reactFlowInstance.toObject())
