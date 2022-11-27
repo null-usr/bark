@@ -39,9 +39,9 @@ import useStore, { RFState, types } from '../../../../store/store'
 import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
 import EdgeDetail from '../../detail/EdgeDetail'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
-import { encodeSchema } from '../../../../helpers/encodeSchema'
-import SaveNodeGroupForm from '../../../../helpers/SaveNodeGroupForm'
-import { decodeSchema } from '../../../../helpers/decodeSchema'
+import { encodeSchema } from '../../../../helpers/serialization/encodeSchema'
+import SaveNodeGroupForm from '../../../../helpers/serialization/SaveNodeGroupForm'
+import { decodeSchema } from '../../../../helpers/serialization/decodeSchema'
 import { Schema } from '../../../../helpers/types'
 
 // styles for the modal
@@ -63,11 +63,18 @@ const nodeCustomizer: React.FC<{ schemaName?: string | null }> = ({
 	let initialNodes: Node<any>[] = []
 	let initialEdges: Edge<any>[] = []
 	let color
+	let displayName = null
 	if (schemaName) {
+		displayName = schemaName.replace('@workspace/', '')
 		// to deal with name overlap, we'll prepend the workspace custom nodes
 		// with @workspaceName/nodename
 		const custom = useStore((state: RFState) => state.customNodes)
-		const s = custom.filter((n) => n.name === schemaName)[0]
+		const { workspace } = useStore()
+		const workspaceNodes = workspace.schemas
+
+		const search = [...custom, ...workspaceNodes]
+
+		const s = search.filter((n) => n.name === schemaName)[0]
 
 		const out = decodeSchema({ x: 0, y: 0 }, s)
 		color = s.color
@@ -254,16 +261,31 @@ const nodeCustomizer: React.FC<{ schemaName?: string | null }> = ({
 			>
 				<button onClick={closeModal}>close</button>
 				<SaveNodeGroupForm
-					name={schemaName}
+					name={displayName}
 					color={color}
-					submit={(name, c) => {
+					saveToEditor={displayName === schemaName}
+					submit={(name, c, saveEditor) => {
 						const data = encodeSchema(name, c, nodes, edges)
-						dispatch({
-							type: types.addCustomNode,
-							data,
-						})
+						if (saveEditor) {
+							dispatch({
+								type: types.addCustomNode,
+								data,
+							})
+						} else {
+							dispatch({
+								type: types.addCustomWorkspaceNode,
+								data: {
+									...data,
+									name: `@workspace/${data.name}`,
+								},
+							})
+						}
 
 						setSGModalOpen(false)
+						dispatch({
+							type: types.customizeSchema,
+							data: { mode: 'active', schema: null },
+						})
 					}}
 				/>
 			</Modal>

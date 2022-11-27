@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 export const PaletteContainer = styled.div`
 	// height: 100%;
+	min-width: 250px;
 	display: flex;
 	flex-direction: column;
 	justify-content: centered;

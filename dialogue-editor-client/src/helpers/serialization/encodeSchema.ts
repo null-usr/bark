@@ -1,5 +1,5 @@
 import { Edge, Node } from 'reactflow'
-import { getOutgoingEdges } from './edgeHelpers'
+import { getOutgoingEdges } from '../edgeHelpers'
 import { SerializeNode } from './serialization'
 
 export const encodeSchema = (
