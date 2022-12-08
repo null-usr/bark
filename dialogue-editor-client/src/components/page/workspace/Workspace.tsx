@@ -4,7 +4,7 @@ import Canvas from './canvas/Canvas'
 import NodeCustomizer from './nodeCustomizer/NodeCustomizer'
 import NodeGroup from './palette/NodeGroup'
 import Palette from './palette/Palette'
-import { WorkspaceContainer } from './styles'
+import { TabLink, WorkspaceContainer } from './styles'
 
 const Workspace: React.FC<{}> = (props) => {
 	const {
@@ -51,13 +51,19 @@ const Workspace: React.FC<{}> = (props) => {
 	return (
 		<WorkspaceContainer>
 			<Palette>
-				<div>
-					<button onClick={() => setPaletteMode('scenes')}>
-						Scenes
-					</button>
-					<button onClick={() => setPaletteMode('nodes')}>
+				<div style={{ marginBottom: 16 }}>
+					<TabLink
+						active={paletteMode === 'nodes'}
+						onClick={() => setPaletteMode('nodes')}
+					>
 						Nodes
-					</button>
+					</TabLink>
+					<TabLink
+						active={paletteMode === 'scenes'}
+						onClick={() => setPaletteMode('scenes')}
+					>
+						Scenes
+					</TabLink>
 				</div>
 				{paletteMode === 'nodes' && (
 					<>
@@ -76,6 +82,7 @@ const Workspace: React.FC<{}> = (props) => {
 				{paletteMode === 'scenes' && (
 					<>
 						<button
+							style={{ marginBottom: 8 }}
 							onClick={() => {
 								dispatch({
 									type: types.createScene,

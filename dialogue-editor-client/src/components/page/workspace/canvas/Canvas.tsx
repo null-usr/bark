@@ -38,6 +38,7 @@ import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import { encodeSchema } from '../../../../helpers/serialization/encodeSchema'
 import SaveNodeGroupForm from '../../../../helpers/serialization/SaveNodeGroupForm'
 import { decodeSchema } from '../../../../helpers/serialization/decodeSchema'
+import { BottomBar } from '../styles'
 
 // styles for the modal
 const customModalStyles = {
@@ -269,7 +270,7 @@ const Canvas: React.FC<{}> = (props) => {
 				/>
 			</Modal>
 			<div
-				style={{ width: '100%', height: '100%' }}
+				style={{ width: '100%', height: '100%', position: 'relative' }}
 				className="reactflow-wrapper"
 				ref={reactFlowWrapper}
 			>
@@ -346,11 +347,13 @@ const Canvas: React.FC<{}> = (props) => {
 					/>
 				</ReactFlow>
 			</div>
-			{showSGButton && (
-				<AddButton onClick={() => setSGModalOpen(true)}>
-					Save Group
-				</AddButton>
-			)}
+			<BottomBar>
+				{showSGButton && (
+					<button onClick={() => setSGModalOpen(true)}>
+						Save Group
+					</button>
+				)}
+			</BottomBar>
 			{nodeID && (
 				<BasicNodeDetail
 					isOpen

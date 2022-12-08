@@ -24,6 +24,7 @@ const NodeGroup: React.FC<{
 							nodes={node.nodes}
 							edges={node.edges}
 							modable={modable}
+							color={node.color}
 						/>
 					)
 				})}
