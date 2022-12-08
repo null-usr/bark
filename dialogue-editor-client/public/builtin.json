@@ -1,7 +1,8 @@
 {
 	"nodes": [{
 			"name": "input",
-			"type": "input"
+			"type": "input",
+			"color": "yellow"
 		},
 		{
 			"name": "default",
@@ -75,8 +76,7 @@
 					"position": [550, 150]
 				}
 			],
-			"edges": [
-				{
+			"edges": [{
 					"handle": "Yes",
 					"from": 0,
 					"to": 1

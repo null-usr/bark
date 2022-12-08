@@ -8,6 +8,7 @@ const PaletteItem: React.FC<{
 	fields?: any[]
 	nodes?: any[]
 	edges?: any[]
+	color?: string
 	modable?: boolean
 }> = ({
 	className,
@@ -16,6 +17,7 @@ const PaletteItem: React.FC<{
 	fields,
 	nodes,
 	edges,
+	color = 'white',
 	modable = false,
 	...props
 }) => {
@@ -37,6 +39,7 @@ const PaletteItem: React.FC<{
 
 	return (
 		<div
+			style={{ background: color || 'white' }}
 			draggable="true"
 			className="node react-flow__node-default"
 			onDragStart={(event) => onDragStart(event)}

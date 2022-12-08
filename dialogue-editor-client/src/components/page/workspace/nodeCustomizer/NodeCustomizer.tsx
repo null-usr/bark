@@ -43,6 +43,7 @@ import { encodeSchema } from '../../../../helpers/serialization/encodeSchema'
 import SaveNodeGroupForm from '../../../../helpers/serialization/SaveNodeGroupForm'
 import { decodeSchema } from '../../../../helpers/serialization/decodeSchema'
 import { Schema } from '../../../../helpers/types'
+import { BottomBar } from '../styles'
 
 // styles for the modal
 const customModalStyles = {
@@ -354,17 +355,19 @@ const nodeCustomizer: React.FC<{ schemaName?: string | null }> = ({
 					/>
 				</ReactFlow>
 			</div>
-			<AddButton onClick={() => setSGModalOpen(true)}>Save</AddButton>
-			<AddButton
-				onClick={() => {
-					dispatch({
-						type: types.customizeSchema,
-						data: { mode: '', schema: null },
-					})
-				}}
-			>
-				Exit
-			</AddButton>
+			<BottomBar>
+				<button onClick={() => setSGModalOpen(true)}>Save</button>
+				<button
+					onClick={() => {
+						dispatch({
+							type: types.customizeSchema,
+							data: { mode: '', schema: null },
+						})
+					}}
+				>
+					Exit
+				</button>
+			</BottomBar>
 		</CanvasContainer>
 	)
 }
