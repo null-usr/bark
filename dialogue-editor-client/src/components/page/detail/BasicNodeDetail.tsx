@@ -168,7 +168,12 @@ const Detail: React.FC<{
 							)
 						// TODO: proper implementation
 						case 'text':
-							return <textarea />
+							return (
+								<>
+									{field.key}:
+									<textarea />
+								</>
+							)
 						case 'bool':
 							return (
 								<BooleanField

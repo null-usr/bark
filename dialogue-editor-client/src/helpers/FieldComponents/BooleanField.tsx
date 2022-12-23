@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FieldContainer } from './styles'
 
 export const BooleanField: React.FC<{
@@ -8,19 +8,26 @@ export const BooleanField: React.FC<{
 	updateField(index: number, k: string, v: any): void
 	del?(k: string): void
 }> = ({ k, v, index, updateField, del }) => {
+	const [key, setKey] = useState(k)
+	const [value, setValue] = useState(v)
 	return (
 		<FieldContainer>
 			<input
 				type="text"
-				value={k}
-				onChange={(e) => updateField(index, e.target.value, v)}
+				value={key}
+				onChange={(e) => setKey(e.target.value)}
 			/>
 			:
 			<input
 				type="checkbox"
-				checked={v}
-				onChange={(e) => updateField(index, k, e.target.checked)}
+				checked={value}
+				onChange={(e) => setValue(e.target.checked)}
 			/>
+			{(k !== key || v !== value) && (
+				<button onClick={() => updateField(index, key, value)}>
+					Save
+				</button>
+			)}
 			<button onClick={del ? () => del(k) : undefined}>Delete</button>
 		</FieldContainer>
 	)
