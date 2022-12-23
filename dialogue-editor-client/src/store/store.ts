@@ -43,6 +43,7 @@ export const types = {
 	renameScene: 'SCENE_RENAME',
 	changeScene: 'SCENE_CHANGE',
 
+	createWorkspace: 'WORKSPACE_CREATE',
 	loadWorkspace: 'WORKSPACE_LOAD',
 	renameWorkspace: 'WORKSPACE_RENAME',
 	addCustomWorkspaceNode: 'WORKSPACE_ADD_SCHEMA',
@@ -196,7 +197,7 @@ const reducer = (
 			}
 		}
 
-		// WORKSPACE/SCENE =================================================
+		// SCENE =================================================
 
 		case types.createScene: {
 			const { scenes } = state.workspace
@@ -293,6 +294,43 @@ const reducer = (
 					...state.workspace,
 					scenes,
 				},
+			}
+		}
+
+		// WORKSPACE ===================================================
+
+		case types.createWorkspace: {
+			return {
+				nodes: [
+					{
+						id: 'root',
+						type: 'root',
+						selectable: true,
+						position: { x: 100, y: 100 },
+						sourcePosition: Position.Left,
+						targetPosition: Position.Right,
+						data: {
+							label: 'ROOT',
+							sources: [],
+							targets: [],
+							id: 'root,',
+						},
+					},
+				],
+				workspace: {
+					name: null,
+					scenes: {
+						default: {
+							name: data.workspaceName,
+							nodes: initialElements,
+							edges: [],
+							viewport: { x: 0, y: 0, zoom: 1 },
+						},
+					},
+					schemas: [],
+				},
+				edges: [],
+				activeScene: 'untitled',
 			}
 		}
 

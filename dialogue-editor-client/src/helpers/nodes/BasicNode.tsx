@@ -196,8 +196,8 @@ export default ({
 	}
 
 	const updateField = (index: number, k: string, v: string) => {
-		const c = fields.filter((f) => f.key === k)
-		if (c.length > 1) {
+		const c = data.fields.filter((f) => f.key === k)
+		if (c.length > 0) {
 			console.log('duplicate key values')
 			return
 		}
@@ -292,13 +292,14 @@ export default ({
 					</button>
 				</ButtonRow>
 				<ButtonRow>
-					<button onClick={() => addField('string')}>Text</button>
+					<button onClick={() => addField('string')}>String</button>
+					<button onClick={() => addField('text')}>Text</button>
 					<button onClick={() => addField('bool')}>Boolean</button>
 					<button onClick={() => addField('number')}>Number</button>
 					<button onClick={() => addField('data')}>data</button>
 				</ButtonRow>
 				<div className="nodrag">
-					{data.fields.map((field, index) => {
+					{fields.map((field, index) => {
 						switch (field.type) {
 							case 'string':
 								return (
