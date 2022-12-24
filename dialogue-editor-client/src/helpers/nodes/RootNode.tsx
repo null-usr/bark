@@ -100,7 +100,7 @@ export default ({
 			const edges = reactFlowInstance.getEdges().filter((element) => {
 				return (
 					element.target !== data.id ||
-					element.targetHandle === data.targets.at(index)
+					element.targetHandle === data.targets[index]
 				)
 			})
 			if (edges) {
@@ -114,7 +114,7 @@ export default ({
 			const edges = reactFlowInstance.getEdges().filter((element) => {
 				return (
 					element.source !== data.id ||
-					element.sourceHandle !== data.sources.at(index)
+					element.sourceHandle !== data.sources[index]
 				)
 			})
 			if (edges) {

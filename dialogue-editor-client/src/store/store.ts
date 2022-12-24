@@ -43,6 +43,7 @@ export const types = {
 	renameScene: 'SCENE_RENAME',
 	changeScene: 'SCENE_CHANGE',
 
+	createWorkspace: 'WORKSPACE_CREATE',
 	loadWorkspace: 'WORKSPACE_LOAD',
 	renameWorkspace: 'WORKSPACE_RENAME',
 	addCustomWorkspaceNode: 'WORKSPACE_ADD_SCHEMA',
@@ -100,7 +101,7 @@ const reducer = (
 		case types.setNode:
 			return { nodeID: data }
 		case types.addNode:
-			return { nodeID: data }
+			return { nodes: state.nodes.concat(data) }
 		// data is ID and new data
 		case types.editNode: {
 			// it's important that you create a new object here
@@ -121,6 +122,10 @@ const reducer = (
 		case types.setNodes:
 			return { nodes: data }
 
+		case types.addEdge: {
+			return { edges: state.edges.concat(data) }
+		}
+   
 		case types.editEdge: {
 			const newEdges = state.edges.map((edge) => {
 				if (edge.id === data.edgeID) {
@@ -196,7 +201,8 @@ const reducer = (
 			}
 		}
 
-		// WORKSPACE/SCENE =================================================
+		// SCENE =================================================
+
 
 		case types.createScene: {
 			const { scenes } = state.workspace
@@ -293,6 +299,43 @@ const reducer = (
 					...state.workspace,
 					scenes,
 				},
+			}
+		}
+
+		// WORKSPACE ===================================================
+
+		case types.createWorkspace: {
+			return {
+				nodes: [
+					{
+						id: 'root',
+						type: 'root',
+						selectable: true,
+						position: { x: 100, y: 100 },
+						sourcePosition: Position.Left,
+						targetPosition: Position.Right,
+						data: {
+							label: 'ROOT',
+							sources: [],
+							targets: [],
+							id: 'root,',
+						},
+					},
+				],
+				workspace: {
+					name: null,
+					scenes: {
+						default: {
+							name: data.workspaceName,
+							nodes: initialElements,
+							edges: [],
+							viewport: { x: 0, y: 0, zoom: 1 },
+						},
+					},
+					schemas: [],
+				},
+				edges: [],
+				activeScene: 'untitled',
 			}
 		}
 

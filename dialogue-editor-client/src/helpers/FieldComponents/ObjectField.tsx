@@ -21,6 +21,7 @@ export const ObjectField: React.FC<{
 	const { edges } = useStore()
 	const [yOffset, setYOffset] = useState(0)
 	const [handleID, setHandleID] = useState('')
+	const [value, setValue] = useState(k)
 
 	const ref = useRef(null)
 
@@ -40,11 +41,14 @@ export const ObjectField: React.FC<{
 			<button onClick={del ? () => del(k) : undefined}>Delete</button>
 			<input
 				type="text"
-				value={v}
+				value={value}
 				onChange={(e) => {
-					update(index, e.target.value)
+					setValue(e.target.value)
 				}}
 			/>
+			{value !== k && (
+				<button onClick={() => update(index, value)}>Save</button>
+			)}
 			<Handle
 				key={k}
 				type="source"

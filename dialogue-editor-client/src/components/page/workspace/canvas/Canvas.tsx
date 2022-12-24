@@ -72,6 +72,8 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 
+	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
+
 	const reactFlowInstance = useReactFlow()
 
 	// call your hook here
@@ -294,8 +296,12 @@ const Canvas: React.FC<{}> = (props) => {
 					// }}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
-					onNodeDragStart={(e, n, nds) => {}}
-					onNodeDragStop={(e, n, nds) => {}}
+					// drag currently doesn't do the callback when a group is dragged
+					// onNodeDragStart={(e, n, nds) => {}}
+					// onNodeDragStop={(e, n, nds) => {
+					// 	console.log(nds)
+					// 	console.log(hoveredEdge)
+					// }}
 					// onConnect={onConnect}
 					onConnect={onCustomConnect}
 					onConnectStart={onConnectStart}
@@ -308,12 +314,16 @@ const Canvas: React.FC<{}> = (props) => {
 					snapToGrid
 					snapGrid={[15, 15]}
 					style={{ height: '100%', width: '100%', zIndex: 0 }}
-					edgeUpdaterRadius={10}
+					edgeUpdaterRadius={10} // maybe increase when dragging
 					elevateEdgesOnSelect
 					fitView
 					// onEdgeContextMenu={}
-					// onEdgeMouseEnter={}
-					// onEdgeMouseLeave={}
+					onEdgeMouseEnter={(event, edge) => {
+						setHoveredEdge(edge)
+					}}
+					onEdgeMouseLeave={(event, edge) => {
+						setHoveredEdge(null)
+					}}
 				>
 					<MiniMap
 						nodeStrokeColor={(n) => {
