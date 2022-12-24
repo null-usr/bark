@@ -299,7 +299,7 @@ export default ({
 					<button onClick={() => addField('data')}>data</button>
 				</ButtonRow>
 				<div className="nodrag">
-					{fields.map((field, index) => {
+					{data.fields.map((field, index) => {
 						switch (field.type) {
 							case 'string':
 								return (

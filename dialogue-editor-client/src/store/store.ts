@@ -101,7 +101,7 @@ const reducer = (
 		case types.setNode:
 			return { nodeID: data }
 		case types.addNode:
-			return { nodeID: data }
+			return { nodes: state.nodes.concat(data) }
 		// data is ID and new data
 		case types.editNode: {
 			// it's important that you create a new object here
@@ -121,6 +121,10 @@ const reducer = (
 		}
 		case types.setNodes:
 			return { nodes: data }
+
+		case types.addEdge: {
+			return { edges: state.edges.concat(data) }
+		}
 
 		case types.editEdge: {
 			const newEdges = state.edges.map((edge) => {
