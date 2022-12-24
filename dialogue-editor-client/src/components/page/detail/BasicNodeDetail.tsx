@@ -7,15 +7,18 @@ import React, {
 import {
 	Edge,
 	Node,
+	Position,
 	useNodesState,
 	useReactFlow,
 	useUpdateNodeInternals,
 } from 'reactflow'
+import { v4 as uuid } from 'uuid'
 import { FlowContext } from '../../../contexts/FlowContext'
 import {
 	getIncomingEdges,
 	getOutgoingEdges,
 } from '../../../helpers/edgeHelpers'
+import DataEdge from '../../../helpers/edges/DataEdge'
 import { BooleanField } from '../../../helpers/FieldComponents/BooleanField'
 import { NumberField } from '../../../helpers/FieldComponents/NumberField'
 import { StringField } from '../../../helpers/FieldComponents/StringField'
@@ -54,6 +57,7 @@ const Detail: React.FC<{
 	const [color, setColor] = useState(editNode.data.color)
 	const [fields, setFields] = useState<Field[]>(editNode.data.fields || [])
 	const [count, setCount] = useState(fields.length)
+	const [lockID, setLockID] = useState(true)
 
 	const addField = (type: string) => {
 		setFields([
@@ -109,7 +113,7 @@ const Detail: React.FC<{
 				isOpen={isOpen}
 				onClick={() => {
 					const nodeData = {
-						id,
+						id: lockID ? editNode.id : id,
 						name,
 						color,
 						fields,
@@ -132,7 +136,16 @@ const Detail: React.FC<{
 			/>
 			<Container>
 				<input value={name} onChange={(e) => setName(e.target.value)} />
-				<input value={id} onChange={(e) => setID(e.target.value)} />
+				<div>
+					<input
+						disabled={lockID}
+						value={id}
+						onChange={(e) => setID(e.target.value)}
+					/>
+					<button onClick={() => setLockID(!lockID)}>
+						toggle ID lock
+					</button>
+				</div>
 				<input
 					type="color"
 					defaultValue={color}
@@ -212,7 +225,32 @@ const Detail: React.FC<{
 									/>
 									:
 									{/* TODO: this may have multiple target nodes, think of a UI/UX for this */}
-									<button>Create</button>
+									<button
+										onClick={() => {
+											const newNode = new BasicNode(
+												'basic',
+												editNode.position.x + 300,
+												editNode.position.y
+											)
+											const newEdge: Edge = new DataEdge(
+												editNode.id,
+												newNode.id,
+												field.key,
+												null
+											)
+
+											dispatch({
+												type: types.addNode,
+												data: newNode,
+											})
+											dispatch({
+												type: types.addEdge,
+												data: newEdge,
+											})
+										}}
+									>
+										Create
+									</button>
 									<button
 										disabled={
 											edgesOut.filter(
@@ -249,7 +287,8 @@ const Detail: React.FC<{
 					}}
 				/> */}
 				{/* {dialogueNode.dialogue} */}
-				Incoming
+				Incoming:
+				<br />
 				{edgesIn.map((e) => {
 					return (
 						<button
@@ -264,7 +303,8 @@ const Detail: React.FC<{
 						</button>
 					)
 				})}
-				Outgoing
+				Outgoing:
+				<br />
 				{naturalOutgoingEdges.map((e) => {
 					return (
 						<button
@@ -279,6 +319,26 @@ const Detail: React.FC<{
 						</button>
 					)
 				})}
+				<button
+					onClick={() => {
+						const newNode = new BasicNode(
+							'basic',
+							editNode.position.x + 300,
+							editNode.position.y
+						)
+						const newEdge: Edge = new DataEdge(
+							editNode.id,
+							newNode.id,
+							null,
+							null
+						)
+
+						dispatch({ type: types.addNode, data: newNode })
+						dispatch({ type: types.addEdge, data: newEdge })
+					}}
+				>
+					Add Outgoing
+				</button>
 			</Container>
 		</>
 	)
