@@ -125,7 +125,7 @@ const reducer = (
 		case types.addEdge: {
 			return { edges: state.edges.concat(data) }
 		}
-
+   
 		case types.editEdge: {
 			const newEdges = state.edges.map((edge) => {
 				if (edge.id === data.edgeID) {
@@ -202,6 +202,7 @@ const reducer = (
 		}
 
 		// SCENE =================================================
+
 
 		case types.createScene: {
 			const { scenes } = state.workspace
