@@ -1,5 +1,7 @@
-import React from 'react'
-import useStore, { RFState, types } from '../../../../store/store'
+import React, { useState } from 'react'
+import useStore, { RFState, types } from '@/store/store'
+import DeleteNode from '@/components/forms/node/DeleteNode'
+import Modal from '@/components/modal/Modal'
 
 const PaletteItem: React.FC<{
 	className: string
@@ -23,6 +25,7 @@ const PaletteItem: React.FC<{
 }) => {
 	const dispatch = useStore((store: RFState) => store.dispatch)
 	const displayName = name.replace('@workspace/', '')
+	const [formMode, setFormMode] = useState('')
 
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		const data = JSON.stringify({
@@ -38,27 +41,12 @@ const PaletteItem: React.FC<{
 	}
 
 	return (
-		<div
-			style={{ background: color || 'white' }}
-			draggable="true"
-			className="node react-flow__node-default"
-			onDragStart={(event) => onDragStart(event)}
-		>
-			{displayName}
-			{modable && (
-				<>
-					<button
-						onClick={() => {
-							dispatch({
-								type: types.customizeSchema,
-								data: { mode: 'customize', schema: name },
-							})
-						}}
-					>
-						E
-					</button>
-					<button
-						onClick={() =>
+		<>
+			{formMode === 'delete' && (
+				<Modal open withDimmer close={() => setFormMode('')}>
+					<DeleteNode
+						name={name}
+						submit={() => {
 							dispatch({
 								type:
 									displayName === name
@@ -66,13 +54,35 @@ const PaletteItem: React.FC<{
 										: types.deleteCustomWorkspaceNode,
 								data: name,
 							})
-						}
-					>
-						X
-					</button>
-				</>
+						}}
+						cancel={() => setFormMode('')}
+					/>
+				</Modal>
 			)}
-		</div>
+			<div
+				style={{ background: color || 'white' }}
+				draggable="true"
+				className="node react-flow__node-default"
+				onDragStart={(event) => onDragStart(event)}
+			>
+				{displayName}
+				{modable && (
+					<>
+						<button
+							onClick={() => {
+								dispatch({
+									type: types.customizeSchema,
+									data: { mode: 'customize', schema: name },
+								})
+							}}
+						>
+							E
+						</button>
+						<button onClick={() => setFormMode('delete')}>X</button>
+					</>
+				)}
+			</div>
+		</>
 	)
 }
 

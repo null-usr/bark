@@ -13,7 +13,7 @@ import {
 	Position,
 	useEdges,
 } from 'reactflow'
-import create from 'zustand'
+import { create } from 'zustand'
 import initialElements from '../helpers/initial-elements'
 import { Schema, Workspace } from '../helpers/types'
 
@@ -62,7 +62,7 @@ export type RFState = {
 	builtInNodes: Schema[]
 	customNodes: Schema[]
 
-	activeScene: string
+	activeScene: string | null
 	workspace: Workspace
 
 	// Reset
@@ -125,7 +125,7 @@ const reducer = (
 		case types.addEdge: {
 			return { edges: state.edges.concat(data) }
 		}
-   
+
 		case types.editEdge: {
 			const newEdges = state.edges.map((edge) => {
 				if (edge.id === data.edgeID) {
@@ -203,7 +203,6 @@ const reducer = (
 
 		// SCENE =================================================
 
-
 		case types.createScene: {
 			const { scenes } = state.workspace
 			scenes[data] = {
@@ -226,6 +225,17 @@ const reducer = (
 				],
 				edges: [],
 				viewport: { x: 0, y: 0, zoom: 100 },
+			}
+
+			// if we're creating from a null scene we need to
+			// encode the current one
+			if (state.activeScene === null) {
+				scenes.default = {
+					name: 'default',
+					nodes: state.nodes,
+					edges: state.edges,
+					viewport: { x: 0, y: 0, zoom: 100 },
+				}
 			}
 			return {
 				workspace: {
@@ -285,10 +295,13 @@ const reducer = (
 			const { scenes } = state.workspace
 			const newScene = state.workspace.scenes[data]
 
-			scenes[state.activeScene] = {
-				...state.workspace.scenes[state.activeScene],
-				nodes: state.nodes,
-				edges: state.edges,
+			// save our current scene
+			if (state.activeScene !== null) {
+				scenes[state.activeScene] = {
+					...state.workspace.scenes[state.activeScene],
+					nodes: state.nodes,
+					edges: state.edges,
+				}
 			}
 
 			return {
@@ -323,7 +336,7 @@ const reducer = (
 					},
 				],
 				workspace: {
-					name: null,
+					name: data.workspaceName,
 					scenes: {
 						default: {
 							name: data.workspaceName,
@@ -341,18 +354,27 @@ const reducer = (
 
 		case types.loadWorkspace: {
 			let hasScenes = false
-			let sceneName = ''
-			if (data.scenes) {
-				;[sceneName] = Object.keys(data.scenes)
-				if (data.scenes[sceneName]) {
+			if (data.scenes && data.activeScene) {
+				if (data.scenes[data.activeScene]) {
 					hasScenes = true
 				}
 			}
 			return {
-				workspace: data,
-				nodes: hasScenes ? data.scenes[sceneName].nodes : [],
-				edges: hasScenes ? data.scenes[sceneName].edges : [],
-				activeScene: hasScenes ? sceneName : 'untitled',
+				workspace: data.workspace,
+				// eslint-disable-next-line no-nested-ternary
+				nodes: hasScenes
+					? data.scenes[data.activeScene].nodes
+					: data.nodes
+					? data.nodes
+					: [],
+				// eslint-disable-next-line no-nested-ternary
+				edges: hasScenes
+					? data.scenes[data.activeScene].edges
+					: data.edges
+					? data.edges
+					: [],
+				viewport: data.viewport ? data.viewport : undefined,
+				activeScene: data.activeScene || null,
 			}
 		}
 
@@ -383,9 +405,9 @@ const reducer = (
 			return {
 				workspace: {
 					...state.workspace,
-					schemas: [
-						state.workspace.schemas.filter((n) => n.name !== data),
-					],
+					schemas: state.workspace.schemas.filter(
+						(n) => n.name !== data
+					),
 				},
 			}
 		}
@@ -406,17 +428,10 @@ const useStore = create<RFState>((set, get) => ({
 	edges: [],
 	builtInNodes: [],
 	customNodes: [],
-	activeScene: 'untitled',
+	activeScene: null,
 	workspace: {
 		name: null,
-		scenes: {
-			default: {
-				name: 'default',
-				nodes: initialElements,
-				edges: [],
-				viewport: { x: 0, y: 0, zoom: 1 },
-			},
-		},
+		scenes: {},
 		schemas: [],
 	},
 	reset: () => {
@@ -439,14 +454,7 @@ const useStore = create<RFState>((set, get) => ({
 			],
 			workspace: {
 				name: null,
-				scenes: {
-					default: {
-						name: 'untitled',
-						nodes: initialElements,
-						edges: [],
-						viewport: { x: 0, y: 0, zoom: 1 },
-					},
-				},
+				scenes: {},
 				schemas: [],
 			},
 		})

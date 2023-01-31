@@ -1,34 +1,17 @@
-import React, {
-	MouseEventHandler,
-	useContext,
-	useEffect,
-	useState,
-} from 'react'
-import {
-	Edge,
-	Node,
-	Position,
-	useNodesState,
-	useReactFlow,
-	useUpdateNodeInternals,
-} from 'reactflow'
-import { v4 as uuid } from 'uuid'
-import { FlowContext } from '../../../contexts/FlowContext'
-import {
-	getIncomingEdges,
-	getOutgoingEdges,
-} from '../../../helpers/edgeHelpers'
-import DataEdge from '../../../helpers/edges/DataEdge'
-import { BooleanField } from '../../../helpers/FieldComponents/BooleanField'
-import { NumberField } from '../../../helpers/FieldComponents/NumberField'
-import { StringField } from '../../../helpers/FieldComponents/StringField'
-import { getCount } from '../../../helpers/getCount'
-import { BasicNode } from '../../../helpers/nodes/BasicNode'
-import { DialogueNode } from '../../../helpers/nodes/DialogueNode'
-import { ButtonRow } from '../../../helpers/styles'
-import { Field } from '../../../helpers/types'
-import useStore, { types } from '../../../store/store'
-import Dimmer from '../../modal/Dimmer'
+import React, { useEffect, useState } from 'react'
+import { Edge, useReactFlow } from 'reactflow'
+import Modal from '@/components/modal/Modal'
+import { getIncomingEdges, getOutgoingEdges } from '@/helpers/edgeHelpers'
+import DataEdge from '@/helpers/edges/DataEdge'
+import { BooleanField } from '@/helpers/FieldComponents/BooleanField'
+import { NumberField } from '@/helpers/FieldComponents/NumberField'
+import { StringField } from '@/helpers/FieldComponents/StringField'
+import { getCount } from '@/helpers/getCount'
+import { BasicNode } from '@/helpers/nodes/BasicNode'
+import { DialogueNode } from '@/helpers/nodes/DialogueNode'
+import { ButtonRow } from '@/helpers/styles'
+import { Field } from '@/helpers/types'
+import useStore, { types } from '@/store/store'
 import { Container } from './styles'
 
 const Detail: React.FC<{
@@ -108,32 +91,32 @@ const Detail: React.FC<{
 	}, [nodeID])
 
 	return (
-		<>
-			<Dimmer
-				isOpen={isOpen}
-				onClick={() => {
-					const nodeData = {
-						id: lockID ? editNode.id : id,
-						name,
-						color,
-						fields,
-					}
+		<Modal
+			open
+			withDimmer
+			close={() => {
+				const nodeData = {
+					id: lockID ? editNode.id : id,
+					name,
+					color,
+					fields,
+				}
 
-					const idCheck = getCount(nodes, 'id', id)
+				const idCheck = getCount(nodes, 'id', id)
 
-					if (idCheck === 1 && id !== nodeID) {
-						/* vendors contains the element we're looking for */
-						console.log('node ID conflict')
-					} else {
-						dispatch({
-							type: types.editNode,
-							data: { nodeID, nodeData },
-						})
-						// updateDialogueData(nodeID, dialogue)
-						close()
-					}
-				}}
-			/>
+				if (idCheck === 1 && id !== nodeID) {
+					/* vendors contains the element we're looking for */
+					console.log('node ID conflict')
+				} else {
+					dispatch({
+						type: types.editNode,
+						data: { nodeID, nodeData },
+					})
+					// updateDialogueData(nodeID, dialogue)
+					close()
+				}
+			}}
+		>
 			<Container>
 				<input value={name} onChange={(e) => setName(e.target.value)} />
 				<div>
@@ -340,7 +323,7 @@ const Detail: React.FC<{
 					Add Outgoing
 				</button>
 			</Container>
-		</>
+		</Modal>
 	)
 }
 

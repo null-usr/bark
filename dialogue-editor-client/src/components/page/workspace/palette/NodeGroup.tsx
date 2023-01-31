@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Schema } from '../../../../helpers/types'
+import { Schema } from '@/helpers/types'
 import PaletteItem from './PaletteItem'
 import { Group } from './styles'
 

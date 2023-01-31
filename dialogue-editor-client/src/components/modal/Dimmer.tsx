@@ -2,11 +2,9 @@ import { MouseEventHandler } from 'react'
 import styled from 'styled-components'
 
 const Dimmer = styled.div<{
-	isOpen: boolean
-	onClick: MouseEventHandler<HTMLElement> | undefined
 	zIndex?: number
 }>`
-	display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+	display: 'block';
 	position: fixed;
 	z-index: ${({ zIndex }) => zIndex || 1000};
 	left: 0;

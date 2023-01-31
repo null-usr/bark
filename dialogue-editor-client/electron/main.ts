@@ -1,5 +1,5 @@
 // Module to control the application lifecycle and the native browser window.
-import { app, BrowserWindow, protocol } from 'electron'
+import { app, BrowserWindow, protocol, Menu, MenuItem } from 'electron'
 import * as path from 'path'
 import * as url from 'url'
 
@@ -22,7 +22,9 @@ function createWindow() {
 				slashes: true,
 		  })
 		: 'http://localhost:3000'
-	win.loadURL(appURL)
+
+	// set the user agent to electron so we can retrieve this on the app side
+	win.loadURL(appURL, { userAgent: 'Electron' })
 
 	// Automatically open Chrome's DevTools in development mode.
 	if (!app.isPackaged) {

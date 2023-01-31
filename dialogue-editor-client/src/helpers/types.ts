@@ -23,7 +23,7 @@ export interface Schema {
 }
 
 export type Scene = {
-	name: string
+	name: string | null
 	nodes: Node<any>[]
 	edges: Edge<any>[]
 	viewport: Viewport

@@ -1,5 +1,6 @@
 {
   "name": "dialogue-editor-client",
+  "productName": "Dialogue Editor",
   "version": "0.1.1",
   "private": true,
   "homepage": "./",
@@ -10,12 +11,12 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.4.0",
-    "@types/node": "^16.11.19",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "@types/styled-components": "^5.1.20",
     "@types/uuid": "^8.3.4",
     "eslint-import-resolver-typescript": "^2.5.0",
+    "formik": "^2.2.9",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-modal": "^3.14.4",
@@ -58,6 +59,7 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^18.11.18",
     "@types/react-modal": "^3.13.1",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",

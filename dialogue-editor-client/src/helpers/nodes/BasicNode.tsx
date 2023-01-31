@@ -11,12 +11,12 @@ import {
 
 import { render } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
+import useStore, { RFState, types } from '@/store/store'
 import { StringField } from '../FieldComponents/StringField'
 import { ButtonRow, Container } from '../styles'
 import { Field } from '../types'
 import { BooleanField } from '../FieldComponents/BooleanField'
 import { NumberField } from '../FieldComponents/NumberField'
-import useStore, { RFState, types } from '../../store/store'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { NodeHeader } from './styles'
 import { SerializeNode } from '../serialization/serialization'
@@ -120,7 +120,7 @@ export default ({
 }: NodeProps<{ name: string; color: string; fields: Field[] }>) => {
 	const [fields, setFields] = useState<Field[]>(data.fields || [])
 	const [count, setCount] = useState(fields.length)
-	const { edges } = useStore()
+	const { edges, workspace } = useStore()
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
 	)
@@ -275,17 +275,28 @@ export default ({
 					>
 						Edit
 					</button>
+					{/* If there is no workspace, save to editor is default */}
 					<button
 						onClick={() =>
-							dispatch({
-								type: types.addCustomNode,
-								data: SerializeNode(
-									data.name,
-									data.color,
-									'base',
-									fields
-								),
-							})
+							workspace.name === null
+								? dispatch({
+										type: types.addCustomNode,
+										data: SerializeNode(
+											data.name,
+											data.color,
+											'base',
+											fields
+										),
+								  })
+								: dispatch({
+										type: types.addCustomWorkspaceNode,
+										data: SerializeNode(
+											`@workspace/${data.name}`,
+											data.color,
+											'base',
+											fields
+										),
+								  })
 						}
 					>
 						Save

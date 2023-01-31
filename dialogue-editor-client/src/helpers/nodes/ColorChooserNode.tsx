@@ -1,7 +1,7 @@
 import React from 'react'
 import { Handle, NodeProps, Position } from 'reactflow'
 
-import useStore from '../../store/store'
+import useStore from '@/store/store'
 
 export type NodeData = {
 	color: string

@@ -1,5 +1,12 @@
 # Getting Started with Create React App
 
+## Build
+
+```
+yarn build:electron
+yarn electron:start SHOULD start both but electronmon doesn't seem like it wants to start so okay lol
+```
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

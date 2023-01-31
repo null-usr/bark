@@ -1,9 +1,8 @@
 import React, { memo, useState } from 'react'
 import { Handle, NodeProps, Position, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
-import Detail from '../../components/page/detail/NodeDetail'
-
-import useStore, { RFState, types } from '../../store/store'
+import useStore, { RFState, types } from '@/store/store'
+import Detail from '@/components/page/detail/NodeDetail'
 
 // this is a temporary class - eventually we'll need events too I assume
 export class DialogueNode {

@@ -5,19 +5,22 @@ import {
 	useNodesState,
 	useReactFlow,
 } from 'reactflow'
-import { FlowContext } from '../../../contexts/FlowContext'
-import { Dropdown } from '../../dropdown/Dropdown'
-import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
-import initialElements from '../../../helpers/initial-elements'
+import { FlowContext } from '@/contexts/FlowContext'
+import { Dropdown } from '@/components/dropdown/Dropdown'
+import initialElements from '@/helpers/initial-elements'
 import {
 	LoadScene,
 	LoadWorkspace,
 	SaveScene,
 	SaveWorkspace,
 	SerializeScene,
-} from '../../../helpers/serialization/serialization'
-import useStore, { RFState, types } from '../../../store/store'
-import { Workspace } from '../../../helpers/types'
+} from '@/helpers/serialization/serialization'
+import useStore, { RFState, types } from '@/store/store'
+import { Workspace } from '@/helpers/types'
+import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
+import Modal from '@/components/modal/Modal'
+import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
+import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 
 // create an input which we then call click upon
 function buildFileSelector() {
@@ -36,12 +39,15 @@ function Toolbar() {
 	const reset = useStore((state) => state.reset)
 	const dispatch = useStore((store: RFState) => store.dispatch)
 
+	const [formMode, setFormMode] = useState('')
+
 	const fileReader = new FileReader()
 
 	const handleFileRead = (e: any) => {
 		const content = fileReader.result
 
-		const data: Workspace | null = LoadWorkspace(content as string)
+		// originally type workspace but it's more like workspace+
+		const data: any | null = LoadWorkspace(content as string)
 
 		if (data) {
 			dispatch({ type: types.loadWorkspace, data })
@@ -60,11 +66,25 @@ function Toolbar() {
 	const onSave = () => {
 		// const flow = reactFlowInstance.toObject()
 		// const out = SaveScene(flow)
-		workspace.scenes[activeScene] = {
-			name: activeScene,
-			...reactFlowInstance.toObject(),
+
+		let currentScene: any = reactFlowInstance.toObject()
+
+		// if our activeScene isn't null, then we can discard current
+		// for the next part
+		if (activeScene !== null) {
+			workspace.scenes[activeScene] = {
+				name: activeScene,
+				...currentScene,
+			}
+			currentScene = {}
 		}
-		const out = SaveWorkspace(workspace)
+		const w = SaveWorkspace(workspace)
+
+		const out = {
+			workspace: w,
+			activeScene,
+			...currentScene,
+		}
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
@@ -90,7 +110,8 @@ function Toolbar() {
 	}
 
 	// load our initial elemnets up
-	const onNew = () => {
+	const onNew = (name: string) => {
+		dispatch({ type: types.createWorkspace, data: { workspaceName: name } })
 		reset()
 		setViewport({ x: 100, y: 100, zoom: 1 })
 		fitView()
@@ -102,31 +123,44 @@ function Toolbar() {
 	}
 
 	return (
-		<HeaderContainer>
-			<LeftButtonGroup>
-				<Dropdown label="File">
-					<button onClick={onNew}>New</button>
-					<button onClick={handleFileSelect}>Open</button>
-					<button onClick={onSave}>Save</button>
-					<button onClick={onExport}>Export</button>
-					<div>File 3</div>
-				</Dropdown>
-				<button
-					onClick={() => {
-						dispatch({
-							type: types.customizeSchema,
-							data: { mode: 'customize', schema: null },
-						})
-					}}
-				>
-					Create Node
-				</button>
-				<button>Help</button>
-			</LeftButtonGroup>
-			<RightButtonGroup>
-				<button>Quit</button>
-			</RightButtonGroup>
-		</HeaderContainer>
+		<>
+			{formMode === 'new' && (
+				<Modal open withDimmer close={() => setFormMode('')}>
+					<CreateWorkspace
+						cancel={() => setFormMode('')}
+						submit={(name) => {
+							onNew(name)
+							setFormMode('')
+						}}
+					/>
+				</Modal>
+			)}
+			{formMode === 'edit' && workspace.name !== null && (
+				<Modal open withDimmer close={() => setFormMode('')}>
+					<EditWorkspace
+						name={workspace.name}
+						submit={(name) => onNew(name)}
+						cancel={() => setFormMode('')}
+					/>
+				</Modal>
+			)}
+			<HeaderContainer>
+				<LeftButtonGroup>
+					<Dropdown label="File">
+						<button onClick={() => setFormMode('new')}>New</button>
+						<button onClick={handleFileSelect}>Open</button>
+						<button onClick={onSave}>Save</button>
+						<button onClick={onExport}>Export</button>
+						<div>File 3</div>
+					</Dropdown>
+					<button>Help</button>
+				</LeftButtonGroup>
+				{/* don't really have anything for this atm */}
+				{/* <RightButtonGroup>
+					<button>Quit</button>
+				</RightButtonGroup> */}
+			</HeaderContainer>
+		</>
 	)
 }
 

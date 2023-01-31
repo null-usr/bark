@@ -6,7 +6,6 @@ import React, {
 	useRef,
 	useState,
 } from 'react'
-import Modal from 'react-modal'
 import ReactFlow, {
 	ReactFlowProvider,
 	addEdge,
@@ -24,34 +23,21 @@ import ReactFlow, {
 	BackgroundVariant,
 } from 'reactflow'
 import { v4 as uuid } from 'uuid'
-import DialogueNodeType, {
-	DialogueNode,
-} from '../../../../helpers/nodes/DialogueNode'
-import { AddButton, CanvasContainer } from './styles'
-import BasicNodeType, { BasicNode } from '../../../../helpers/nodes/BasicNode'
-import DataEdge, { DataEdgeType } from '../../../../helpers/edges/DataEdge'
-import RootNodeType from '../../../../helpers/nodes/RootNode'
-import useStore, { RFState, types } from '../../../../store/store'
-import ColorChooserNode from '../../../../helpers/nodes/ColorChooserNode'
-import EdgeDetail from '../../detail/EdgeDetail'
+import Modal from '@/components/modal/Modal'
+import DialogueNodeType, { DialogueNode } from '@/helpers/nodes/DialogueNode'
+import BasicNodeType, { BasicNode } from '@/helpers/nodes/BasicNode'
+import DataEdge, { DataEdgeType } from '@/helpers/edges/DataEdge'
+import RootNodeType from '@/helpers/nodes/RootNode'
+import useStore, { RFState, types } from '@/store/store'
+import ColorChooserNode from '@/helpers/nodes/ColorChooserNode'
+import { encodeSchema } from '@/helpers/serialization/encodeSchema'
+import SaveNodeGroupForm from '@/helpers/serialization/SaveNodeGroupForm'
+import { decodeSchema } from '@/helpers/serialization/decodeSchema'
+import CreateNode from '@/components/forms/node/EditNode'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
-import { encodeSchema } from '../../../../helpers/serialization/encodeSchema'
-import SaveNodeGroupForm from '../../../../helpers/serialization/SaveNodeGroupForm'
-import { decodeSchema } from '../../../../helpers/serialization/decodeSchema'
+import EdgeDetail from '../../detail/EdgeDetail'
+import { AddButton, CanvasContainer } from './styles'
 import { BottomBar } from '../styles'
-
-// styles for the modal
-const customModalStyles = {
-	content: {
-		top: '50%',
-		left: '50%',
-		right: 'auto',
-		bottom: 'auto',
-		marginRight: '-50%',
-		transform: 'translate(-50%, -50%)',
-		zIndex: 1001,
-	},
-}
 
 const Canvas: React.FC<{}> = (props) => {
 	const {
@@ -63,6 +49,8 @@ const Canvas: React.FC<{}> = (props) => {
 		addNode,
 		setEdges,
 		activeScene,
+		customNodes: custom,
+		workspace,
 	} = useStore()
 	const { setViewport, fitView } = useReactFlow()
 
@@ -81,6 +69,11 @@ const Canvas: React.FC<{}> = (props) => {
 
 	const nodeID = useStore((state: RFState) => state.nodeID)
 	const edgeID = useStore((state: RFState) => state.edgeID)
+
+	const forbiddenList = [
+		...workspace.schemas.map((s) => s.name),
+		...custom.map((s) => s.name),
+	]
 
 	// zustand store
 	const dispatch = useStore((store: RFState) => store.dispatch)
@@ -144,7 +137,10 @@ const Canvas: React.FC<{}> = (props) => {
 	)
 
 	const onConnectStart = useCallback(
-		(event: React.MouseEvent, params: OnConnectStartParams) => {
+		(
+			event: React.MouseEvent<Element, MouseEvent>,
+			params: OnConnectStartParams
+		) => {
 			if (event.button !== 2 && params.handleType === 'source') {
 				setConnectionAttempt(params)
 			}
@@ -154,7 +150,7 @@ const Canvas: React.FC<{}> = (props) => {
 
 	// we've dragged a handle into an empty spot
 	const onConnectEnd = useCallback(
-		(event: MouseEvent) => {
+		(event: React.MouseEvent<Element, MouseEvent>) => {
 			if (!connection.current) {
 				return
 			}
@@ -232,27 +228,20 @@ const Canvas: React.FC<{}> = (props) => {
 		[reactFlowInstance]
 	)
 
-	Modal.setAppElement('#root')
-
 	return (
 		<CanvasContainer>
-			<Modal
-				isOpen={sgModalOpen}
-				// react/jsx-no-bind, JSX props should not use functions
-				onRequestClose={closeModal}
-				style={customModalStyles}
-				contentLabel="Add Dialogue Option"
-			>
-				<button onClick={closeModal}>close</button>
-				<SaveNodeGroupForm
-					submit={(name, color, saveEditor) => {
+			<Modal withDimmer open={sgModalOpen} close={closeModal}>
+				<CreateNode
+					forbidden={forbiddenList}
+					cancel={() => setSGModalOpen(false)}
+					submit={(name, color, saveToEditor) => {
 						const data = encodeSchema(
 							name,
 							color,
 							selectedNodes,
 							edges
 						)
-						if (saveEditor) {
+						if (saveToEditor) {
 							dispatch({
 								type: types.addCustomNode,
 								data,
@@ -270,6 +259,7 @@ const Canvas: React.FC<{}> = (props) => {
 						setSGModalOpen(false)
 					}}
 				/>
+				<button onClick={closeModal}>Cancel</button>
 			</Modal>
 			<div
 				style={{ width: '100%', height: '100%', position: 'relative' }}
@@ -304,7 +294,9 @@ const Canvas: React.FC<{}> = (props) => {
 					// }}
 					// onConnect={onConnect}
 					onConnect={onCustomConnect}
+					// @ts-ignore
 					onConnectStart={onConnectStart}
+					// @ts-ignore
 					onConnectEnd={onConnectEnd}
 					// onInit={onInit}
 					onDragOver={onDragOver}

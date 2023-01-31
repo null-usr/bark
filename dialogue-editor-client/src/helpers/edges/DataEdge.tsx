@@ -20,7 +20,7 @@ import {
 } from 'reactflow'
 
 import '../style.css'
-import useStore, { RFState, types } from '../../store/store'
+import useStore, { RFState, types } from '@/store/store'
 
 const foreignObjectSize = 40
 
