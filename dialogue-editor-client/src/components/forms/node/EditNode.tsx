@@ -17,7 +17,6 @@ const CreateNode: React.FC<{
 			validateOnChange={false}
 			validateOnBlur={false}
 			validate={(values) => {
-				console.log('bump')
 				const errors: any = {}
 
 				if (values.name.length < 1) {
@@ -37,7 +36,7 @@ const CreateNode: React.FC<{
 			}}
 			initialValues={{
 				name: name || '',
-				color: color || '#000',
+				color: color || '#FFFFFF',
 				saveToEditor: saveToEditor || false,
 			}}
 			onSubmit={(values) => {
@@ -47,10 +46,10 @@ const CreateNode: React.FC<{
 			{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 				<Form onSubmit={handleSubmit}>
 					<label htmlFor="name">Name</label>
-					<Field name="name" i />
+					<Field name="name" />
 					{errors.name ? <div>{errors.name}</div> : null}
 					<label htmlFor="color">Color</label>
-					<Field type="color" className="nodrag" />
+					<Field name="color" type="color" className="nodrag" />
 					<label htmlFor="saveToEditor">Save to Editor</label>
 					<Field name="saveToEditor" type="checkbox" />
 					<button type="submit">Save</button>

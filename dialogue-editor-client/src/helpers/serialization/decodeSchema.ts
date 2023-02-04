@@ -1,8 +1,8 @@
 import { Position, XYPosition } from 'reactflow'
 import { v4 as uuid } from 'uuid'
-import DataEdge from '../edges/DataEdge'
-import { BasicNode } from '../nodes/BasicNode'
-import { DialogueNode } from '../nodes/DialogueNode'
+import DataEdge from '@/components/edges/DataEdge'
+import { BasicNode } from '@/components/nodes/BasicNode'
+import { DialogueNode } from '@/components/nodes/DialogueNode'
 
 export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 	const { name, type, fields, color } = paletteItem

@@ -49,7 +49,12 @@ export const encodeSchema = (
 		// look into map, if the to and from both exist, use their
 		// ids & the to node's key for it
 		const from = idMap[e.source]
-		const handle = e.sourceHandle || ''
+		// eslint-disable-next-line no-nested-ternary
+		const handle = e.sourceHandle
+			? e.sourceHandle === e.source
+				? ''
+				: e.sourceHandle
+			: ''
 		const to = idMap[e.target]
 
 		if (to !== undefined && from !== undefined) {

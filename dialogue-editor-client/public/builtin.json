@@ -1,7 +1,7 @@
 {
 	"nodes": [{
-			"name": "input",
-			"type": "input",
+			"name": "source",
+			"type": "source",
 			"color": "yellow"
 		},
 		{

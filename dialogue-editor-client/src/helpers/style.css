@@ -34,17 +34,17 @@
 
 .react-flow__node-root {
 	font-size: 12px;
-	background: #eee;
-	border: 1px solid #555;
+	/* background: #eee; */
+	/* border: 1px solid #555; */
 	border-radius: 5px;
 	text-align: center;
-	padding: 10px;
+	/* padding: 10px; */
 }
 .react-flow__node-dialogue {
 	font-size: 12px;
-	background: #eee;
+	/* background: #eee; */
 	border: 1px solid #555;
-	border-radius: 5px;
+	border-radius: 6px;
 	text-align: center;
 	padding: 10px;
 }
@@ -61,4 +61,49 @@
 	fill: none;
 	stroke: transparent;
 	stroke-width: 28;
+}
+
+.react-flow__node-default,
+.react-flow__node-input,
+.react-flow__node-output {
+	padding: 0px;
+	border-radius: 6px;
+	font-size: 12px;
+	/* color: #222; */
+	text-align: center;
+	border-width: 1px;
+	border-style: solid;
+	width: auto;
+	min-width: 150px;
+	background: none;
+}
+
+/* SELECTIONS */
+/* especially this and nodesselection-rect */
+.react-flow__selection {
+	background-color: #eeeeee80;
+}
+.react-flow__selectionpane {
+	background-color: #eeeeee80;
+}
+.react-flow__nodesselection {
+}
+.react-flow__nodesselection-rect {
+	background-color: #eeeeee80;
+}
+
+.ports {
+	padding: 0px;
+	margin: 0px;
+	width: 10px;
+	position: absolute;
+	top: 6px;
+}
+.port-name {
+	/* position: absolute; */
+	/* top: 3px; */
+	list-style: none;
+	font-size: 10px;
+	color: gray;
+	height: 18px;
 }
