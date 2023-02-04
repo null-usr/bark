@@ -6,6 +6,7 @@ import {
 	OnEdgesChange,
 	OnNodesChange,
 	Position,
+	updateEdge,
 } from 'reactflow'
 import { Schema, Workspace } from '../helpers/types'
 
@@ -20,6 +21,7 @@ export const types = {
 
 	setEdge: 'SET_EDGE',
 	editEdge: 'EDIT_EDGE',
+	editEdgeHandle: 'EDIT_EDGE_HANDLE',
 	addEdge: 'ADD_EDGE',
 	deleteEdge: 'DELETE_EDGE',
 	updateSourceHandle: 'UPDATE_SOURCE',
@@ -129,6 +131,9 @@ export const reducer = (
 				return edge
 			})
 			return { edges: newEdges }
+		}
+		case types.editEdgeHandle: {
+			return { edges: updateEdge(data.old, data.new, state.edges) }
 		}
 		case types.deleteEdge: {
 			const out = state.edges.filter((e: { id: string }) => e.id !== data)

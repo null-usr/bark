@@ -7,7 +7,6 @@ import React, {
 	useState,
 } from 'react'
 import {
-	addEdge,
 	Background,
 	Connection,
 	Edge,
@@ -18,6 +17,7 @@ import {
 	BackgroundVariant,
 	NodeChange,
 	EdgeChange,
+	useEdges,
 } from 'reactflow'
 import { v4 as uuid } from 'uuid'
 import Modal from '@/components/modal/Modal'
@@ -113,8 +113,8 @@ const Canvas: React.FC<{
 	}, [activeScene])
 
 	// useEffect(() => {
-	// console.log(nodes)
-	// console.log(edges)
+	// 	console.log(nodes)
+	// 	console.log(edges)
 	// }, [nodes, edges])
 
 	// ================= CONNECTION BEHAVIOR ================================
@@ -190,8 +190,10 @@ const Canvas: React.FC<{
 				connection.current!.handleId,
 				null
 			)
+
 			addNode(newNode)
-			reactFlowInstance.setEdges((els: any) => addEdge(edge, els))
+			// setEdges((els: any) => addEdge(edge, els))
+			onConnect(edge)
 			setConnectionAttempt(null)
 		},
 		[reactFlowInstance, connectionAttempt, nodes, edges]

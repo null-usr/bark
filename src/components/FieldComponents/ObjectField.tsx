@@ -1,5 +1,7 @@
 /*
-    Object would just be a react-flow handle to another node
+    Object is a key with a react-flow handle attachable to another node
+	Edge ID doesn't matter so long as the handle IDs match so it corresponds to 
+	the correct handle
 */
 
 import React, { useEffect, useRef, useState } from 'react'
@@ -14,6 +16,7 @@ export const ObjectField: React.FC<{
 	index: number
 	id: string
 	update: (index: number, v: string) => void
+	// add is a function
 	add: (name: string) => void
 	del?: (k: string) => void
 	error?: boolean
@@ -56,7 +59,7 @@ export const ObjectField: React.FC<{
 				key={k}
 				type="source"
 				position={Position.Right}
-				id={k} // this will need to be some combination of node id + key
+				id={k}
 				style={{
 					// @ts-ignore
 					top: yOffset, // function to position the handle, should be at same height as this object + centering offset
