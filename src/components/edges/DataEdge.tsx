@@ -93,15 +93,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 							o
 						</button>
 					</div>
-					<input
-						className="nodrag nopan"
-						value={data.name}
-						onChange={(e) => {
-							updateName(e.target.value)
-						}}
-					/>
 					{sourceHandleId}
-					{targetHandleId}
 					<div>
 						<button
 							className="edgebutton nopan"
@@ -143,7 +135,7 @@ class DataEdge implements Connection {
 		if (name) {
 			this.name = name
 		} else {
-			this.name = this.id
+			this.name = ''
 		}
 
 		this.source = source

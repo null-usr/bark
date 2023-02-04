@@ -121,15 +121,14 @@ export default ({
 	isConnectable,
 	selected,
 }: NodeProps<{ name: string; color: string; fields: Field[] }>) => {
+	const { edges, workspace, updateNodeColor, updateNodeName } = useStore()
+
 	const [fields, setFields] = useState<Field[]>(data.fields || [])
 	const [count, setCount] = useState(fields.length)
-	const { edges, workspace } = useStore()
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
 	)
-
-	const updateNodeColor = useStore((state) => state.updateNodeColor)
-	const updateNodeName = useStore((state) => state.updateNodeName)
+	const [expanded, setExpanded] = useState(false)
 
 	// when updating handles programmatically, this is needed
 	const updateNodeInternals = useUpdateNodeInternals()
@@ -158,11 +157,8 @@ export default ({
 			// We create a handle with a key of key:{count}
 			value = `value ${count}`
 			addHandle(`key:${count}`)
-			setFields([...data.fields, { key: `key: ${count}`, value, type }])
-			data.fields = [
-				...data.fields,
-				{ key: `key: ${count}`, value, type },
-			]
+			setFields([...data.fields, { key: `key:${count}`, value, type }])
+			data.fields = [...data.fields, { key: `key:${count}`, value, type }]
 			setCount(count + 1)
 			return
 		} else {
@@ -229,24 +225,27 @@ export default ({
 		const editEdge = outgoing.filter(
 			(e) => e.sourceHandle === fields[index].key
 		)[0]
-		editEdge.sourceHandle = k
-		editEdge.data = { ...editEdge.data }
 
-		// new is type connection:
-		// source, target, sourceHandle targetHandle
-		// in our case we only modify the sourceHandle
-		dispatch({
-			type: types.editEdgeHandle,
-			data: {
-				old: editEdge,
-				new: {
-					source: editEdge.source,
-					target: editEdge.target,
-					sourceHandle: k,
-					targetHandle: editEdge.targetHandle,
+		if (editEdge) {
+			editEdge.sourceHandle = k
+			editEdge.data = { ...editEdge.data }
+
+			// new is type connection:
+			// source, target, sourceHandle targetHandle
+			// in our case we only modify the sourceHandle
+			dispatch({
+				type: types.editEdgeHandle,
+				data: {
+					old: editEdge,
+					new: {
+						source: editEdge.source,
+						target: editEdge.target,
+						sourceHandle: k,
+						targetHandle: editEdge.targetHandle,
+					},
 				},
-			},
-		})
+			})
+		}
 
 		// need to force a re-render by updating node itnerals, aka
 		// by editing the sourcehandles array
@@ -282,6 +281,7 @@ export default ({
 	}
 
 	useEffect(() => {
+		// console.log(sourceArray)
 		updateNodeInternals(id)
 	}, [sourceArray])
 
@@ -358,89 +358,114 @@ export default ({
 					</button>
 				</ButtonRow>
 				<ButtonRow>
-					<button onClick={() => addField('string')}>String</button>
-					<button onClick={() => addField('text')}>Text</button>
-					<button onClick={() => addField('bool')}>Boolean</button>
-					<button onClick={() => addField('number')}>Number</button>
-					<button onClick={() => addField('data')}>data</button>
+					<button onClick={() => setExpanded(!expanded)}>
+						{!expanded && <>Expand</>}
+						{expanded && <>Collapse</>}
+					</button>
 				</ButtonRow>
-				<div
-					style={{ display: 'flex', flexDirection: 'column', gap: 4 }}
-					className="nodrag"
-				>
-					{fields.map((field, index) => {
-						switch (field.type) {
-							case 'string':
-								return (
-									<StringField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										error={errors[index] || false}
-									/>
-								)
-							case 'text':
-								return (
-									<StringField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										error={errors[index] || false}
-									/>
-								)
-							case 'bool':
-								return (
-									<BooleanField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										error={errors[index] || false}
-									/>
-								)
-							case 'number':
-								return (
-									<NumberField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										error={errors[index] || false}
-									/>
-								)
-							case 'data':
-								return (
-									<ObjectField
-										add={addHandle}
-										id={id}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										index={index}
-										update={updateDataFieldKey}
-										del={deleteField}
-										error={errors[index] || false}
-									/>
-								)
-							default:
-								return <></>
-						}
-					})}
-				</div>
+
+				{expanded && (
+					<>
+						<ButtonRow>
+							<button onClick={() => addField('string')}>
+								String
+							</button>
+							<button onClick={() => addField('text')}>
+								Text
+							</button>
+							<button onClick={() => addField('bool')}>
+								Boolean
+							</button>
+							<button onClick={() => addField('number')}>
+								Number
+							</button>
+							<button onClick={() => addField('data')}>
+								data
+							</button>
+						</ButtonRow>
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+								gap: 4,
+							}}
+							className="nodrag"
+						>
+							{fields.map((field, index) => {
+								switch (field.type) {
+									case 'string':
+										return (
+											<StringField
+												index={index}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												updateValue={updateValue}
+												updateKey={updateKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									case 'text':
+										return (
+											<StringField
+												index={index}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												updateValue={updateValue}
+												updateKey={updateKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									case 'bool':
+										return (
+											<BooleanField
+												index={index}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												updateValue={updateValue}
+												updateKey={updateKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									case 'number':
+										return (
+											<NumberField
+												index={index}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												updateValue={updateValue}
+												updateKey={updateKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									case 'data':
+										return (
+											<ObjectField
+												add={addHandle}
+												id={id}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												index={index}
+												update={updateDataFieldKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									default:
+										return <></>
+								}
+							})}
+						</div>
+					</>
+				)}
 			</Container>
 			<Handle
 				type="source"
@@ -449,6 +474,25 @@ export default ({
 				// style={{ background: '#555' }}
 				isConnectable={isConnectable}
 			/>
+			{/* When the node is collapsed, in order to force
+				reactflow to continue to render the edges, we stack
+				handles and make them unclickable/invisible
+			*/}
+			{!expanded && (
+				<>
+					{sourceArray.map((h) => (
+						<Handle
+							type="source"
+							key={h}
+							id={h}
+							position={Position.Right}
+							onClick={undefined}
+							style={{ pointerEvents: 'none' }}
+							isConnectable={false}
+						/>
+					))}
+				</>
+			)}
 		</Node>
 	)
 }

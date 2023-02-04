@@ -37,7 +37,7 @@ export const ObjectField: React.FC<{
 			setYOffset(ref.current.offsetTop + 12)
 			// to force a rerender so the last handle drag and drop is
 			// positioned correctly
-			add(k)
+			// add(k)
 			updateNodeInternals(id)
 		}
 	}, [ref])
