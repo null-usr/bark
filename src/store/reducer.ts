@@ -42,6 +42,9 @@ export const types = {
 	renameWorkspace: 'WORKSPACE_RENAME',
 	addCustomWorkspaceNode: 'WORKSPACE_ADD_SCHEMA',
 	deleteCustomWorkspaceNode: 'WORKSPACE_DELETE_SCHEMA',
+	createWorkspaceVariable: 'WORKSPACE_CREATE_VAR',
+	editWorkspaceVariable: 'WORKSPACE_EDIT_VAR',
+	deleteWorkspaceVariable: 'WORKSPACE_DELETE_VAR',
 }
 
 export type RFState = {
@@ -346,6 +349,7 @@ export const reducer = (
 						},
 					},
 					schemas: [],
+					w_vars: {},
 				},
 				edges: [],
 				activeScene: 'untitled',
@@ -408,6 +412,42 @@ export const reducer = (
 					schemas: state.workspace.schemas.filter(
 						(n) => n.name !== data
 					),
+				},
+			}
+		}
+
+		case types.createWorkspaceVariable: {
+			const { w_vars } = state.workspace
+			w_vars[data.name] = {
+				type: data.type,
+				options: [],
+			}
+			return {
+				workspace: {
+					...state.workspace,
+					w_vars,
+				},
+			}
+		}
+
+		case types.editWorkspaceVariable: {
+			const { w_vars } = state.workspace
+			w_vars[data.name].options = data.options
+			return {
+				workspace: {
+					...state.workspace,
+					w_vars,
+				},
+			}
+		}
+
+		case types.deleteWorkspaceVariable: {
+			const { w_vars } = state.workspace
+			delete w_vars[data]
+			return {
+				workspace: {
+					...state.workspace,
+					w_vars,
 				},
 			}
 		}

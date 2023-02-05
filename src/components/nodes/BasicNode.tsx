@@ -21,6 +21,7 @@ import { BooleanField } from '../FieldComponents/BooleanField'
 import { NumberField } from '../FieldComponents/NumberField'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { NodeHeader, ButtonRow, Container } from './styles'
+import { CustomField } from '../FieldComponents/CustomField'
 
 // class to help create basic nodes
 export class BasicNode {
@@ -128,7 +129,7 @@ export default ({
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
 	)
-	const [expanded, setExpanded] = useState(false)
+	const [expanded, setExpanded] = useState(true)
 
 	// when updating handles programmatically, this is needed
 	const updateNodeInternals = useUpdateNodeInternals()
@@ -382,6 +383,14 @@ export default ({
 							<button onClick={() => addField('data')}>
 								data
 							</button>
+							<button
+								disabled={
+									Object.keys(workspace.w_vars).length === 0
+								}
+								onClick={() => addField('custom')}
+							>
+								custom
+							</button>
 						</ButtonRow>
 						<div
 							style={{
@@ -455,6 +464,19 @@ export default ({
 												v={field.value}
 												index={index}
 												update={updateDataFieldKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									case 'custom':
+										return (
+											<CustomField
+												index={index}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												updateValue={updateValue}
+												updateKey={updateKey}
 												del={deleteField}
 												error={errors[index] || false}
 											/>

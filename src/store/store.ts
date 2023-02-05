@@ -34,6 +34,7 @@ const useStore = create<RFState>((set, get) => ({
 		name: null,
 		scenes: {},
 		schemas: [],
+		w_vars: {},
 	},
 	reset: () => {
 		set({
@@ -57,6 +58,7 @@ const useStore = create<RFState>((set, get) => ({
 				name: null,
 				scenes: {},
 				schemas: [],
+				w_vars: {},
 			},
 		})
 	},
@@ -129,6 +131,7 @@ const useStore = create<RFState>((set, get) => ({
 	deleteEdge: (id: string) => set({ edgeID: id }),
 	editNode: (id: string) => set({ nodeID: id }),
 	dispatch: (args: { type: any; data: any }) =>
+		// @ts-ignore
 		set((state) => reducer(state, args)),
 	updateNodeColor: (nodeId: string, color: string) => {
 		set({

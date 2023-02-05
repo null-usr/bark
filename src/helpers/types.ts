@@ -53,4 +53,10 @@ export type Workspace = {
 	name: string | null // when the name is null, that's when we ask when they save, what they want to name it
 	scenes: { [key: string]: Scene }
 	schemas: Schema[]
+	w_vars: {
+		[key: string]: {
+			type: 'number' | 'string'
+			options: number[] | string[]
+		}
+	}
 }

@@ -107,10 +107,10 @@ function Toolbar() {
 
 	// load our initial elemnets up
 	const onNew = (name: string) => {
-		dispatch({ type: types.createWorkspace, data: { workspaceName: name } })
 		reset()
 		setViewport({ x: 100, y: 100, zoom: 1 })
 		fitView()
+		dispatch({ type: types.createWorkspace, data: { workspaceName: name } })
 	}
 
 	const handleFileSelect = (e: { preventDefault: () => void }) => {
@@ -147,6 +147,16 @@ function Toolbar() {
 						<button onClick={handleFileSelect}>Open</button>
 						<button onClick={onSave}>Save</button>
 						<button onClick={onExport}>Export</button>
+						<div>File 3</div>
+					</Dropdown>
+					<Dropdown label="Workspace">
+						<button onClick={() => setFormMode('new')}>New</button>
+						<button
+							disabled={workspace.name === null}
+							onClick={() => setFormMode('edit')}
+						>
+							Edit
+						</button>
 						<div>File 3</div>
 					</Dropdown>
 					<button>Help</button>
