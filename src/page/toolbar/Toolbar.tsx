@@ -59,10 +59,7 @@ function Toolbar() {
 		fileReader.readAsText((e.target as HTMLInputElement).files![0])
 	}
 
-	const onSave = () => {
-		// const flow = reactFlowInstance.toObject()
-		// const out = SaveScene(flow)
-
+	const save = () => {
 		let currentScene: any = reactFlowInstance.toObject()
 
 		// if our activeScene isn't null, then we can discard current
@@ -74,13 +71,24 @@ function Toolbar() {
 			}
 			currentScene = {}
 		}
-		const w = SaveWorkspace(workspace)
+		// const w = SaveWorkspace(workspace)
 
 		const out = {
-			workspace: w,
+			workspace,
 			activeScene,
 			...currentScene,
 		}
+
+		return JSON.stringify(out, (k, v) =>
+			typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
+		)
+	}
+
+	const onSave = () => {
+		// const flow = reactFlowInstance.toObject()
+		// const out = SaveScene(flow)
+
+		const out = save()
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
@@ -106,11 +114,18 @@ function Toolbar() {
 	}
 
 	// load our initial elemnets up
-	const onNew = (name: string) => {
+	const onNewWorkspace = (name: string) => {
 		reset()
 		setViewport({ x: 100, y: 100, zoom: 1 })
 		fitView()
 		dispatch({ type: types.createWorkspace, data: { workspaceName: name } })
+	}
+
+	// load our initial elemnets up
+	const onNew = () => {
+		reset()
+		setViewport({ x: 100, y: 100, zoom: 1 })
+		fitView()
 	}
 
 	const handleFileSelect = (e: { preventDefault: () => void }) => {
@@ -118,14 +133,63 @@ function Toolbar() {
 		fileSelector.click()
 	}
 
+	// ELECTRON =======================================================
+	// @ts-ignore
+	if (window.ipcRenderer) {
+		// @ts-ignore
+		window.ipcRenderer.on('window:new', () => {
+			onNew()
+		})
+
+		// @ts-ignore
+		window.ipcRenderer.on('workspace:new', () => {
+			setFormMode('newWorkspace')
+		})
+
+		// @ts-ignore
+		window.ipcRenderer.on('workspace:edit', () => {
+			setFormMode('edit')
+		})
+
+		// saveWorkspace
+		// @ts-ignore
+		window.ipcRenderer.on('workspace:saveWorkspace', (data) => {
+			const out = { path: data.path, data: save() }
+
+			// send the stringified content up and out to electron's main.ts
+			// @ts-ignore
+			window.ipcRenderer.send('window:write', out)
+		})
+
+		// exportJSON
+		// @ts-ignore
+		window.ipcRenderer.on('workspace:saveJSON', (data) => {
+			const out = { path: data.path, data: save() }
+
+			// send the stringified content up and out to electron's main.ts
+			// @ts-ignore
+			window.ipcRenderer.send('window:write', out)
+		})
+
+		// successful or failed writes, have a modal for this
+		// @ts-ignore
+		window.ipcRenderer.on('window:writeSuccess', () => {
+			console.log('successful write')
+		})
+		// @ts-ignore
+		window.ipcRenderer.on('window:writeFailed', () => {
+			console.log('failed write')
+		})
+	}
+
 	return (
 		<>
-			{formMode === 'new' && (
+			{formMode === 'newWorkspace' && (
 				<Modal open withDimmer close={() => setFormMode('')}>
 					<CreateWorkspace
 						cancel={() => setFormMode('')}
 						submit={(name) => {
-							onNew(name)
+							onNew()
 							setFormMode('')
 						}}
 					/>
@@ -135,37 +199,42 @@ function Toolbar() {
 				<Modal open withDimmer close={() => setFormMode('')}>
 					<EditWorkspace
 						name={workspace.name}
-						submit={(name) => onNew(name)}
+						submit={(name) => onNewWorkspace(name)}
 						cancel={() => setFormMode('')}
 					/>
 				</Modal>
 			)}
-			<HeaderContainer>
-				<LeftButtonGroup>
-					<Dropdown label="File">
-						<button onClick={() => setFormMode('new')}>New</button>
-						<button onClick={handleFileSelect}>Open</button>
-						<button onClick={onSave}>Save</button>
-						<button onClick={onExport}>Export</button>
-						<div>File 3</div>
-					</Dropdown>
-					<Dropdown label="Workspace">
-						<button onClick={() => setFormMode('new')}>New</button>
-						<button
-							disabled={workspace.name === null}
-							onClick={() => setFormMode('edit')}
-						>
-							Edit
-						</button>
-						<div>File 3</div>
-					</Dropdown>
-					<button>Help</button>
-				</LeftButtonGroup>
-				{/* don't really have anything for this atm */}
-				{/* <RightButtonGroup>
+			{/* Only render the visible toolbar if we're not in the electron app */}
+			{navigator.userAgent !== 'Electron' && (
+				<HeaderContainer>
+					<LeftButtonGroup>
+						<Dropdown label="File">
+							<button onClick={onNew}>New</button>
+							<button onClick={handleFileSelect}>Open</button>
+							<button onClick={onSave}>Save</button>
+							<button onClick={onExport}>Export</button>
+							<div>File 3</div>
+						</Dropdown>
+						<Dropdown label="Workspace">
+							<button onClick={() => setFormMode('newWorkspace')}>
+								New
+							</button>
+							<button
+								disabled={workspace.name === null}
+								onClick={() => setFormMode('edit')}
+							>
+								Edit
+							</button>
+							<div>File 3</div>
+						</Dropdown>
+						<button>Help</button>
+					</LeftButtonGroup>
+					{/* don't really have anything for this atm */}
+					{/* <RightButtonGroup>
 					<button>Quit</button>
 				</RightButtonGroup> */}
-			</HeaderContainer>
+				</HeaderContainer>
+			)}
 		</>
 	)
 }

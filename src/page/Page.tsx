@@ -28,8 +28,7 @@ function Page() {
 				<PageContainer>
 					<ThemeProvider theme={theme}>
 						<ReactFlowProvider>
-							{/* Only render the toolbar if we're not in the electron app */}
-							{navigator.userAgent !== 'Electron' && <Toolbar />}
+							<Toolbar />
 							<Workspace />
 						</ReactFlowProvider>
 					</ThemeProvider>

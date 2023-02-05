@@ -23,6 +23,7 @@ export const NumberField: React.FC<{
 				type="text"
 				value={key}
 				onChange={(e) => setKey(e.target.value)}
+				onSubmit={() => updateKey(index, key)}
 			/>
 			:
 			<input

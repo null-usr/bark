@@ -51,6 +51,7 @@ export const ObjectField: React.FC<{
 				onChange={(e) => {
 					setValue(e.target.value)
 				}}
+				onSubmit={() => update(index, value)}
 			/>
 			{value !== k && (
 				<button onClick={() => update(index, value)}>Save</button>

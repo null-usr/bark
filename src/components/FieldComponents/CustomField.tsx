@@ -30,6 +30,7 @@ export const CustomField: React.FC<{
 				type="text"
 				value={key}
 				onChange={(e) => setKey(e.target.value)}
+				onSubmit={() => updateKey(index, key)}
 			/>
 			:
 			<select

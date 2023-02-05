@@ -2,9 +2,6 @@
 // serialize lite versions to be loaded by the game engines
 
 import { Edge, Node, ReactFlowJsonObject } from 'reactflow'
-import { IReactFlow } from '@/contexts/FlowContext'
-import { BasicNode } from '../nodes/BasicNode'
-import DataEdge from '../edges/DataEdge'
 import { Field, Workspace } from '../types'
 
 export interface ISceneData extends ReactFlowJsonObject {
