@@ -66,6 +66,8 @@ const Canvas: React.FC<{
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
 
+	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
+
 	const reactFlowInstance = useReactFlow()
 	const reactFlowWrapper = useRef<any>(null)
 

@@ -125,7 +125,6 @@ export const reducer = (
 		case types.addEdge: {
 			return { edges: state.edges.concat(data) }
 		}
-
 		case types.editEdge: {
 			const newEdges = state.edges.map((edge) => {
 				if (edge.id === data.edgeID) {
