@@ -1,6 +1,5 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
-import { contextBridge } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
 
 // As an example, here we use the exposeInMainWorld API to expose the browsers
