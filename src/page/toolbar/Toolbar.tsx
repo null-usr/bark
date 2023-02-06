@@ -189,7 +189,7 @@ function Toolbar() {
 					<CreateWorkspace
 						cancel={() => setFormMode('')}
 						submit={(name) => {
-							onNew()
+							onNewWorkspace(name)
 							setFormMode('')
 						}}
 					/>
@@ -199,7 +199,13 @@ function Toolbar() {
 				<Modal open withDimmer close={() => setFormMode('')}>
 					<EditWorkspace
 						name={workspace.name}
-						submit={(name) => onNewWorkspace(name)}
+						submit={(name) => {
+							dispatch({
+								type: types.renameWorkspace,
+								data: { newName: name },
+							})
+							setFormMode('')
+						}}
 						cancel={() => setFormMode('')}
 					/>
 				</Modal>
