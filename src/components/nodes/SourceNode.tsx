@@ -42,6 +42,7 @@ export class SourceNode {
 
 // https://github.com/wbkd/react-flow/issues/1641
 export default ({
+	dragging,
 	selected,
 	data,
 	id,
@@ -65,27 +66,34 @@ export default ({
 	}
 
 	return (
-		<Node selected={selected}>
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-around',
-					alignItems: 'center',
-				}}
-			>
-				<div style={{ flex: 2 }}>
-					<div style={{ fontWeight: 500, fontSize: 15 }}>
-						{data.label}
+		<>
+			{/* {dragging && 
+			
+			
+			} */}
+
+			<Node dragging={dragging} selected={selected}>
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'space-around',
+						alignItems: 'center',
+					}}
+				>
+					<div style={{ flex: 2 }}>
+						<div style={{ fontWeight: 500, fontSize: 15 }}>
+							{data.label}
+						</div>
 					</div>
 				</div>
-			</div>
-			<Handle
-				type="source"
-				position={Position.Right}
-				id={id}
-				// style={{ background: '#555' }}
-				// isConnectable={isConnectable}
-			/>
-		</Node>
+				<Handle
+					type="source"
+					position={Position.Right}
+					id={id}
+					// style={{ background: '#555' }}
+					// isConnectable={isConnectable}
+				/>
+			</Node>
+		</>
 	)
 }

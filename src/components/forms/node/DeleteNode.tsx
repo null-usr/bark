@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
+import Button from '@/components/Button/Button'
 import { Formik, Form, Field } from 'formik'
+import { Paragraph } from '@/components/Typography/text'
+import { FlexColumn, FlexRow } from '@/components/styles'
 
 // Create a custom editor or workspace node
 const DeleteNode: React.FC<{
@@ -9,11 +12,15 @@ const DeleteNode: React.FC<{
 	cancel: () => void
 }> = ({ name, submit, cancel }) => {
 	return (
-		<div>
-			<p>Are you sure you want to delete {name}?</p>
-			<button onClick={submit}>Delete</button>
-			<button onClick={cancel}>cancel</button>
-		</div>
+		<FlexColumn>
+			<Paragraph>Are you sure you want to delete {name}?</Paragraph>
+			<FlexRow>
+				<Button danger onClick={submit}>
+					Delete
+				</Button>
+				<Button onClick={cancel}>cancel</Button>
+			</FlexRow>
+		</FlexColumn>
 	)
 }
 

@@ -31,6 +31,40 @@ export const PaletteContainer = styled.div`
 	}
 `
 
+export const SceneContainer = styled.div<{ active?: boolean }>`
+	display: grid;
+	justify-content: center;
+	align-content: center;
+
+	cursor: pointer;
+
+	height: 50px;
+	border-radius: 6px;
+	border: 1px solid
+		${({ active, ...props }) =>
+			active ? `${props.theme.primary}` : '#fcfcfc'};
+`
+
+export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
+	display: grid;
+	justify-content: center;
+	align-content: center;
+
+	cursor: pointer;
+
+	background-color: ${({ color }) => color || 'white'};
+
+	min-height: 50px;
+	border-radius: 6px;
+	border: 2px solid
+		${({ active, ...props }) =>
+			active ? `${props.theme.primary}` : '#fcfcfc'};
+
+	&:hover {
+		border: 2px solid blue;
+	}
+`
+
 export const Group = styled.div`
 	// pointer-events: none;
 `

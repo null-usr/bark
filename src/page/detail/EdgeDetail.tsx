@@ -9,6 +9,7 @@ import { StringField } from '@/components/FieldComponents/StringField'
 import { ButtonRow } from '@/helpers/styles'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
+import Button from '@/components/Button/Button'
 import { Container } from './styles'
 
 const Detail: React.FC<{
@@ -76,9 +77,9 @@ const Detail: React.FC<{
 				{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
 				<input value={name} onChange={(e) => setName(e.target.value)} />
 				<ButtonRow>
-					<button onClick={() => addField('string')}>Text</button>
-					<button onClick={() => addField('bool')}>Boolean</button>
-					<button onClick={() => addField('number')}>Number</button>
+					<Button onClick={() => addField('string')}>Text</Button>
+					<Button onClick={() => addField('bool')}>Boolean</Button>
+					<Button onClick={() => addField('number')}>Number</Button>
 				</ButtonRow>
 				{/* {fields.map((field, index) => {
 					switch (field.type) {

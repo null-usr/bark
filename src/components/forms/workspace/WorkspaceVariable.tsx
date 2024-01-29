@@ -1,3 +1,4 @@
+import ExpandButton from '@/components/Button/ExpandButton'
 import { types } from '@/store/reducer'
 import useStore from '@/store/store'
 import { Field, Form, Formik } from 'formik'
@@ -10,10 +11,10 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 	return (
 		<div>
 			{name} {w_var.type}
-			<button onClick={() => setExpanded(!expanded)}>
+			<ExpandButton onClick={() => setExpanded(!expanded)}>
 				{expanded && <>collapse</>}
 				{!expanded && <>expand</>}
-			</button>
+			</ExpandButton>
 			<button
 				onClick={() =>
 					dispatch({

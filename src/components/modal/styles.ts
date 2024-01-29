@@ -5,6 +5,8 @@ export const ModalContainer = styled.div<{
 }>`
 	z-index: ${({ zIndex }) => zIndex || 1001};
 
+	padding: 16px;
+
 	position: fixed;
 	top: 50%;
 	left: 50%;

@@ -13,6 +13,7 @@ import { ButtonRow } from '@/helpers/styles'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
+import Button from '@/components/Button/Button'
 import { Container } from './styles'
 
 const Detail: React.FC<{
@@ -21,11 +22,18 @@ const Detail: React.FC<{
 }> = ({ close, isOpen }) => {
 	const reactFlowInstance = useReactFlow()
 
-	const { nodes, edges, nodeID, dispatch, updateDialogueData } = useStore()
+	const {
+		nodes,
+		edges,
+		nodeID,
+		dispatch,
+		updateDialogueData,
+		updateNodeColor,
+	} = useStore()
 
 	if (!nodeID) return null
 
-	const editNode = reactFlowInstance.getNode(nodeID) as BasicNode
+	const editNode = nodes.find((n) => n.id === nodeID) as BasicNode
 
 	if (!editNode) return null
 
@@ -37,8 +45,8 @@ const Detail: React.FC<{
 	)
 
 	const [name, setName] = useState(editNode.data.name)
+	// const [color, setColor] = useState(editNode.data.color)
 	const [id, setID] = useState(nodeID || '')
-	const [color, setColor] = useState(editNode.data.color)
 	const [fields, setFields] = useState<Field[]>(editNode.data.fields || [])
 	const [count, setCount] = useState(fields.length)
 	const [lockID, setLockID] = useState(true)
@@ -89,7 +97,7 @@ const Detail: React.FC<{
 				const nodeData = {
 					id: lockID ? editNode.id : id,
 					name,
-					color,
+					color: editNode.data.color,
 					fields,
 				}
 
@@ -122,22 +130,25 @@ const Detail: React.FC<{
 						value={id}
 						onChange={(e) => setID(e.target.value)}
 					/>
-					<button onClick={() => setLockID(!lockID)}>
+					<Button onClick={() => setLockID(!lockID)}>
 						toggle ID lock
-					</button>
+					</Button>
 				</div>
 				<input
 					type="color"
-					defaultValue={color}
-					onChange={(evt) => setColor(evt.target.value)}
+					value={editNode.data.color}
+					onChange={(evt) =>
+						updateNodeColor(editNode.id, evt.target.value)
+					}
+					style={{ cursor: 'pointer' }}
 					className="nodrag"
 				/>
 				<ButtonRow>
-					<button onClick={() => addField('string')}>String</button>
-					<button onClick={() => addField('text')}>Text</button>
-					<button onClick={() => addField('bool')}>Boolean</button>
-					<button onClick={() => addField('number')}>Number</button>
-					<button onClick={() => addField('data')}>data</button>
+					<Button onClick={() => addField('string')}>String</Button>
+					<Button onClick={() => addField('text')}>Text</Button>
+					<Button onClick={() => addField('bool')}>Boolean</Button>
+					<Button onClick={() => addField('number')}>Number</Button>
+					<Button onClick={() => addField('data')}>data</Button>
 				</ButtonRow>
 				{/*  */}
 				{/* <textarea
@@ -208,7 +219,7 @@ const Detail: React.FC<{
 									/>
 									:
 									{/* TODO: this may have multiple target nodes, think of a UI/UX for this */}
-									<button
+									<Button
 										onClick={() => {
 											const newNode = new BasicNode(
 												'basic',
@@ -233,8 +244,8 @@ const Detail: React.FC<{
 										}}
 									>
 										Create
-									</button>
-									<button
+									</Button>
+									<Button
 										disabled={
 											edgesOut.filter(
 												(e) =>
@@ -256,7 +267,7 @@ const Detail: React.FC<{
 										}}
 									>
 										Go
-									</button>
+									</Button>
 								</div>
 							)
 						default:
@@ -274,7 +285,7 @@ const Detail: React.FC<{
 				<br />
 				{edgesIn.map((e) => {
 					return (
-						<button
+						<Button
 							onClick={() =>
 								dispatch({
 									type: types.setNode,
@@ -283,7 +294,7 @@ const Detail: React.FC<{
 							}
 						>
 							{e.source}
-						</button>
+						</Button>
 					)
 				})}
 				Outgoing:
@@ -291,7 +302,7 @@ const Detail: React.FC<{
 				{/* outgoing edges not from a field */}
 				{naturalOutgoingEdges.map((e) => {
 					return (
-						<button
+						<Button
 							onClick={() =>
 								dispatch({
 									type: types.setNode,
@@ -300,10 +311,10 @@ const Detail: React.FC<{
 							}
 						>
 							{e.target}
-						</button>
+						</Button>
 					)
 				})}
-				<button
+				<Button
 					onClick={() => {
 						const newNode = new BasicNode(
 							'basic',
@@ -322,7 +333,7 @@ const Detail: React.FC<{
 					}}
 				>
 					Add Outgoing
-				</button>
+				</Button>
 			</Container>
 		</Modal>
 	)

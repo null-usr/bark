@@ -10,6 +10,7 @@ import {
 } from 'reactflow'
 
 import { v4 as uuidv4 } from 'uuid'
+import Button from '@/components/Button/Button'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Node } from '@/helpers/theme'
@@ -315,24 +316,25 @@ export default ({
 					<div style={{ padding: 20 }}>
 						<input
 							type="color"
-							defaultValue={data.color}
+							value={data.color}
 							onChange={(evt) =>
 								updateNodeColor(id, evt.target.value)
 							}
 							className="nodrag"
+							style={{ cursor: 'pointer' }}
 						/>
 					</div>
 				</NodeHeader>
 				<ButtonRow>
-					<button
+					<Button
 						onClick={() =>
 							dispatch({ type: types.setNode, data: id })
 						}
 					>
 						Edit
-					</button>
+					</Button>
 					{/* If there is no workspace, save to editor is default */}
-					<button
+					<Button
 						onClick={() =>
 							workspace.name === null
 								? dispatch({
@@ -356,33 +358,33 @@ export default ({
 						}
 					>
 						Save
-					</button>
+					</Button>
 				</ButtonRow>
 				<ButtonRow>
-					<button onClick={() => setExpanded(!expanded)}>
+					<Button onClick={() => setExpanded(!expanded)}>
 						{!expanded && <>Expand</>}
 						{expanded && <>Collapse</>}
-					</button>
+					</Button>
 				</ButtonRow>
 
 				{expanded && (
 					<>
 						<ButtonRow>
-							<button onClick={() => addField('string')}>
+							<Button onClick={() => addField('string')}>
 								String
-							</button>
-							<button onClick={() => addField('text')}>
+							</Button>
+							<Button onClick={() => addField('text')}>
 								Text
-							</button>
-							<button onClick={() => addField('bool')}>
+							</Button>
+							<Button onClick={() => addField('bool')}>
 								Boolean
-							</button>
-							<button onClick={() => addField('number')}>
+							</Button>
+							<Button onClick={() => addField('number')}>
 								Number
-							</button>
-							<button onClick={() => addField('data')}>
+							</Button>
+							<Button onClick={() => addField('data')}>
 								data
-							</button>
+							</Button>
 							<button
 								disabled={
 									Object.keys(workspace.w_vars).length === 0

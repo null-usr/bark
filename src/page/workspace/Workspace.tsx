@@ -15,10 +15,12 @@ import CreateScene from '@/components/forms/scene/CreateScene'
 import EditScene from '@/components/forms/scene/EditScene'
 import Modal from '@/components/modal/Modal'
 import DeleteScene from '@/components/forms/scene/DeleteScene'
+import Button from '@/components/Button/Button'
 import Canvas from './canvas/Canvas'
 import NodeGroup from './palette/NodeGroup'
 import Palette from './palette/Palette'
-import { SceneContainer, TabLink, WorkspaceContainer } from './styles'
+import { TabLink, WorkspaceContainer } from './styles'
+import SceneGroup from './palette/SceneGroup'
 
 const Workspace: React.FC<{}> = (props) => {
 	const {
@@ -182,12 +184,7 @@ const Workspace: React.FC<{}> = (props) => {
 									You can drag these nodes to the pane on the
 									right.
 								</div>
-								<button
-									style={{
-										width: '100%',
-										marginBottom: 8,
-										cursor: 'pointer',
-									}}
+								<Button
 									onClick={() => {
 										dispatch({
 											type: types.customizeSchema,
@@ -197,9 +194,10 @@ const Workspace: React.FC<{}> = (props) => {
 											},
 										})
 									}}
+									block
 								>
 									Create Node
-								</button>
+								</Button>
 								<NodeGroup title="Basic Nodes" data={builtIn} />
 								<NodeGroup
 									title="Custom Nodes"
@@ -231,71 +229,11 @@ const Workspace: React.FC<{}> = (props) => {
 								>
 									New Scene
 								</button>
-								{workspaceScenes.map((s) => {
-									return (
-										<SceneContainer
-											key={s}
-											onClick={
-												s === activeScene
-													? undefined
-													: () => {
-															dispatch({
-																type: types.changeScene,
-																data: s,
-															})
-													  }
-											}
-											active={activeScene === s}
-										>
-											{s}
-											{activeScene !== s && (
-												<>
-													<button
-														onClick={
-															activeScene === s
-																? undefined
-																: (e) => {
-																		e.stopPropagation()
-																		setFormMode(
-																			`renameScene-${s}`
-																		)
-																  }
-														}
-														key={s}
-													>
-														O
-													</button>
-													<button
-														onClick={
-															activeScene === s
-																? undefined
-																: (e) => {
-																		e.stopPropagation()
-																		setFormMode(
-																			`deleteScene-${s}`
-																		)
-																  }
-														}
-														key={s}
-													>
-														X
-													</button>
-												</>
-											)}
-										</SceneContainer>
-									)
-								})}
-								{Object.keys(workspaceScenes).length === 0 && (
-									<SceneContainer
-										style={{
-											background: '#ccc',
-											cursor: 'not-allowed',
-											borderColor: 'black',
-										}}
-									>
-										default
-									</SceneContainer>
-								)}
+								<SceneGroup
+									data={workspaceScenes}
+									activeScene={activeScene}
+									onEdit={setFormMode}
+								/>
 							</div>
 						)}
 					</div>

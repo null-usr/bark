@@ -9,6 +9,7 @@ import React, {
 } from 'react'
 import {
 	applyEdgeChanges,
+	BaseEdge,
 	Connection,
 	Edge,
 	EdgeLabelRenderer,
@@ -21,11 +22,15 @@ import {
 
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
+import { splitEdge } from '@/helpers/edgeHelpers'
+import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 
 const foreignObjectSize = 40
 
 export const DataEdgeType: FC<EdgeProps> = ({
 	id,
+	source,
+	target,
 	sourceX,
 	sourceY,
 	targetX,
@@ -46,9 +51,13 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		targetPosition,
 	})
 
+	const reactFlowInstance = useReactFlow()
+
+	const { onConnect, addNode } = useStore()
 	const dispatch = useStore((store) => store.dispatch)
 
 	const [name, setName] = useState(data.name || 'placeholder')
+	const [hovered, setHovered] = useState(false)
 
 	const updateName = (newName: string) => {
 		setName(newName)
@@ -62,26 +71,78 @@ export const DataEdgeType: FC<EdgeProps> = ({
 		<>
 			{/* look into interactionWidth for easier to select edges */}
 			{/* https://reactflow.dev/docs/api/edges/edge-options/#options */}
-			<path
+			{/* <path
 				className="react-flow__edge-path"
 				d={edgePath}
 				markerEnd={markerEnd}
 				fillRule="evenodd"
-			/>
+			/> */}
+			<BaseEdge id={id} path={edgePath} />
 			<EdgeLabelRenderer>
 				<div
 					style={{
+						display: 'flex',
+						flexDirection: 'row',
+						gap: 4,
 						position: 'absolute',
-						transform: `translate(-50%, -50%) translate(${centerX}px,${centerY}px)`,
+						transform: `translate(-50%, -50%) 
+							translate(${centerX}px,${centerY}px)`,
 						pointerEvents: 'all',
-						backgroundColor: 'white',
+						backgroundColor: hovered ? 'blue' : 'white',
 						border: '1px solid grey',
-						padding: 10,
+						padding: 4,
 						borderRadius: 5,
 						fontSize: 12,
 						fontWeight: 700,
 						zIndex: 1001, // don't want edges on top of this
 					}}
+					className="nopan nodrag"
+					onDrop={(e) => {
+						e.preventDefault()
+						e.stopPropagation()
+						// console.log(e)
+
+						const nodeData = e.dataTransfer.getData(
+							'application/reactflow'
+						)
+
+						const paletteItem = JSON.parse(nodeData)
+
+						const position = { x: centerX, y: centerY }
+
+						const { newNodes, newEdges } = decodeSchema(
+							position,
+							paletteItem
+						)
+
+						newNodes.forEach((n) => addNode(n))
+						newEdges.forEach((ed) => onConnect(ed))
+
+						const insertedEdges = splitEdge(
+							{
+								id,
+								source,
+								target,
+								sourceHandle: sourceHandleId,
+								targetHandle: targetHandleId,
+								data,
+							},
+							newNodes[0]
+						)
+						onConnect(insertedEdges[0])
+						onConnect(insertedEdges[1])
+						dispatch({
+							type: types.deleteEdge,
+							data: id,
+						})
+					}}
+					onMouseOver={(e) => {
+						setHovered(true)
+					}}
+					onMouseLeave={(e) => {
+						setHovered(false)
+					}}
+					onFocus={() => {}}
 				>
 					<div>
 						<button
@@ -93,7 +154,7 @@ export const DataEdgeType: FC<EdgeProps> = ({
 							o
 						</button>
 					</div>
-					{sourceHandleId}
+					{/* {sourceHandleId} */}
 					<div>
 						<button
 							className="edgebutton nopan"
@@ -128,7 +189,8 @@ class DataEdge implements Connection {
 		target: string,
 		sourceHandle: string | null,
 		targetHandle: string | null,
-		name?: string
+		name?: string,
+		data?: string
 	) {
 		this.id = `${source}-${sourceHandle}-${target}`
 
@@ -144,7 +206,12 @@ class DataEdge implements Connection {
 		this.targetHandle = targetHandle
 
 		this.edgeData = createRef()
-		this._set_data()
+
+		if (!data) {
+			this._set_data()
+		} else {
+			this.data = data
+		}
 	}
 
 	_set_data() {

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
+import Button from '@/components/Button/Button'
 
 // Create a custom editor or workspace node
 const CreateWorkspace: React.FC<{
@@ -33,10 +34,10 @@ const CreateWorkspace: React.FC<{
 					<label htmlFor="name">Name</label>
 					<Field name="name" />
 					{errors.name ? <div>{errors.name}</div> : null}
-					<button type="submit">Save</button>
-					<button type="button" onClick={cancel}>
+					<Button submitType="submit">Save</Button>
+					<Button type="subtle" onClick={cancel}>
 						cancel
-					</button>
+					</Button>
 				</Form>
 			)}
 		</Formik>

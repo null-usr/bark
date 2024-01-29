@@ -3,6 +3,7 @@
 */
 
 import React, { useEffect, useState } from 'react'
+import Button from '@/components/Button/Button'
 import { FieldContainer } from './styles'
 
 export const StringField: React.FC<{
@@ -39,9 +40,9 @@ export const StringField: React.FC<{
 				}}
 			/>
 			{k !== key && (
-				<button onClick={() => updateKey(index, key)}>Save</button>
+				<Button onClick={() => updateKey(index, key)}>Save</Button>
 			)}
-			<button onClick={del ? () => del(k) : undefined}>Delete</button>
+			<Button onClick={del ? () => del(k) : undefined}>Delete</Button>
 		</FieldContainer>
 	)
 }

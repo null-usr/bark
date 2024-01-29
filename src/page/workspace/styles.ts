@@ -34,15 +34,6 @@ export const TabLink = styled.button<{
 	}
 `
 
-export const SceneContainer = styled.div<{ active?: boolean }>`
-	cursor: pointer;
-	height: 50px;
-	border-radius: 6px;
-	border: 1px solid
-		${({ active, ...props }) =>
-			active ? `${props.theme.primary}` : '#fcfcfc'};
-`
-
 export const BottomBar = styled.div`
 	position: absolute;
 	bottom 20px;

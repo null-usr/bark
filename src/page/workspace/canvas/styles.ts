@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const CanvasContainer = styled.div`
-	position: relative;
+	/* position: relative; */
 
 	width: 100%;
 	height: 100%;

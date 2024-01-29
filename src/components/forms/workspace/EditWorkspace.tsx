@@ -3,6 +3,7 @@ import React from 'react'
 import { Formik, Form, Field } from 'formik'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
+import Button from '@/components/Button/Button'
 import WorkspaceVariable from './WorkspaceVariable'
 
 // Create a custom editor or workspace node
@@ -39,10 +40,10 @@ const EditWorkspace: React.FC<{
 						<label htmlFor="name">Name</label>
 						<Field name="name" />
 						{errors.name ? <div>{errors.name}</div> : null}
-						<button type="submit">Save</button>
-						<button type="button" onClick={cancel}>
+						<Button submitType="submit">Save</Button>
+						<Button type="subtle" onClick={cancel}>
 							cancel
-						</button>
+						</Button>
 					</Form>
 				)}
 			</Formik>

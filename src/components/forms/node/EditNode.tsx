@@ -1,6 +1,9 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
+import Button from '@/components/Button/Button'
+import { FlexColumn, FlexRow } from '@/components/styles'
+import { H1, H3 } from '@/components/Typography/headers'
 
 // Edit a custom editor or workspace node
 // Shared w/ Create Node
@@ -45,17 +48,24 @@ const CreateNode: React.FC<{
 		>
 			{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 				<Form onSubmit={handleSubmit}>
-					<label htmlFor="name">Name</label>
-					<Field name="name" />
-					{errors.name ? <div>{errors.name}</div> : null}
-					<label htmlFor="color">Color</label>
-					<Field name="color" type="color" className="nodrag" />
-					<label htmlFor="saveToEditor">Save to Editor</label>
-					<Field name="saveToEditor" type="checkbox" />
-					<button type="submit">Save</button>
-					<button type="button" onClick={cancel}>
-						cancel
-					</button>
+					<FlexColumn>
+						<H3 style={{ alignSelf: 'center' }}>SAVE NODE</H3>
+						<label htmlFor="name">Name</label>
+						<Field name="name" />
+						{errors.name ? <div>{errors.name}</div> : null}
+						<label htmlFor="color">Color</label>
+						<Field name="color" type="color" className="nodrag" />
+						<div>
+							<label htmlFor="saveToEditor">Save to Editor</label>
+							<Field name="saveToEditor" type="checkbox" />
+						</div>
+						<FlexRow>
+							<Button submitType="submit">Save</Button>
+							<Button type="subtle" onClick={cancel}>
+								cancel
+							</Button>
+						</FlexRow>
+					</FlexColumn>
 				</Form>
 			)}
 		</Formik>

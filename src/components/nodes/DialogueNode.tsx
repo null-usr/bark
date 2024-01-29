@@ -1,6 +1,7 @@
 import React, { memo, useState } from 'react'
 import { Handle, NodeProps, Position, XYPosition } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
+import Button from '@/components/Button/Button'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 // import Detail from '@/components/page/detail/NodeDetail'
@@ -108,11 +109,11 @@ export default ({
 			/>
 			<h2>{data.characterName}</h2>
 			<p>{data.dialogue}</p>
-			<button
+			<Button
 				onClick={() => dispatch({ type: types.setNode, data: data.id })}
 			>
 				Edit
-			</button>
+			</Button>
 			<Handle
 				type="source"
 				position={sourcePosition}

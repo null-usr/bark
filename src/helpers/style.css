@@ -89,7 +89,7 @@
 .react-flow__nodesselection {
 }
 .react-flow__nodesselection-rect {
-	background-color: #eeeeee80;
+	/* background-color: #eeeeee80; */
 }
 
 .ports {

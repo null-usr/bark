@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
+import Button from '@/components/Button/Button'
+import { FlexColumn, FlexRow } from '@/components/styles'
 
 // Create a custom editor or workspace node
 const EditScene: React.FC<{
@@ -35,13 +37,18 @@ const EditScene: React.FC<{
 		>
 			{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 				<Form onSubmit={handleSubmit}>
-					<label htmlFor="name">Name</label>
-					<Field name="name" />
-					{errors.name ? <div>{errors.name}</div> : null}
-					<button type="submit">Save</button>
-					<button type="button" onClick={cancel}>
-						cancel
-					</button>
+					<FlexColumn>
+						<label htmlFor="name">Name</label>
+						<Field name="name" />
+						{errors.name ? <div>{errors.name}</div> : null}
+
+						<FlexRow>
+							<Button submitType="submit">Save</Button>
+							<Button type="subtle" onClick={cancel}>
+								cancel
+							</Button>
+						</FlexRow>
+					</FlexColumn>
 				</Form>
 			)}
 		</Formik>

@@ -29,6 +29,9 @@ import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import EditNode from '@/components/forms/node/EditNode'
 import { ControlsStyled, MiniMapStyled, ReactFlowStyled } from '@/helpers/theme'
 import { NodeTypes, EdgeTypes } from '@/helpers/types'
+import Button from '@/components/Button/Button'
+import { ContextMenu } from '@/components/ContextMenu/ContextMenu'
+import { splitEdge } from '@/helpers/edgeHelpers'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import EdgeDetail from '../../detail/EdgeDetail'
 import { CanvasContainer } from './styles'
@@ -65,6 +68,9 @@ const Canvas: React.FC<{
 	const [showSGButton, setShowSGButton] = useState(false)
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
+
+	const [contextMenuData, setContextMenuData] = useState(null)
+	const contextMenuRef = useRef(null)
 
 	const reactFlowInstance = useReactFlow()
 	const reactFlowWrapper = useRef<any>(null)
@@ -171,7 +177,7 @@ const Canvas: React.FC<{
 
 			const reactFlowBounds =
 				reactFlowWrapper.current.getBoundingClientRect()
-			const position = reactFlowInstance.project({
+			const position = reactFlowInstance.screenToFlowPosition({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
@@ -227,7 +233,7 @@ const Canvas: React.FC<{
 
 			const paletteItem = JSON.parse(data)
 
-			const position = reactFlowInstance.project({
+			const position = reactFlowInstance.screenToFlowPosition({
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
@@ -240,6 +246,65 @@ const Canvas: React.FC<{
 			// addNode(newNode)
 		},
 		[reactFlowInstance, nodes]
+	)
+
+	const onNodeContextMenu = useCallback(
+		(event, n) => {
+			// Prevent native context menu from showing
+			event.preventDefault()
+
+			// Calculate position of the context menu. We want to make sure it
+			// doesn't get positioned off-screen.
+			// @ts-ignore
+			const pane = contextMenuRef.current!.getBoundingClientRect()
+			setContextMenuData({
+				// @ts-ignore
+				ids: [n.id],
+				top:
+					event.clientY + 200 < pane.height
+						? event.clientY
+						: event.clientY - 200,
+				left:
+					event.clientX + 200 < pane.width
+						? event.clientX
+						: event.clientX - 200,
+				// right: event.clientX + 200 >= pane.width && 200,
+				// bottom: event.clientY + 200 >= pane.height && 200,
+			})
+		},
+		[setContextMenuData]
+	)
+
+	const onSelectionContextMenu = useCallback(
+		(event, nds) => {
+			// Prevent native context menu from showing
+			event.preventDefault()
+
+			// Calculate position of the context menu. We want to make sure it
+			// doesn't get positioned off-screen.
+			// @ts-ignore
+			const pane = contextMenuRef.current!.getBoundingClientRect()
+
+			setContextMenuData({
+				// @ts-ignore
+				ids: nds.map((n) => n.id),
+				top: event.clientY + 200 < pane.height && event.clientY,
+				left: event.clientX + 200 < pane.width && event.clientX,
+				right:
+					event.clientX + 200 >= pane.width &&
+					pane.width - event.clientX,
+				bottom:
+					event.clientY + 200 >= pane.height &&
+					pane.height - event.clientY,
+			})
+		},
+		[setContextMenuData]
+	)
+
+	// Close the context menu if it's open whenever the window is clicked.
+	const onPaneClick = useCallback(
+		() => setContextMenuData(null),
+		[setContextMenuData]
 	)
 
 	return (
@@ -286,9 +351,20 @@ const Canvas: React.FC<{
 								data: { mode: 'active', schema: null },
 							})
 						}
+
+						onPaneClick()
 					}}
 				/>
 			</Modal>
+			{contextMenuData && (
+				<ContextMenu
+					onClick={onPaneClick}
+					onSave={() => setSGModalOpen(true)}
+					// @ts-ignore
+					{...contextMenuData}
+				/>
+			)}
+			{/* {edgeContextMenuData && <ContextMenu />} */}
 			<div
 				style={{ width: '100%', height: '100%', position: 'relative' }}
 				className="reactflow-wrapper"
@@ -296,6 +372,9 @@ const Canvas: React.FC<{
 			>
 				{/* @ts-ignore */}
 				<ReactFlowStyled
+					ref={contextMenuRef}
+					// panOnDrag={false}
+					// selectionOnDrag
 					nodes={nodes}
 					edges={edges}
 					edgeTypes={EdgeTypes}
@@ -310,11 +389,36 @@ const Canvas: React.FC<{
 							setShowSGButton(false)
 						}
 					}}
-					// onSelectionDragStop={(e: React.MouseEvent, nds: Node[]) => {
-					// 	console.log('pong')
-					// }}
+					onNodeDragStart={(eevent, nd, nds) => {}}
+					onNodeDragStop={(e, nd, nds) => {
+						if (nds.length > 1 || hoveredEdge === null) {
+							return
+						}
+
+						if (
+							hoveredEdge.source === nd.id ||
+							hoveredEdge.target === nd.id
+						) {
+							return
+						}
+
+						console.log('we are here')
+
+						const newEdges = splitEdge(hoveredEdge, nd)
+						onConnect(newEdges[0])
+						onConnect(newEdges[1])
+						dispatch({
+							type: types.deleteEdge,
+							data: hoveredEdge.id,
+						})
+					}}
 					onNodesChange={onNodesChange}
-					onEdgesChange={onEdgesChange}
+					onEdgesChange={(eds) => {
+						// bug that if you delete the hovered edge
+						// it still 'exists' in the hoveredEdge variable
+						setHoveredEdge(null)
+						onEdgesChange(eds)
+					}}
 					// drag currently doesn't do the callback when a group is dragged
 					// onNodeDragStart={(e, n, nds) => {}}
 					// onNodeDragStop={(e, n, nds) => {
@@ -340,11 +444,19 @@ const Canvas: React.FC<{
 					fitView
 					// onEdgeContextMenu={}
 					onEdgeMouseEnter={(event, edge) => {
+						// console.log(edge)
 						setHoveredEdge(edge)
 					}}
 					onEdgeMouseLeave={(event, edge) => {
 						setHoveredEdge(null)
 					}}
+					onNodeContextMenu={onNodeContextMenu}
+					onSelectionContextMenu={onSelectionContextMenu}
+					onPaneClick={() => {
+						onPaneClick()
+					}}
+					edgesFocusable
+					// onEdgeContextMenu={}
 				>
 					<MiniMapStyled
 						nodeStrokeColor={(n) => {
@@ -380,12 +492,12 @@ const Canvas: React.FC<{
 			</div>
 			<BottomBar>
 				{(showSGButton || mode === 'customize') && (
-					<button onClick={() => setSGModalOpen(true)}>
+					<Button onClick={() => setSGModalOpen(true)}>
 						Save Group
-					</button>
+					</Button>
 				)}
 				{mode === 'customize' && (
-					<button
+					<Button
 						onClick={() => {
 							setNodes([])
 							setEdges([])
@@ -396,7 +508,7 @@ const Canvas: React.FC<{
 						}}
 					>
 						Exit
-					</button>
+					</Button>
 				)}
 			</BottomBar>
 			{nodeID && (

@@ -3,6 +3,8 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import DeleteNode from '@/components/forms/node/DeleteNode'
 import Modal from '@/components/modal/Modal'
+import { FlexRow } from '@/components/styles'
+import { NodeContainer } from './styles'
 
 const PaletteItem: React.FC<{
 	className: string
@@ -60,33 +62,43 @@ const PaletteItem: React.FC<{
 					/>
 				</Modal>
 			)}
-			<div
-				style={{
-					background: color || 'white',
-					borderRadius: 6,
-					height: 35,
-				}}
+			<NodeContainer
+				color={color}
+				active={false}
 				draggable="true"
 				className="node react-flow__node-default"
 				onDragStart={(event) => onDragStart(event)}
 			>
-				{displayName}
-				{modable && (
-					<>
-						<button
-							onClick={() => {
-								dispatch({
-									type: types.customizeSchema,
-									data: { mode: 'customize', schema: name },
-								})
-							}}
-						>
-							E
-						</button>
-						<button onClick={() => setFormMode('delete')}>X</button>
-					</>
-				)}
-			</div>
+				<FlexRow
+					style={{ justifyContent: 'space-between', width: '100%' }}
+				>
+					{displayName}
+					{modable && (
+						<FlexRow>
+							<button
+								style={{ cursor: 'pointer' }}
+								onClick={() => {
+									dispatch({
+										type: types.customizeSchema,
+										data: {
+											mode: 'customize',
+											schema: name,
+										},
+									})
+								}}
+							>
+								E
+							</button>
+							<button
+								style={{ cursor: 'pointer' }}
+								onClick={() => setFormMode('delete')}
+							>
+								X
+							</button>
+						</FlexRow>
+					)}
+				</FlexRow>
+			</NodeContainer>
 		</>
 	)
 }

@@ -6,6 +6,7 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import { Edge, Handle, Position, useUpdateNodeInternals } from 'reactflow'
+import Button from '@/components/Button/Button'
 import { types } from '@/store/reducer'
 import useStore from '@/store/store'
 import { FieldContainer } from './styles'
@@ -44,7 +45,7 @@ export const ObjectField: React.FC<{
 
 	return (
 		<FieldContainer error={error} ref={ref}>
-			<button onClick={del ? () => del(k) : undefined}>Delete</button>
+			<Button onClick={del ? () => del(k) : undefined}>Delete</Button>
 			<input
 				type="text"
 				value={value}
@@ -54,7 +55,7 @@ export const ObjectField: React.FC<{
 				onSubmit={() => update(index, value)}
 			/>
 			{value !== k && (
-				<button onClick={() => update(index, value)}>Save</button>
+				<Button onClick={() => update(index, value)}>Save</Button>
 			)}
 			<Handle
 				key={k}
