@@ -22,7 +22,7 @@ const PaletteItem: React.FC<{
 	fields,
 	nodes,
 	edges,
-	color = 'white',
+	color,
 	modable = false,
 	...props
 }) => {

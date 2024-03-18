@@ -170,7 +170,7 @@ export default ({
 	)
 
 	return (
-		<Node selected={selected}>
+		<Node selected={selected} style={{ padding: 8 }}>
 			<div
 				style={{
 					minHeight:

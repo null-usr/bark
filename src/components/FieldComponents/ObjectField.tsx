@@ -16,12 +16,13 @@ export const ObjectField: React.FC<{
 	v: string
 	index: number
 	id: string
+	color?: string
 	update: (index: number, v: string) => void
 	// add is a function
 	add: (name: string) => void
 	del?: (k: string) => void
 	error?: boolean
-}> = ({ k, v, index, id, error, add, update, del }) => {
+}> = ({ k, v, index, id, error, color, add, update, del }) => {
 	const updateNodeInternals = useUpdateNodeInternals()
 	const dispatch = useStore((state) => state.dispatch)
 
@@ -65,8 +66,9 @@ export const ObjectField: React.FC<{
 				style={{
 					// @ts-ignore
 					top: yOffset, // function to position the handle, should be at same height as this object + centering offset
-					right: 16,
+					right: -3,
 					zIndex: 100,
+					background: color,
 				}}
 				onContextMenu={(event) => {
 					event.preventDefault()

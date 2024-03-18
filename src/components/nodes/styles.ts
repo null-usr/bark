@@ -3,6 +3,7 @@ import styled from 'styled-components'
 export const NodeHeader = styled.div<{
 	color?: string
 }>`
+	padding: 6px;
 	min-height: 32px;
 	background-color: ${({ color }) => color || 'white'};
 `

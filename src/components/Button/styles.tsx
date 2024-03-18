@@ -15,9 +15,9 @@ export const Base = styled.button<BaseProps>`
 	gap: 8px;
 	border: none;
 	margin: 0;
-	padding: 4px 12px;
+	padding: 4px 8px;
 	${({ block }) => (block ? 'flex: 1; width: 100%;' : '')}
-	min-width: 88px;
+	/* min-width: 88px; */
 	min-height: 32px;
 	text-decoration: none;
 	cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
@@ -30,7 +30,7 @@ export const Base = styled.button<BaseProps>`
 		if (danger) return `${colors.red[40]}`
 		return `${colors.blue[60]}`
 	}};
-	border-radius: 6px;
+	border-radius: 4px;
 
 	${Paragraph} {
 		color: ${colors.gray[10]};

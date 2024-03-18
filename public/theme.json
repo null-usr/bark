@@ -1,5 +1,6 @@
 {
-	"bg": "#3a3a3a",
+	"bg": "#000",
+	"secondaryBg": "#181818",
 	"primary": "#D8FFB3",
 
 	"nodeBg": "#343435",

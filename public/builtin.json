@@ -1,25 +1,24 @@
 {
 	"nodes": [{
-			"name": "source",
-			"type": "source",
-			"color": "yellow"
+			"name": "SOURCE",
+			"type": "source"
 		},
 		{
-			"name": "default",
+			"name": "DEFAULT",
 			"type": "default"
 		},
 		{
-			"name": "output",
+			"name": "OUTPUT",
 			"type": "output"
 		},
 		{
-			"name": "base",
+			"name": "BASE",
 			"type": "base"
 		},
 		{
-			"name": "Dialogue Node",
+			"name": "DIALOGUE NODE",
 			"type": "base",
-			"color": "#FFFFFF",
+			"color": "#343435",
 			"fields": [{
 					"key": "characterName",
 					"type": "string",
@@ -33,9 +32,9 @@
 			]
 		},
 		{
-			"name": "Branch",
+			"name": "BRANCH",
 			"type": "group",
-			"color": "#FFFFFF",
+			"color": "#343435",
 			"nodes": [{
 					"name": "Branch",
 					"type": "base",

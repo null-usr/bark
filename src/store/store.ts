@@ -7,11 +7,7 @@ import {
 	EdgeChange,
 	Node,
 	NodeChange,
-	OnConnect,
-	OnEdgesChange,
-	OnNodesChange,
 	Position,
-	useEdges,
 } from 'reactflow'
 import { create } from 'zustand'
 import initialElements from '../helpers/initial-elements'
@@ -129,6 +125,10 @@ const useStore = create<RFState>((set, get) => ({
 		})
 	},
 	deleteEdge: (id: string) => set({ edgeID: id }),
+	deleteNode: (id: string) =>
+		set({
+			nodes: get().nodes.filter((n) => n.id !== id),
+		}),
 	editNode: (id: string) => set({ nodeID: id }),
 	dispatch: (args: { type: any; data: any }) =>
 		// @ts-ignore

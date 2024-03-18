@@ -185,6 +185,7 @@ const Workspace: React.FC<{}> = (props) => {
 									right.
 								</div>
 								<Button
+									type="secondary"
 									onClick={() => {
 										dispatch({
 											type: types.customizeSchema,
@@ -219,7 +220,8 @@ const Workspace: React.FC<{}> = (props) => {
 									gap: 8,
 								}}
 							>
-								<button
+								<Button
+									type="secondary"
 									style={{
 										width: '100%',
 										marginBottom: 8,
@@ -228,7 +230,7 @@ const Workspace: React.FC<{}> = (props) => {
 									onClick={() => setFormMode('createScene')}
 								>
 									New Scene
-								</button>
+								</Button>
 								<SceneGroup
 									data={workspaceScenes}
 									activeScene={activeScene}

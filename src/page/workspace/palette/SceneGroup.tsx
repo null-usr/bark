@@ -15,13 +15,13 @@ const SceneGroup: React.FC<{
 		<>
 			{Object.keys(data).length === 0 && (
 				<SceneContainer
-					style={{
-						background: '#ccc',
-						cursor: 'not-allowed',
-						borderColor: 'black',
-					}}
+					// style={{
+					// 	background: '#ccc',
+					// 	cursor: 'not-allowed',
+					// 	borderColor: 'black',
+					// }}
 				>
-					default
+					DEFAULT
 				</SceneContainer>
 			)}
 			{data.map((s) => {

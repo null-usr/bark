@@ -4,7 +4,7 @@ export const HeaderContainer = styled.div<{
 	background?: string
 }>`
 	// width: 100%;
-	background: ${({ background }) => background || 'grey'};
+	background: ${(props) => props.theme.secondaryBg || 'grey'};
 	color: white;
 	padding: 10px 20px;
 	display: flex;

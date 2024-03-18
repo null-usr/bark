@@ -3,11 +3,15 @@ import {
 	Handle,
 	Position,
 	NodeProps,
-	Connection,
-	Edge,
 	XYPosition,
 	useUpdateNodeInternals,
 } from 'reactflow'
+
+import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
+import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
+import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
+import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
+import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 
 import { v4 as uuidv4 } from 'uuid'
 import Button from '@/components/Button/Button'
@@ -23,6 +27,9 @@ import { NumberField } from '../FieldComponents/NumberField'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { NodeHeader, ButtonRow, Container } from './styles'
 import { CustomField } from '../FieldComponents/CustomField'
+import { FlexRow } from '../styles'
+import IconButton from '../Button/IconButton'
+import ColorInput from '../ColorInput'
 
 // class to help create basic nodes
 export class BasicNode {
@@ -123,7 +130,8 @@ export default ({
 	isConnectable,
 	selected,
 }: NodeProps<{ name: string; color: string; fields: Field[] }>) => {
-	const { edges, workspace, updateNodeColor, updateNodeName } = useStore()
+	const { edges, workspace, updateNodeColor, updateNodeName, deleteNode } =
+		useStore()
 
 	const [fields, setFields] = useState<Field[]>(data.fields || [])
 	const [count, setCount] = useState(fields.length)
@@ -296,8 +304,9 @@ export default ({
 	}, [data])
 
 	return (
-		<Node selected={selected}>
+		<Node color={data.color} selected={selected}>
 			<Handle
+				style={{ background: data.color }}
 				type="target"
 				position={Position.Left}
 				// style={{ background: '#555' }}
@@ -307,191 +316,232 @@ export default ({
 			{/* {sourceHandles} */}
 			<Container>
 				<NodeHeader color={data.color}>
-					<input
-						value={data.name}
-						onChange={(e) => {
-							updateNodeName(id, e.target.value)
-						}}
-					/>
-					<div style={{ padding: 20 }}>
-						<input
-							type="color"
-							value={data.color}
-							onChange={(evt) =>
-								updateNodeColor(id, evt.target.value)
-							}
-							className="nodrag"
-							style={{ cursor: 'pointer' }}
+					<FlexRow style={{ justifyContent: 'space-between' }}>
+						<FlexRow style={{ alignItems: 'center' }}>
+							<input
+								value={data.name}
+								onChange={(e) => {
+									updateNodeName(id, e.target.value)
+								}}
+							/>
+							<ColorInput
+								width="32px"
+								height="32px"
+								value={data.color}
+								onChange={(color) => updateNodeColor(id, color)}
+							/>
+						</FlexRow>
+						<ButtonRow>
+							<IconButton
+								Icon={EditIcon}
+								stroke="white"
+								onClick={() =>
+									dispatch({ type: types.setNode, data: id })
+								}
+							/>
+							{/* If there is no workspace, save to editor is default */}
+							<IconButton
+								Icon={SaveIcon}
+								stroke="white"
+								fill="black"
+								onClick={() =>
+									workspace.name === null
+										? dispatch({
+												type: types.addCustomNode,
+												data: SerializeNode(
+													data.name,
+													data.color,
+													'base',
+													fields
+												),
+										  })
+										: dispatch({
+												type: types.addCustomWorkspaceNode,
+												data: SerializeNode(
+													`@workspace/${data.name}`,
+													data.color,
+													'base',
+													fields
+												),
+										  })
+								}
+							/>
+							<IconButton
+								Icon={CloseIcon}
+								width={32}
+								height={32}
+								onClick={() => deleteNode(id)}
+							/>
+						</ButtonRow>
+					</FlexRow>
+				</NodeHeader>
+
+				<Container style={{ padding: 8 }}>
+					<div style={{ alignSelf: 'center' }}>
+						<IconButton
+							background="white"
+							Icon={expanded ? ChevronUpIcon : ChevronDownIcon}
+							onClick={() => setExpanded(!expanded)}
 						/>
 					</div>
-				</NodeHeader>
-				<ButtonRow>
-					<Button
-						onClick={() =>
-							dispatch({ type: types.setNode, data: id })
-						}
-					>
-						Edit
-					</Button>
-					{/* If there is no workspace, save to editor is default */}
-					<Button
-						onClick={() =>
-							workspace.name === null
-								? dispatch({
-										type: types.addCustomNode,
-										data: SerializeNode(
-											data.name,
-											data.color,
-											'base',
-											fields
-										),
-								  })
-								: dispatch({
-										type: types.addCustomWorkspaceNode,
-										data: SerializeNode(
-											`@workspace/${data.name}`,
-											data.color,
-											'base',
-											fields
-										),
-								  })
-						}
-					>
-						Save
-					</Button>
-				</ButtonRow>
-				<ButtonRow>
-					<Button onClick={() => setExpanded(!expanded)}>
-						{!expanded && <>Expand</>}
-						{expanded && <>Collapse</>}
-					</Button>
-				</ButtonRow>
 
-				{expanded && (
-					<>
-						<ButtonRow>
-							<Button onClick={() => addField('string')}>
-								String
-							</Button>
-							<Button onClick={() => addField('text')}>
-								Text
-							</Button>
-							<Button onClick={() => addField('bool')}>
-								Boolean
-							</Button>
-							<Button onClick={() => addField('number')}>
-								Number
-							</Button>
-							<Button onClick={() => addField('data')}>
-								data
-							</Button>
-							<button
-								disabled={
-									Object.keys(workspace.w_vars).length === 0
-								}
-								onClick={() => addField('custom')}
+					{expanded && (
+						<>
+							<ButtonRow>
+								<Button
+									type="secondary"
+									onClick={() => addField('string')}
+								>
+									String
+								</Button>
+								<Button
+									type="secondary"
+									onClick={() => addField('text')}
+								>
+									Text
+								</Button>
+								<Button
+									type="secondary"
+									onClick={() => addField('bool')}
+								>
+									Boolean
+								</Button>
+								<Button
+									type="secondary"
+									onClick={() => addField('number')}
+								>
+									Number
+								</Button>
+								<Button
+									type="secondary"
+									onClick={() => addField('data')}
+								>
+									data
+								</Button>
+								<Button
+									type="secondary"
+									disabled={
+										Object.keys(workspace.w_vars).length ===
+										0
+									}
+									onClick={() => addField('custom')}
+								>
+									custom
+								</Button>
+							</ButtonRow>
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									gap: 4,
+								}}
+								className="nodrag"
 							>
-								custom
-							</button>
-						</ButtonRow>
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'column',
-								gap: 4,
-							}}
-							className="nodrag"
-						>
-							{fields.map((field, index) => {
-								switch (field.type) {
-									case 'string':
-										return (
-											<StringField
-												index={index}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												updateValue={updateValue}
-												updateKey={updateKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									case 'text':
-										return (
-											<StringField
-												index={index}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												updateValue={updateValue}
-												updateKey={updateKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									case 'bool':
-										return (
-											<BooleanField
-												index={index}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												updateValue={updateValue}
-												updateKey={updateKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									case 'number':
-										return (
-											<NumberField
-												index={index}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												updateValue={updateValue}
-												updateKey={updateKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									case 'data':
-										return (
-											<ObjectField
-												add={addHandle}
-												id={id}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												index={index}
-												update={updateDataFieldKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									case 'custom':
-										return (
-											<CustomField
-												index={index}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												updateValue={updateValue}
-												updateKey={updateKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									default:
-										return <></>
-								}
-							})}
-						</div>
-					</>
-				)}
+								{fields.map((field, index) => {
+									switch (field.type) {
+										case 'string':
+											return (
+												<StringField
+													index={index}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													updateValue={updateValue}
+													updateKey={updateKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										case 'text':
+											return (
+												<StringField
+													index={index}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													updateValue={updateValue}
+													updateKey={updateKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										case 'bool':
+											return (
+												<BooleanField
+													index={index}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													updateValue={updateValue}
+													updateKey={updateKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										case 'number':
+											return (
+												<NumberField
+													index={index}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													updateValue={updateValue}
+													updateKey={updateKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										case 'data':
+											return (
+												<ObjectField
+													color={data.color}
+													add={addHandle}
+													id={id}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													index={index}
+													update={updateDataFieldKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										case 'custom':
+											return (
+												<CustomField
+													index={index}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													updateValue={updateValue}
+													updateKey={updateKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										default:
+											return <></>
+									}
+								})}
+							</div>
+						</>
+					)}
+				</Container>
 			</Container>
 			<Handle
+				style={{ background: data.color, top: 70 }}
 				type="source"
 				position={Position.Right}
 				id={id}
@@ -511,7 +561,10 @@ export default ({
 							id={h}
 							position={Position.Right}
 							onClick={undefined}
-							style={{ pointerEvents: 'none' }}
+							style={{
+								pointerEvents: 'none',
+								background: data.color,
+							}}
 							isConnectable={false}
 						/>
 					))}

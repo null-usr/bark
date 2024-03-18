@@ -72,7 +72,11 @@ export default ({
 			
 			} */}
 
-			<Node dragging={dragging} selected={selected}>
+			<Node
+				dragging={dragging}
+				selected={selected}
+				style={{ padding: 8 }}
+			>
 				<div
 					style={{
 						display: 'flex',

@@ -12,7 +12,7 @@ export const ModalContainer = styled.div<{
 	left: 50%;
 	transform: translate(-50%, -50%);
 	background-color: white;
-	border-radius: 5px;
+	border-radius: 2px;
 `
 
 export const Content = styled.div<{}>`

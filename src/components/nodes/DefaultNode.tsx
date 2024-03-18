@@ -75,7 +75,7 @@ export default ({
 	}
 
 	return (
-		<Node selected={selected}>
+		<Node selected={selected} style={{ padding: 8 }}>
 			<Handle
 				type="target"
 				position={Position.Left}

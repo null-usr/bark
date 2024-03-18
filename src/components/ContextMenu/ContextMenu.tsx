@@ -16,7 +16,8 @@ export const ContextMenu: React.FC<{
 	right: number
 	bottom: number
 	onSave: () => void
-}> = ({ ids, top, left, right, bottom, onSave, ...props }) => {
+	close: () => void
+}> = ({ ids, top, left, right, bottom, onSave, close, ...props }) => {
 	const { nodes, edges, addNode, onConnect, setNodes, dispatch } = useStore()
 
 	const rfStore = useStoreApi()
@@ -99,6 +100,7 @@ export const ContextMenu: React.FC<{
 		)
 
 		setNodes(nodes.filter((node) => !ids.includes(node.id)))
+		close()
 	}, [ids, setNodes])
 
 	return (

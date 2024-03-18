@@ -18,8 +18,8 @@ export const TabLink = styled.button<{
 	active: boolean
 }>`
 	background-color: ${({ active, ...props }) =>
-		active ? `${props.theme.bg}` : '#fcfcfc'};
-	color: ${({ active }) => (active ? 'white' : 'black')};
+		active ? props.theme.secondaryBg : props.theme.bg};
+	color: white;
 	float: left;
 	border: none;
 	outline: none;
@@ -36,7 +36,7 @@ export const TabLink = styled.button<{
 
 export const BottomBar = styled.div`
 	position: absolute;
-	bottom 20px;
+	bottom: 20px;
 	left: 0;
 	right: 0;
 

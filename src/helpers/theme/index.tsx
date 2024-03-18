@@ -36,18 +36,25 @@ export const ControlsStyled = styled(Controls)`
 
 export const Node = styled.div<{ selected?: boolean; dragging?: boolean }>`
 	${({ dragging }) => dragging && 'pointer-events: none;'}
-	padding: 10px 20px;
-	border-radius: 5px;
+	border-radius: 2px;
 	background: ${(props) => props.theme.nodeBg};
 	color: ${(props) => props.theme.nodeColor};
-	border: 1px solid
+
+	border: 2px solid
 		${(props) =>
-			props.selected ? props.theme.primary : props.theme.nodeBorder};
+			props.selected
+				? `${props.theme.primary}`
+				: `${props.color ? props.color : props.theme.nodeBorder}`};
 
 	.react-flow__handle {
 		background: ${(props) => props.theme.primary};
 		width: 10px;
 		height: 10px;
 		border-radius: 50%;
+	}
+
+	.react-flow__node-default {
+		border: ${({ selected, ...props }) =>
+			selected ? `1px solid blue` : '1px solid green'};
 	}
 `

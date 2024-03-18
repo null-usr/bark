@@ -10,11 +10,11 @@ export const PaletteContainer = styled.div`
 	flex-direction: column;
 	justify-content: centered;
 
-	border-right: 1px solid #eee;
+	border-right: 1px solid #404040;
 	// padding: 15px 10px;
 	font-size: 12px;
 	color: white;
-	background: ${(props) => props.theme.bg};
+	background: ${(props) => props.theme.secondaryBg};
 
 	@media screen and (min-width: 768px) {
 		//width: 20%;
@@ -38,8 +38,10 @@ export const SceneContainer = styled.div<{ active?: boolean }>`
 
 	cursor: pointer;
 
+	background-color: ${(props) => props.theme.nodeBg};
+
 	height: 50px;
-	border-radius: 6px;
+	border-radius: 3px;
 	border: 1px solid
 		${({ active, ...props }) =>
 			active ? `${props.theme.primary}` : '#fcfcfc'};
@@ -50,18 +52,20 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 	justify-content: center;
 	align-content: center;
 
+	color: white;
+
 	cursor: pointer;
 
-	background-color: ${({ color }) => color || 'white'};
+	background-color: ${({ color, ...props }) => color || props.theme.nodeBg};
 
 	min-height: 50px;
-	border-radius: 6px;
-	border: 2px solid
+	border-radius: 3px;
+	border: 1px solid
 		${({ active, ...props }) =>
 			active ? `${props.theme.primary}` : '#fcfcfc'};
 
 	&:hover {
-		border: 2px solid blue;
+		border: 1px solid ${(props) => props.theme.primary};
 	}
 `
 
