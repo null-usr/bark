@@ -32,9 +32,9 @@ export const PaletteContainer = styled.div`
 `
 
 export const SceneContainer = styled.div<{ active?: boolean }>`
-	display: grid;
-	justify-content: center;
-	align-content: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 
 	cursor: pointer;
 
@@ -49,10 +49,7 @@ export const SceneContainer = styled.div<{ active?: boolean }>`
 
 export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 	display: grid;
-	justify-content: center;
 	align-content: center;
-
-	color: white;
 
 	cursor: pointer;
 

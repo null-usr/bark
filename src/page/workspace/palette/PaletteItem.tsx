@@ -4,6 +4,10 @@ import { types } from '@/store/reducer'
 import DeleteNode from '@/components/forms/node/DeleteNode'
 import Modal from '@/components/modal/Modal'
 import { FlexRow } from '@/components/styles'
+import { Paragraph } from '@/components/Typography/text'
+import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
+import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
+import IconButton from '@/components/Button/IconButton'
 import { NodeContainer } from './styles'
 
 const PaletteItem: React.FC<{
@@ -72,11 +76,16 @@ const PaletteItem: React.FC<{
 				<FlexRow
 					style={{ justifyContent: 'space-between', width: '100%' }}
 				>
-					{displayName}
+					<Paragraph
+						color="white"
+						style={{ flex: 1, textAlign: 'center' }}
+					>
+						{displayName}
+					</Paragraph>
 					{modable && (
-						<FlexRow>
-							<button
-								style={{ cursor: 'pointer' }}
+						<FlexRow style={{ alignItems: 'center' }}>
+							<IconButton
+								Icon={EditIcon}
 								onClick={() => {
 									dispatch({
 										type: types.customizeSchema,
@@ -86,15 +95,11 @@ const PaletteItem: React.FC<{
 										},
 									})
 								}}
-							>
-								E
-							</button>
-							<button
-								style={{ cursor: 'pointer' }}
+							/>
+							<IconButton
+								Icon={CloseIcon}
 								onClick={() => setFormMode('delete')}
-							>
-								X
-							</button>
+							/>
 						</FlexRow>
 					)}
 				</FlexRow>

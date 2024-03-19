@@ -49,7 +49,9 @@ const CreateNode: React.FC<{
 			{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 				<Form onSubmit={handleSubmit}>
 					<FlexColumn>
-						<H3 style={{ alignSelf: 'center' }}>SAVE NODE</H3>
+						<H3 color="white" style={{ alignSelf: 'center' }}>
+							SAVE NODE
+						</H3>
 						<label htmlFor="name">Name</label>
 						<Field name="name" />
 						{errors.name ? <div>{errors.name}</div> : null}

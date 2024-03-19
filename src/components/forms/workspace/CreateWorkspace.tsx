@@ -2,6 +2,7 @@
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
 import Button from '@/components/Button/Button'
+import { FlexColumn, FlexRow } from '@/components/styles'
 
 // Create a custom editor or workspace node
 const CreateWorkspace: React.FC<{
@@ -31,13 +32,17 @@ const CreateWorkspace: React.FC<{
 		>
 			{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 				<Form onSubmit={handleSubmit}>
-					<label htmlFor="name">Name</label>
-					<Field name="name" />
-					{errors.name ? <div>{errors.name}</div> : null}
-					<Button submitType="submit">Save</Button>
-					<Button type="subtle" onClick={cancel}>
-						cancel
-					</Button>
+					<FlexColumn style={{ padding: 8 }}>
+						<label htmlFor="name">Name</label>
+						<Field name="name" />
+						{errors.name ? <div>{errors.name}</div> : null}
+						<FlexRow>
+							<Button submitType="submit">Save</Button>
+							<Button type="subtle" onClick={cancel}>
+								cancel
+							</Button>
+						</FlexRow>
+					</FlexColumn>
 				</Form>
 			)}
 		</Formik>

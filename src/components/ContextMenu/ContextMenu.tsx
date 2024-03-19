@@ -5,9 +5,16 @@ import { SerializeNode } from '@/helpers/serialization/serialization'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { types } from '@/store/reducer'
+import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
+import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
+import { ReactComponent as DuplicateIcon } from '@/assets/icons/duplicate.svg'
 import { ContextButton, ContextMenuContainer } from './styles'
 import Divider from '../Divider'
 import Button from '../Button/Button'
+import { Paragraph } from '../Typography/text'
+import { FlexRow } from '../styles'
+
+import IconButton from '../Button/IconButton'
 
 export const ContextMenu: React.FC<{
 	ids: string[]
@@ -107,26 +114,31 @@ export const ContextMenu: React.FC<{
 		// @ts-ignore
 		<ContextMenuContainer style={{ top, left, right, bottom }}>
 			<ContextButton>
-				<p style={{ margin: '0.5em' }}>
-					<small>
-						node(s):{' '}
-						{ids.map((id) => (
-							<p key={id}>{id}, </p>
-						))}
-					</small>
-				</p>
+				<Paragraph>
+					node(s):{' '}
+					{ids.map((id, index, arr) => (
+						<>
+							[{id}]{index < arr.length - 1 && <>, </>}
+						</>
+					))}
+				</Paragraph>
 				<Divider />
 			</ContextButton>
-			<ContextButton>
-				<Button onClick={duplicateNode}>duplicate</Button>
-			</ContextButton>
-			<ContextButton>
-				<Button onClick={onSave}>save</Button>
-			</ContextButton>
-			<Divider />
-			<ContextButton>
-				<Button onClick={deleteNode}>delete</Button>
-			</ContextButton>
+			<FlexRow style={{ justifyContent: 'space-between' }}>
+				<FlexRow>
+					<IconButton
+						fill="white"
+						Icon={DuplicateIcon}
+						onClick={duplicateNode}
+					/>
+					<IconButton fill="white" Icon={SaveIcon} onClick={onSave} />
+				</FlexRow>
+				<IconButton
+					fill="white"
+					Icon={CloseIcon}
+					onClick={deleteNode}
+				/>
+			</FlexRow>
 		</ContextMenuContainer>
 	)
 }

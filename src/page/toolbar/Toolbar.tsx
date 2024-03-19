@@ -16,7 +16,9 @@ import { Workspace } from '@/helpers/types'
 import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
 import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
+import Button from '@/components/Button/Button'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
+import { ToolbarButton } from './ToolbarButton'
 
 // create an input which we then call click upon
 function buildFileSelector() {
@@ -213,27 +215,45 @@ function Toolbar() {
 			{/* Only render the visible toolbar if we're not in the electron app */}
 			{navigator.userAgent !== 'Electron' && (
 				<HeaderContainer>
-					<LeftButtonGroup>
-						<Dropdown label="File">
-							<button onClick={onNew}>New</button>
-							<button onClick={handleFileSelect}>Open</button>
-							<button onClick={onSave}>Save</button>
-							<button onClick={onExport}>Export</button>
-							<div>File 3</div>
-						</Dropdown>
-						<Dropdown label="Workspace">
-							<button onClick={() => setFormMode('newWorkspace')}>
-								New
-							</button>
-							<button
+					<LeftButtonGroup style={{ gap: 0 }}>
+						<ToolbarButton label="File">
+							<Button type="subtle" block onClick={onNew}>
+								New File
+							</Button>
+							<Button
+								type="subtle"
+								block
+								onClick={handleFileSelect}
+							>
+								Open
+							</Button>
+							<Button type="subtle" block onClick={onSave}>
+								Save
+							</Button>
+							<Button type="subtle" block onClick={onExport}>
+								Export
+							</Button>
+						</ToolbarButton>
+						<ToolbarButton label="Workspace">
+							<Button
+								type="subtle"
+								block
+								onClick={() => setFormMode('newWorkspace')}
+							>
+								New Workspace
+							</Button>
+							<Button
+								type="subtle"
+								block
 								disabled={workspace.name === null}
 								onClick={() => setFormMode('edit')}
 							>
 								Edit
-							</button>
-							<div>File 3</div>
-						</Dropdown>
-						<button>Help</button>
+							</Button>
+						</ToolbarButton>
+						<ToolbarButton label="Help">
+							<></>
+						</ToolbarButton>
 					</LeftButtonGroup>
 					{/* don't really have anything for this atm */}
 					{/* <RightButtonGroup>

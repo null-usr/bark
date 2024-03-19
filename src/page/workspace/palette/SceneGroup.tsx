@@ -2,8 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { Schema } from '@/helpers/types'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
-import PaletteItem from './PaletteItem'
+import { FlexRow } from '@/components/styles'
+import IconButton from '@/components/Button/IconButton'
+import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
+import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
+import { Paragraph } from '@/components/Typography/text'
 import { Group, SceneContainer } from './styles'
+import PaletteItem from './PaletteItem'
 
 const SceneGroup: React.FC<{
 	data: string[]
@@ -15,13 +20,18 @@ const SceneGroup: React.FC<{
 		<>
 			{Object.keys(data).length === 0 && (
 				<SceneContainer
-					// style={{
-					// 	background: '#ccc',
-					// 	cursor: 'not-allowed',
-					// 	borderColor: 'black',
-					// }}
+				// style={{
+				// 	background: '#ccc',
+				// 	cursor: 'not-allowed',
+				// 	borderColor: 'black',
+				// }}
 				>
-					DEFAULT
+					<Paragraph
+						color="white"
+						style={{ flex: 1, textAlign: 'center' }}
+					>
+						DEFAULT
+					</Paragraph>
 				</SceneContainer>
 			)}
 			{data.map((s) => {
@@ -40,10 +50,16 @@ const SceneGroup: React.FC<{
 						}
 						active={activeScene === s}
 					>
-						{s}
+						<Paragraph
+							color="white"
+							style={{ flex: 1, textAlign: 'center' }}
+						>
+							{s}
+						</Paragraph>
 						{activeScene !== s && (
-							<>
-								<button
+							<FlexRow style={{ alignItems: 'center' }}>
+								<IconButton
+									Icon={EditIcon}
 									onClick={
 										activeScene === s
 											? undefined
@@ -53,10 +69,9 @@ const SceneGroup: React.FC<{
 											  }
 									}
 									key={s}
-								>
-									O
-								</button>
-								<button
+								/>
+								<IconButton
+									Icon={CloseIcon}
 									onClick={
 										activeScene === s
 											? undefined
@@ -66,10 +81,8 @@ const SceneGroup: React.FC<{
 											  }
 									}
 									key={s}
-								>
-									X
-								</button>
-							</>
+								/>
+							</FlexRow>
 						)}
 					</SceneContainer>
 				)
