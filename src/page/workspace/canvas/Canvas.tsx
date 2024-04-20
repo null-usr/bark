@@ -29,6 +29,7 @@ import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import EdgeDetail from '../../detail/EdgeDetail'
 import { CanvasContainer } from './styles'
 import { BottomBar } from '../styles'
+import { BasicNode } from '@/helpers/classes/BasicNode'
 
 const Canvas: React.FC<{
 	schemaName?: string | null
@@ -174,14 +175,7 @@ const Canvas: React.FC<{
 				x: event.clientX - reactFlowBounds.left,
 				y: event.clientY - reactFlowBounds.top,
 			})
-			const newNode = {
-				id: uuid(),
-				type: 'default',
-				position,
-				data: { label: `default node` },
-				sourcePosition: Position.Right,
-				targetPosition: Position.Left,
-			}
+			const newNode = new BasicNode('BASE', position.x, position.y)
 
 			const edge: Edge = new DataEdge(
 				connection.current!.nodeId!,
