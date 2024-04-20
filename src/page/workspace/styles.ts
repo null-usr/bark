@@ -28,6 +28,9 @@ export const TabLink = styled.button<{
 	font-size: 17px;
 	width: 50%;
 
+	${({ active, ...props }) =>
+		active && `border-top: 2px solid ${props.theme.primary};`}
+
 	&:hover {
 		background-color: ${({ active }) => (active ? '' : '#777')};
 		color: ${({ active }) => (active ? '' : 'white')};

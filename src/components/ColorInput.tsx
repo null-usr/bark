@@ -18,8 +18,8 @@ const StyledInput = styled.input<{
 	width?: string
 }>`
 	border-radius: 50%;
-	inline-size: ${({ width }) => width || '100%'};
-	block-size: ${({ width }) => width || '100%'};
+	inline-size: ${({ width }) => width || '32px'};
+	block-size: ${({ width }) => width || '32px'};
 	padding: 1px;
 	border-width: 1px;
 	border-style: solid;
@@ -39,11 +39,12 @@ const StyledInput = styled.input<{
 `
 
 const ColorInput: React.FC<{
-	value: string
+	name?: string
+	value?: string
 	width?: string
 	height?: string
 	onChange?: (a0: string) => void
-}> = ({ value, width, height, onChange }) => {
+}> = ({ name, value, width, height, onChange }) => {
 	const colorInputRef = useRef(null)
 
 	const handleColorChange = (event: { target: { value: any } }) => {
@@ -66,6 +67,7 @@ const ColorInput: React.FC<{
 				onClick={handleSpanClick}
 			/> */}
 			<StyledInput
+				name={name}
 				width={width}
 				type="color"
 				value={value}

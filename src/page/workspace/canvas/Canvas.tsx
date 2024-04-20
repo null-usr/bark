@@ -1,11 +1,4 @@
-import React, {
-	useCallback,
-	useContext,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
 	Background,
 	Connection,
@@ -21,7 +14,7 @@ import {
 } from 'reactflow'
 import { v4 as uuid } from 'uuid'
 import Modal from '@/components/modal/Modal'
-import DataEdge from '@/components/edges/DataEdge'
+import { DataEdge } from '@/helpers/classes/DataEdge'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { encodeSchema } from '@/helpers/serialization/encodeSchema'
@@ -60,7 +53,13 @@ const Canvas: React.FC<{
 	setNodes,
 	mode,
 }) => {
-	const { activeScene, customNodes: custom, workspace } = useStore()
+	const {
+		activeScene,
+		customNodes: custom,
+		workspace,
+		edgeID,
+		nodeID,
+	} = useStore()
 	const { setViewport, fitView } = useReactFlow()
 
 	// for modal
@@ -74,12 +73,6 @@ const Canvas: React.FC<{
 
 	const reactFlowInstance = useReactFlow()
 	const reactFlowWrapper = useRef<any>(null)
-
-	// call your hook here
-	// const forceUpdate = useForceUpdate()
-
-	const nodeID = useStore((state) => state.nodeID)
-	const edgeID = useStore((state) => state.edgeID)
 
 	const forbiddenList = [
 		...workspace.schemas.map((s) => s.name),
@@ -361,6 +354,7 @@ const Canvas: React.FC<{
 					onClick={onPaneClick}
 					onSave={() => setSGModalOpen(true)}
 					// @ts-ignore
+					// eslint-disable-next-line react/jsx-props-no-spreading
 					{...contextMenuData}
 				/>
 			)}

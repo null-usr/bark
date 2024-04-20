@@ -128,6 +128,17 @@ const useStore = create<RFState>((set, get) => ({
 	deleteNode: (id: string) =>
 		set({
 			nodes: get().nodes.filter((n) => n.id !== id),
+			edges: applyEdgeChanges(
+				get()
+					.edges.filter(
+						(e) =>
+							e.sourceNode?.id !== id && e.targetNode?.id !== id
+					)
+					.map((e) => {
+						return { id: e.id, type: 'remove' }
+					}),
+				get().edges
+			),
 		}),
 	editNode: (id: string) => set({ nodeID: id }),
 	dispatch: (args: { type: any; data: any }) =>

@@ -40,6 +40,10 @@ export const Node = styled.div<{ selected?: boolean; dragging?: boolean }>`
 	background: ${(props) => props.theme.nodeBg};
 	color: ${(props) => props.theme.nodeColor};
 
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
+
 	border: 2px solid
 		${(props) =>
 			props.selected

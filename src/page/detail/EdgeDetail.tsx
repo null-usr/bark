@@ -2,7 +2,7 @@ import Modal from '@/components/modal/Modal'
 import React, { useState } from 'react'
 import { useReactFlow } from 'reactflow'
 import { types } from '@/store/reducer'
-import DataEdge from '@/components/edges/DataEdge'
+import { DataEdge } from '@/helpers/classes/DataEdge'
 import { BooleanField } from '@/components/FieldComponents/BooleanField'
 import { NumberField } from '@/components/FieldComponents/NumberField'
 import { StringField } from '@/components/FieldComponents/StringField'
@@ -10,6 +10,8 @@ import { ButtonRow } from '@/helpers/styles'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
 import Button from '@/components/Button/Button'
+import { FlexColumn, FlexRow } from '@/components/styles'
+import Divider from '@/components/Divider'
 import { Container } from './styles'
 
 const Detail: React.FC<{
@@ -24,7 +26,10 @@ const Detail: React.FC<{
 
 	const editEdge = reactFlowInstance.getEdge(edgeID) as DataEdge
 	const [name, setName] = useState(editEdge.data.name)
-	const [id, setID] = useState(edgeID || '')
+	// const [id, setID] = useState(edgeID || '')
+
+	const incomingNodes = nodes.filter((n) => n.id === editEdge.source)
+	const outgoingNodes = nodes.filter((n) => n.id === editEdge.target)
 
 	const [fields, setFields] = useState<Field[]>(editEdge.data.fields || [])
 	const [count, setCount] = useState(fields.length)
@@ -59,7 +64,7 @@ const Detail: React.FC<{
 			close={() => {
 				const edgeData = {
 					name,
-					id,
+					edgeID,
 					fields,
 				}
 				// in this case ID doesn't matter because when we export
@@ -73,54 +78,110 @@ const Detail: React.FC<{
 				close()
 			}}
 		>
-			<Container>
-				{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
-				<input value={name} onChange={(e) => setName(e.target.value)} />
-				<ButtonRow>
-					<Button onClick={() => addField('string')}>Text</Button>
-					<Button onClick={() => addField('bool')}>Boolean</Button>
-					<Button onClick={() => addField('number')}>Number</Button>
-				</ButtonRow>
-				{/* {fields.map((field, index) => {
-					switch (field.type) {
-						case 'string':
-							return (
-								<StringField
-									updateField={updateField}
-									del={deleteField}
-									index={index}
-									key={field.key}
-									k={field.key}
-									v={field.value}
-								/>
-							)
-						case 'bool':
-							return (
-								<BooleanField
-									updateField={updateField}
-									del={deleteField}
-									index={index}
-									key={field.key}
-									k={field.key}
-									v={field.value}
-								/>
-							)
-						case 'number':
-							return (
-								<NumberField
-									updateField={updateField}
-									del={deleteField}
-									index={index}
-									key={field.key}
-									k={field.key}
-									v={field.value}
-								/>
-							)
-						default:
-							return <></>
-					}
-				})} */}
-			</Container>
+			<FlexRow>
+				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
+					INCOMING NODES
+					<Divider />
+					{incomingNodes.map((n) => {
+						return (
+							<Button
+								type="secondary"
+								onClick={() => {
+									dispatch({
+										type: types.setNode,
+										data: n.id,
+									})
+									dispatch({
+										type: types.setEdge,
+										data: null,
+									})
+								}}
+							>
+								{n.id}
+							</Button>
+						)
+					})}
+				</FlexColumn>
+
+				<Container>
+					{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
+					<input
+						value={name}
+						onChange={(e) => setName(e.target.value)}
+					/>
+					<ButtonRow>
+						<Button onClick={() => addField('string')}>Text</Button>
+						<Button onClick={() => addField('bool')}>
+							Boolean
+						</Button>
+						<Button onClick={() => addField('number')}>
+							Number
+						</Button>
+					</ButtonRow>
+					{fields.map((field, index) => {
+						switch (field.type) {
+							case 'string':
+								return (
+									<StringField
+										updateField={updateField}
+										del={deleteField}
+										index={index}
+										key={field.key}
+										k={field.key}
+										v={field.value}
+									/>
+								)
+							case 'bool':
+								return (
+									<BooleanField
+										updateField={updateField}
+										del={deleteField}
+										index={index}
+										key={field.key}
+										k={field.key}
+										v={field.value}
+									/>
+								)
+							case 'number':
+								return (
+									<NumberField
+										updateField={updateField}
+										del={deleteField}
+										index={index}
+										key={field.key}
+										k={field.key}
+										v={field.value}
+									/>
+								)
+							default:
+								return <></>
+						}
+					})}
+				</Container>
+				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
+					OUTGOING NODES
+					<Divider />
+					{outgoingNodes.map((n) => {
+						return (
+							<Button
+								type="secondary"
+								onClick={() => {
+									dispatch({
+										type: types.setNode,
+										data: n.id,
+									})
+									dispatch({
+										type: types.setEdge,
+										data: null,
+									})
+								}}
+							>
+								{n.id}
+							</Button>
+						)
+					})}
+				</FlexColumn>
+			</FlexRow>
 		</Modal>
 	)
 }

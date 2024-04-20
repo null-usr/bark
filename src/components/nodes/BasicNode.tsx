@@ -1,19 +1,14 @@
-import React, { useState, useEffect, createRef, useMemo } from 'react'
-import {
-	Handle,
-	Position,
-	NodeProps,
-	XYPosition,
-	useUpdateNodeInternals,
-} from 'reactflow'
+import React, { useState, useEffect, useRef } from 'react'
+import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
 import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
 import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
-import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
+import ChevronDown, {
+	ReactComponent as ChevronDownIcon,
+} from '@/assets/icons/chevron_down.svg'
 import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 
-import { v4 as uuidv4 } from 'uuid'
 import Button from '@/components/Button/Button'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
@@ -31,96 +26,6 @@ import { FlexRow } from '../styles'
 import IconButton from '../Button/IconButton'
 import ColorInput from '../ColorInput'
 
-// class to help create basic nodes
-export class BasicNode {
-	id: string
-	color: string
-	name: string
-	fields: Field[]
-	data: { name: string; color: string; fields?: Field[]; type: string } = {
-		name: '',
-		color: '',
-		type: 'basic',
-	}
-
-	nodeData: any
-	type: string
-
-	sourcePosition: Position
-	targetPosition: Position
-	position: XYPosition
-
-	constructor(
-		name: string,
-		x: number,
-		y: number,
-		id?: string,
-		data?: Field[],
-		color?: string,
-		TB?: boolean
-	) {
-		this.id = id || uuidv4()
-		this.position = { x, y }
-		this.fields = data || []
-		this.type = 'base'
-		this.name = name
-		this.color = color || '#FFFFFF'
-		this.nodeData = createRef()
-		this._set_data()
-
-		if (TB) {
-			this.sourcePosition = Position.Bottom
-			this.targetPosition = Position.Top
-		} else {
-			this.sourcePosition = Position.Right
-			this.targetPosition = Position.Left
-		}
-	}
-
-	private _set_data() {
-		this.data = {
-			color: this.color,
-			name: this.name,
-			fields: this.fields,
-			type: 'base',
-		}
-	}
-
-	// here we look into our component and grab all the data we need
-	public serialize = (): {
-		[id: string]: {
-			[key: string]: [value: string]
-		}
-	} => {
-		if (this.nodeData.current) {
-			const data = this.nodeData.current.getNodeData()
-			const output: any = {}
-			output[this.id] = {}
-			data.forEach((element: Field) => {
-				output[this.id][element.key] = element.value
-			})
-			return output
-		}
-		return {}
-	}
-}
-
-// example function
-export function CreateDialogueNode(x: number, y: number) {
-	return new BasicNode('Dialogue Node', x, y, undefined, [
-		{
-			key: 'characterName',
-			type: 'string',
-			value: '',
-		},
-		{
-			key: 'dialogue',
-			type: 'text',
-			value: '',
-		},
-	])
-}
-
 // https://www.carlrippon.com/react-forwardref-typescript/
 // https://stackoverflow.com/questions/37949981/call-child-method-from-parent
 // need to do a check that all the keys are unique
@@ -132,6 +37,10 @@ export default ({
 }: NodeProps<{ name: string; color: string; fields: Field[] }>) => {
 	const { edges, workspace, updateNodeColor, updateNodeName, deleteNode } =
 		useStore()
+
+	const nodeRef = useRef<HTMLDivElement>(null)
+	const [nodeWidth, setNodeWidth] = useState(50)
+	const [nodeHeight, setNodeHeight] = useState(50)
 
 	const [fields, setFields] = useState<Field[]>(data.fields || [])
 	const [count, setCount] = useState(fields.length)
@@ -303,10 +212,36 @@ export default ({
 		setFields([...data.fields])
 	}, [data])
 
+	useEffect(() => {
+		if (nodeRef.current) {
+			setNodeWidth(nodeRef.current.offsetWidth)
+			setNodeHeight(nodeRef.current.offsetHeight)
+		}
+	}, [data, expanded])
+
+	const controlStyle = {
+		background: 'transparent',
+		border: 'none',
+	}
+
 	return (
 		<Node color={data.color} selected={selected}>
+			{/* TODO: disabled until vertical resize can play well w/ 
+			additional fields being added */}
+			{/* {expanded && (
+				<NodeResizeControl
+					style={controlStyle}
+					minWidth={nodeWidth}
+					minHeight={nodeHeight}
+				>
+					<ResizeIcon />
+				</NodeResizeControl>
+			)} */}
 			<Handle
-				style={{ background: data.color }}
+				style={{
+					background: data.color,
+					top: 70,
+				}}
 				type="target"
 				position={Position.Left}
 				// style={{ background: '#555' }}
@@ -314,7 +249,7 @@ export default ({
 				isConnectable={isConnectable}
 			/>
 			{/* {sourceHandles} */}
-			<Container>
+			<Container ref={nodeRef}>
 				<NodeHeader color={data.color}>
 					<FlexRow style={{ justifyContent: 'space-between' }}>
 						<FlexRow style={{ alignItems: 'center' }}>
@@ -370,6 +305,7 @@ export default ({
 								Icon={CloseIcon}
 								width={32}
 								height={32}
+								// TODO: The way this deletes nodes is causing an issue, the edges aren't deleted too
 								onClick={() => deleteNode(id)}
 							/>
 						</ButtonRow>

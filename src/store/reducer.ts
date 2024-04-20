@@ -144,7 +144,7 @@ export const reducer = (
 			return {}
 		}
 		case types.setEdge: {
-			return { edgeID: data.nodes }
+			return { edgeID: data }
 		}
 
 		case types.updateSourceHandle: {

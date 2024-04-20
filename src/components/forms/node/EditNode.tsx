@@ -4,6 +4,7 @@ import { Formik, Form, Field } from 'formik'
 import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import { H1, H3 } from '@/components/Typography/headers'
+import ColorInput from '@/components/ColorInput'
 
 // Edit a custom editor or workspace node
 // Shared w/ Create Node
@@ -56,7 +57,11 @@ const CreateNode: React.FC<{
 						<Field name="name" />
 						{errors.name ? <div>{errors.name}</div> : null}
 						<label htmlFor="color">Color</label>
-						<Field name="color" type="color" className="nodrag" />
+						{/* <Field name="color" type="color" className="nodrag" /> */}
+						<ColorInput
+							name="color"
+							onChange={(c) => setFieldValue('color', c)}
+						/>
 						<div>
 							<label htmlFor="saveToEditor">Save to Editor</label>
 							<Field name="saveToEditor" type="checkbox" />
