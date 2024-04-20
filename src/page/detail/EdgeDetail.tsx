@@ -42,10 +42,17 @@ const Detail: React.FC<{
 		setCount(count + 1)
 	}
 
-	const updateField = (index: number, k: string, v: any) => {
+	const updateKey = (index: number, k: string) => {
 		const f = [...fields]
 		const item = { ...f[index] }
 		item.key = k
+		f[index] = item
+		setFields(f)
+	}
+
+	const updateValue = (index: number, v: any) => {
+		const f = [...fields]
+		const item = { ...f[index] }
 		item.value = v
 		f[index] = item
 		setFields(f)
@@ -123,18 +130,21 @@ const Detail: React.FC<{
 							case 'string':
 								return (
 									<StringField
-										updateField={updateField}
+										updateKey={updateKey}
+										updateValue={updateValue}
 										del={deleteField}
 										index={index}
 										key={field.key}
 										k={field.key}
 										v={field.value}
+										// error={errors[index] || false}
 									/>
 								)
 							case 'bool':
 								return (
 									<BooleanField
-										updateField={updateField}
+										updateKey={updateKey}
+										updateValue={updateValue}
 										del={deleteField}
 										index={index}
 										key={field.key}
@@ -145,7 +155,8 @@ const Detail: React.FC<{
 							case 'number':
 								return (
 									<NumberField
-										updateField={updateField}
+										updateKey={updateKey}
+										updateValue={updateValue}
 										del={deleteField}
 										index={index}
 										key={field.key}

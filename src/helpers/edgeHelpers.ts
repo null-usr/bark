@@ -1,4 +1,4 @@
-import DataEdge from '@/components/edges/DataEdge'
+import { DataEdge } from '@/helpers/classes/DataEdge'
 import { Edge, Node } from 'reactflow'
 
 export const getOutgoingEdges = (id: string, edges: Edge<any>[]) => {
