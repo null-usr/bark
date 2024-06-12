@@ -22,6 +22,7 @@ let mainWindow: BrowserWindow | null
 // Create windows =====================================
 function createWindow() {
 	mainWindow = new BrowserWindow({
+		title: 'Bark Dialogue Editor',
 		width: 1280,
 		height: 720,
 		webPreferences: {
@@ -54,13 +55,15 @@ function createWindow() {
 // create about window
 function createAboutWindow() {
 	const win = new BrowserWindow({
-		title: 'About Dialogue Editor',
-		width: 300,
-		height: 300,
+		title: 'About',
+		width: 500,
+		height: 500,
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 		},
 	})
+
+	win.removeMenu()
 
 	// In production, set the initial browser path to the local bundle generated
 	// by the Create React App build process.
@@ -71,7 +74,7 @@ function createAboutWindow() {
 				protocol: 'file:',
 				slashes: true,
 		  })
-		: 'http://localhost:3000'
+		: 'http://localhost:3000/about.html'
 
 	// set the user agent to electron so we can retrieve this on the app side
 	win.loadURL(appURL, { userAgent: 'Electron' })
@@ -262,7 +265,7 @@ const template = [
 							label: 'Learn More',
 							click: async () => {
 								await shell.openExternal(
-									'https://electronjs.org'
+									'https://www.nclarke.dev/projects/dialogue/'
 								)
 							},
 						},

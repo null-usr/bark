@@ -23,7 +23,11 @@ import { Node } from '@/helpers/theme'
 import { Field } from '@/helpers/types'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { types } from '@/store/reducer'
+
+import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
+import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 import { ObjectField } from '../FieldComponents/ObjectField'
+import { FlexColumn } from '../styles'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -67,12 +71,16 @@ export default ({
 	const updateHandles = useStore((state) => state.updateNodeHandles)
 	const dispatch = useStore((store) => store.dispatch)
 
+	// when updating handles programmatically, this is needed
+	const updateNodeInternals = useUpdateNodeInternals()
+
 	const nodeRef: any = useRef()
 	const reactFlowInstance = useReactFlow()
 
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
 	const [errors, setErrors] = useState<{ [key: number]: boolean }>({})
+	const [expanded, setExpanded] = useState(true)
 
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
@@ -181,6 +189,10 @@ export default ({
 		return 13 + 18 * index
 	}
 
+	useEffect(() => {
+		updateNodeInternals(id)
+	}, [sourceArray])
+
 	return (
 		<>
 			{/* {dragging && 
@@ -193,83 +205,123 @@ export default ({
 				selected={selected}
 				style={{ padding: 8 }}
 			>
-				<div
-					style={{
-						display: 'flex',
-						gap: 16,
-						justifyContent: 'space-around',
-						alignItems: 'center',
-					}}
-				>
-					<div style={{ flex: 2 }}>
-						{/* TODO: this should change the node's ID like a root node */}
-						<input
-							value={data.name}
-							onChange={(e) => {
-								updateNodeName(id, e.target.value)
-							}}
-						/>
-					</div>
-					<button
-						className="nodrag"
-						key="sourceMore"
-						onClick={() => addField('data')}
+				<FlexColumn>
+					<div
+						style={{
+							display: 'flex',
+							gap: 16,
+							justifyContent: 'space-around',
+							alignItems: 'center',
+						}}
 					>
-						+
-					</button>
-				</div>
+						<div style={{ flex: 2 }}>
+							{/* TODO: this should change the node's ID like a root node */}
+							<input
+								value={data.name}
+								onChange={(e) => {
+									updateNodeName(id, e.target.value)
+								}}
+							/>
+						</div>
+						<button
+							className="nodrag"
+							key="sourceMore"
+							onClick={() => addField('data')}
+						>
+							+
+						</button>
+					</div>
 
-				<div
-					style={{
-						display: 'flex',
-						flexDirection: 'column',
-						gap: 4,
-					}}
-					className="nodrag"
-				>
-					{fields.map((field, index) => {
-						switch (field.type) {
-							case 'data':
-								return (
-									<ObjectField
-										// color={data.color}
-										add={addHandle}
-										id={id}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										index={index}
-										update={updateDataFieldKey}
-										del={deleteField}
-										error={errors[index] || false}
-									/>
-								)
-							default:
-								return <></>
-						}
-					})}
-				</div>
-				<Handle
-					type="source"
-					style={{ top: 20 }}
-					position={Position.Right}
-					id={id}
-					// style={{ background: '#555' }}
-					// isConnectable={isConnectable}
-				/>
-				{/* {sourceArray.map((h) => (
+					<div style={{ alignSelf: 'center' }}>
+						{expanded ? (
+							// @ts-ignore
+							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+							<div
+								style={{ cursor: 'pointer' }}
+								onClick={() => setExpanded(!expanded)}
+							>
+								<ChevronUpIcon
+									stroke="white"
+									fill="white"
+									width={32}
+								/>
+							</div>
+						) : (
+							// @ts-ignore
+							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+							<div
+								style={{ cursor: 'pointer' }}
+								onClick={() => setExpanded(!expanded)}
+							>
+								<ChevronDownIcon
+									stroke="white"
+									fill="white"
+									width={32}
+								/>
+							</div>
+						)}
+					</div>
+
+					{expanded && (
+						<div
+							style={{
+								display: 'flex',
+								flexDirection: 'column',
+								gap: 4,
+							}}
+							className="nodrag"
+						>
+							{fields.map((field, index) => {
+								switch (field.type) {
+									case 'data':
+										return (
+											<ObjectField
+												// color={data.color}
+												add={addHandle}
+												id={id}
+												key={field.key}
+												k={field.key}
+												v={field.value}
+												index={index}
+												update={updateDataFieldKey}
+												del={deleteField}
+												error={errors[index] || false}
+											/>
+										)
+									default:
+										return <></>
+								}
+							})}
+						</div>
+					)}
+
 					<Handle
 						type="source"
-						key={h}
-						id={h}
+						style={{ top: 20 }}
 						position={Position.Right}
-						onClick={undefined}
-						style={{
-							pointerEvents: 'none',
-						}}
-						isConnectable={false}
+						id={id}
+						// style={{ background: '#555' }}
+						// isConnectable={isConnectable}
 					/>
-				))} */}
+
+					{!expanded && (
+						<>
+							{sourceArray.map((h) => (
+								<Handle
+									type="source"
+									key={h}
+									id={h}
+									position={Position.Right}
+									onClick={undefined}
+									style={{
+										pointerEvents: 'none',
+									}}
+									isConnectable={false}
+								/>
+							))}
+						</>
+					)}
+				</FlexColumn>
 			</Node>
 		</>
 	)

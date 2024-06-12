@@ -16,7 +16,7 @@ const ExpandButton = styled.div<{
 
 	background-color: ${({ background }) => `${background || colors.gray[10]}`};
 
-	border-radius: 10px;
+	border-radius: 3px;
 	border: 1px solid ${({ border }) => border || colors.gray[80]};
 
 	&:hover {

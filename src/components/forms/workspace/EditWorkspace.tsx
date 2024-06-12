@@ -4,7 +4,15 @@ import { Formik, Form, Field } from 'formik'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import Button from '@/components/Button/Button'
+import { FlexColumn, FlexRow } from '@/components/styles'
+import Divider from '@/components/Divider'
+import { Paragraph } from '@/components/Typography/text'
+import styled from 'styled-components'
 import WorkspaceVariable from './WorkspaceVariable'
+
+const Container = styled(FlexColumn)`
+	width: 75vw;
+`
 
 // Create a custom editor or workspace node
 const EditWorkspace: React.FC<{
@@ -15,7 +23,7 @@ const EditWorkspace: React.FC<{
 	const { workspace, dispatch } = useStore()
 	const workspaceVars = Object.keys(workspace.w_vars)
 	return (
-		<>
+		<Container>
 			<Formik
 				validateOnChange={false}
 				validateOnBlur={false}
@@ -37,17 +45,26 @@ const EditWorkspace: React.FC<{
 			>
 				{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 					<Form onSubmit={handleSubmit}>
-						<label htmlFor="name">Name</label>
-						<Field name="name" />
-						{errors.name ? <div>{errors.name}</div> : null}
-						<Button submitType="submit">Save</Button>
-						<Button type="subtle" onClick={cancel}>
-							cancel
-						</Button>
+						<FlexColumn>
+							<label htmlFor="name">Workspace Name</label>
+							<Field name="name" />
+							{errors.name ? <div>{errors.name}</div> : null}
+
+							<FlexRow style={{ justifyContent: 'center' }}>
+								<Button submitType="submit">Save</Button>
+								<Button type="subtle" onClick={cancel}>
+									cancel
+								</Button>
+							</FlexRow>
+						</FlexColumn>
 					</Form>
 				)}
 			</Formik>
-
+			<Divider color="white" />
+			<Paragraph color="white">Workspace Variables</Paragraph>
+			{workspaceVars.map((v) => {
+				return <WorkspaceVariable key={v} name={v} />
+			})}
 			<Formik
 				validateOnChange={false}
 				validateOnBlur={false}
@@ -82,26 +99,35 @@ const EditWorkspace: React.FC<{
 			>
 				{({ values, errors, touched, handleSubmit, setFieldValue }) => (
 					<Form onSubmit={handleSubmit}>
-						<label htmlFor="name">Variable Name</label>
-						<Field name="name" />
-						{errors.name ? <div>{errors.name}</div> : null}
-						<p>Type</p>
-						<label>
-							String
-							<Field name="type" type="radio" value="string" />
-						</label>
-						<label>
-							Number
-							<Field name="type" type="radio" value="number" />
-						</label>
-						<button type="submit">Create Workspace Variable</button>
+						<FlexColumn>
+							<label htmlFor="name">Variable Name</label>
+							<Field name="name" />
+							{errors.name ? <div>{errors.name}</div> : null}
+							<p>TYPE</p>
+							<label>
+								String
+								<Field
+									name="type"
+									type="radio"
+									value="string"
+								/>
+							</label>
+							<label>
+								Number
+								<Field
+									name="type"
+									type="radio"
+									value="number"
+								/>
+							</label>
+							<button type="submit">
+								Create Workspace Variable
+							</button>
+						</FlexColumn>
 					</Form>
 				)}
 			</Formik>
-			{workspaceVars.map((v) => {
-				return <WorkspaceVariable key={v} name={v} />
-			})}
-		</>
+		</Container>
 	)
 }
 

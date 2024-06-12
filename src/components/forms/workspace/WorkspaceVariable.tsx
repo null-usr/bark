@@ -1,4 +1,7 @@
+import Button from '@/components/Button/Button'
 import ExpandButton from '@/components/Button/ExpandButton'
+import { Paragraph } from '@/components/Typography/text'
+import { FlexColumn, FlexRow } from '@/components/styles'
 import { types } from '@/store/reducer'
 import useStore from '@/store/store'
 import { Field, Form, Formik } from 'formik'
@@ -9,24 +12,54 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 	const { workspace, dispatch } = useStore()
 	const w_var = workspace.w_vars[name]
 	return (
-		<div>
-			{name} {w_var.type}
-			<ExpandButton onClick={() => setExpanded(!expanded)}>
-				{expanded && <>collapse</>}
-				{!expanded && <>expand</>}
-			</ExpandButton>
-			<button
-				onClick={() =>
-					dispatch({
-						type: types.deleteWorkspaceVariable,
-						data: name,
-					})
-				}
-			>
-				Delete
-			</button>
+		<FlexColumn>
+			<FlexRow style={{ justifyContent: 'space-between' }}>
+				<FlexRow>
+					<Paragraph color="white">{name}:</Paragraph>
+					<Paragraph color="white">{w_var.type}</Paragraph>
+				</FlexRow>
+				<Button
+					danger
+					onClick={() =>
+						dispatch({
+							type: types.deleteWorkspaceVariable,
+							data: name,
+						})
+					}
+				>
+					Delete
+				</Button>
+			</FlexRow>
 			{expanded && (
 				<>
+					{w_var.options.map((o) => (
+						<FlexRow
+							style={{ justifyContent: 'space-between' }}
+							key={o}
+						>
+							<Paragraph color="white">{o}</Paragraph>
+
+							<Button
+								type="secondary"
+								danger
+								onClick={() =>
+									dispatch({
+										type: types.editWorkspaceVariable,
+										data: {
+											name,
+											// @ts-ignore
+											options: w_var.options.filter(
+												(op: string | number) =>
+													op !== o
+											),
+										},
+									})
+								}
+							>
+								delete option
+							</Button>
+						</FlexRow>
+					))}
 					<Formik
 						validateOnChange={false}
 						validateOnBlur={false}
@@ -71,9 +104,11 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 							setFieldValue,
 						}) => (
 							<Form onSubmit={handleSubmit}>
+								{/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
 								<label htmlFor="option">
 									Option Name
 									<Field
+										required
 										id="option"
 										name="option"
 										type={
@@ -92,31 +127,18 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 							</Form>
 						)}
 					</Formik>
-					{w_var.options.map((o) => (
-						<div key={o}>
-							{o}{' '}
-							<button
-								onClick={() =>
-									dispatch({
-										type: types.editWorkspaceVariable,
-										data: {
-											name,
-											// @ts-ignore
-											options: w_var.options.filter(
-												(op: string | number) =>
-													op !== o
-											),
-										},
-									})
-								}
-							>
-								delete option
-							</button>
-						</div>
-					))}
 				</>
 			)}
-		</div>
+
+			<ExpandButton
+				background="black"
+				hover="gray"
+				onClick={() => setExpanded(!expanded)}
+			>
+				{expanded && <>collapse</>}
+				{!expanded && <>expand</>}
+			</ExpandButton>
+		</FlexColumn>
 	)
 }
 

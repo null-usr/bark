@@ -1,6 +1,6 @@
 {
   "name": "dialogue-editor-client",
-  "productName": "Dialogue Editor",
+  "productName": "Bark Dialogue Editor",
   "version": "0.1.1",
   "private": true,
   "homepage": "./",
@@ -31,6 +31,7 @@
   },
   "scripts": {
     "start": "vite",
+    "start:electron": "electronmon ./dist/electron/main.js\"",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon ./dist/electron/main.js\"",
     "build": "tsc && vite build",
     "build:electron": "tsc && vite build && tsc -p electron",
