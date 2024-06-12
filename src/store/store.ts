@@ -17,42 +17,61 @@ import { reducer, RFState } from './reducer'
 // to get parts of the store and call actions
 const useStore = create<RFState>((set, get) => ({
 	theme: null,
-	nodeID: null,
-	edgeID: null,
+	editNodeID: null,
+	editEdgeID: null,
+	saveNodes: null,
 	nodes: initialElements,
 	mode: 'active',
 	schema: null,
 	edges: [],
 	builtInNodes: [],
 	customNodes: [],
-	activeScene: null,
+	activeScene: 'Default',
 	workspace: {
 		name: null,
-		scenes: {},
+		scenes: {
+			Default: {
+				name: 'Default',
+				nodes: [],
+				edges: [],
+				viewport: { x: 0, y: 0, zoom: 100 },
+			},
+		},
 		schemas: [],
 		w_vars: {},
 	},
 	reset: () => {
-		set({
-			nodes: [
-				{
-					id: 'root',
-					type: 'root',
-					selectable: true,
-					position: { x: 100, y: 100 },
-					sourcePosition: Position.Left,
-					targetPosition: Position.Right,
-					data: {
-						label: 'ROOT',
-						sources: [],
-						targets: [],
-						id: 'root,',
-					},
+		const tmpNodes = [
+			{
+				id: 'root',
+				type: 'root',
+				selectable: true,
+				position: { x: 100, y: 100 },
+				sourcePosition: Position.Left,
+				targetPosition: Position.Right,
+				data: {
+					label: 'ROOT',
+					sources: [],
+					targets: [],
+					id: 'root,',
 				},
-			],
+			},
+		]
+
+		const tmpEdges: Edge<any>[] = []
+		set({
+			nodes: tmpNodes,
+			edges: tmpEdges,
 			workspace: {
 				name: null,
-				scenes: {},
+				scenes: {
+					Default: {
+						name: 'Default',
+						nodes: tmpNodes,
+						edges: tmpEdges,
+						viewport: { x: 0, y: 0, zoom: 100 },
+					},
+				},
 				schemas: [],
 				w_vars: {},
 			},
@@ -124,7 +143,7 @@ const useStore = create<RFState>((set, get) => ({
 			}),
 		})
 	},
-	deleteEdge: (id: string) => set({ edgeID: id }),
+	deleteEdge: (id: string) => set({ editEdgeID: id }),
 	deleteNode: (id: string) =>
 		set({
 			nodes: get().nodes.filter((n) => n.id !== id),
@@ -140,7 +159,7 @@ const useStore = create<RFState>((set, get) => ({
 				get().edges
 			),
 		}),
-	editNode: (id: string) => set({ nodeID: id }),
+	editNode: (id: string) => set({ editNodeID: id }),
 	dispatch: (args: { type: any; data: any }) =>
 		// @ts-ignore
 		set((state) => reducer(state, args)),

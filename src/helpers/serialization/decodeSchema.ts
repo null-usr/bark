@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import { DialogueNode } from '@/components/nodes/DialogueNode'
 import { DataEdge } from '../classes/DataEdge'
 import { BasicNode } from '../classes/BasicNode'
+import { SourceNode } from '../classes/SourceNode'
 
 export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 	const { name, type, fields, color } = paletteItem
@@ -21,6 +22,9 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 					position.y
 				)
 			)
+			break
+		case 'source':
+			newNodes.push(new SourceNode('Source', position.x, position.y))
 			break
 		case 'base':
 			newNodes.push(

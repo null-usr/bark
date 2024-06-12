@@ -4,9 +4,7 @@ import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow'
 import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
 import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
 import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
-import ChevronDown, {
-	ReactComponent as ChevronDownIcon,
-} from '@/assets/icons/chevron_down.svg'
+import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
 import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 
 import Button from '@/components/Button/Button'
@@ -35,8 +33,15 @@ export default ({
 	isConnectable,
 	selected,
 }: NodeProps<{ name: string; color: string; fields: Field[] }>) => {
-	const { edges, workspace, updateNodeColor, updateNodeName, deleteNode } =
-		useStore()
+	const {
+		nodes,
+		edges,
+		workspace,
+		mode,
+		updateNodeColor,
+		updateNodeName,
+		deleteNode,
+	} = useStore()
 
 	const nodeRef = useRef<HTMLDivElement>(null)
 	const [nodeWidth, setNodeWidth] = useState(50)
@@ -268,44 +273,38 @@ export default ({
 						</FlexRow>
 						<ButtonRow>
 							<IconButton
-								Icon={EditIcon}
+								background="black"
 								stroke="white"
+								Icon={EditIcon}
 								onClick={() =>
 									dispatch({ type: types.setNode, data: id })
 								}
 							/>
 							{/* If there is no workspace, save to editor is default */}
+							{/* we can only save in non-customize mode */}
+							{mode !== 'customize' && (
+								<IconButton
+									background="black"
+									Icon={SaveIcon}
+									stroke="white"
+									fill="black"
+									onClick={() =>
+										dispatch({
+											type: types.setSaveNodes,
+											data: nodes.filter(
+												(n) => n.id === id
+											),
+										})
+									}
+								/>
+							)}
 							<IconButton
-								Icon={SaveIcon}
+								background="black"
 								stroke="white"
-								fill="black"
-								onClick={() =>
-									workspace.name === null
-										? dispatch({
-												type: types.addCustomNode,
-												data: SerializeNode(
-													data.name,
-													data.color,
-													'base',
-													fields
-												),
-										  })
-										: dispatch({
-												type: types.addCustomWorkspaceNode,
-												data: SerializeNode(
-													`@workspace/${data.name}`,
-													data.color,
-													'base',
-													fields
-												),
-										  })
-								}
-							/>
-							<IconButton
+								fill="white"
 								Icon={CloseIcon}
 								width={32}
 								height={32}
-								// TODO: The way this deletes nodes is causing an issue, the edges aren't deleted too
 								onClick={() => deleteNode(id)}
 							/>
 						</ButtonRow>
@@ -314,11 +313,33 @@ export default ({
 
 				<Container style={{ padding: 8 }}>
 					<div style={{ alignSelf: 'center' }}>
-						<IconButton
-							background="white"
-							Icon={expanded ? ChevronUpIcon : ChevronDownIcon}
-							onClick={() => setExpanded(!expanded)}
-						/>
+						{expanded ? (
+							// @ts-ignore
+							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+							<div
+								style={{ cursor: 'pointer' }}
+								onClick={() => setExpanded(!expanded)}
+							>
+								<ChevronUpIcon
+									stroke="white"
+									fill="white"
+									width={32}
+								/>
+							</div>
+						) : (
+							// @ts-ignore
+							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+							<div
+								style={{ cursor: 'pointer' }}
+								onClick={() => setExpanded(!expanded)}
+							>
+								<ChevronDownIcon
+									stroke="white"
+									fill="white"
+									width={32}
+								/>
+							</div>
+						)}
 					</div>
 
 					{expanded && (

@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import React from 'react'
+import colors from '@/helpers/theme/colors'
 
 const StyledIcon = styled.svg.attrs({
 	version: '1.1',
@@ -11,10 +12,11 @@ export const Svg = styled(StyledIcon)<{ color?: string; styleString?: string }>`
 	${({ styleString }) => styleString || ''}
 `
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DefaultSVGCSS = (color: any, active: any, hover: any) => {
 	return `
   display: block;
-  ${color ? `color: ${color};` : `color:gray;`}
+  ${color ? `color: ${color};` : `color: ${colors.gray[50]};`}
 
   &:hover {
     ${hover ? `color: ${hover};` : ''};
@@ -46,8 +48,7 @@ const IconContainer = styled.div<{
 		if (shape === 'rounded') {
 			return '6px'
 		}
-
-		return '0px'
+		return ''
 	}};
 
 	background-color: ${({ backgroundColor }) =>
@@ -77,8 +78,7 @@ export interface Props {
 export const Icon: React.FC<Props> = ({
 	width = 24,
 	height = 24,
-	//   color = colors.gray[60],
-	color = 'gray',
+	color = colors.gray,
 	hover,
 	active,
 	Component,

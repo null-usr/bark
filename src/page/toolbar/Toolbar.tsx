@@ -12,7 +12,7 @@ import {
 } from '@/helpers/serialization/serialization'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
-import { Workspace } from '@/helpers/types'
+import { Scene, Workspace } from '@/helpers/types'
 import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
 import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
@@ -45,10 +45,20 @@ function Toolbar() {
 		const content = fileReader.result
 
 		// originally type workspace but it's more like workspace+
-		const data: any | null = LoadWorkspace(content as string)
+		const data: Workspace | null = LoadWorkspace(content as string)
 
 		if (data) {
-			dispatch({ type: types.loadWorkspace, data })
+			// if there's no name, we're loading an exported json
+			if (!data.name) {
+				// @ts-ignore
+				const scene = data as Scene
+				scene.name = 'Default'
+				dispatch({ type: types.setNodes, data: scene.nodes })
+				dispatch({ type: types.setEdges, data: scene.edges })
+				setViewport(scene.viewport)
+			} else {
+				dispatch({ type: types.loadWorkspace, data })
+			}
 		}
 	}
 
@@ -130,8 +140,7 @@ function Toolbar() {
 		fitView()
 	}
 
-	const handleFileSelect = (e: { preventDefault: () => void }) => {
-		e.preventDefault()
+	const handleFileSelect = () => {
 		fileSelector.click()
 	}
 
@@ -197,7 +206,7 @@ function Toolbar() {
 					/>
 				</Modal>
 			)}
-			{formMode === 'edit' && workspace.name !== null && (
+			{formMode === 'edit' && (
 				<Modal open withDimmer close={() => setFormMode('')}>
 					<EditWorkspace
 						name={workspace.name}
@@ -245,7 +254,6 @@ function Toolbar() {
 							<Button
 								type="subtle"
 								block
-								disabled={workspace.name === null}
 								onClick={() => setFormMode('edit')}
 							>
 								Edit

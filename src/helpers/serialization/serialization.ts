@@ -107,7 +107,7 @@ export function SaveWorkspace(workspace: Workspace) {
 	)
 }
 
-export function LoadWorkspace(workspace: string) {
+export function LoadWorkspace(workspace: string): Workspace {
 	const data: any = JSON.parse(workspace, (k, v) => {
 		const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 

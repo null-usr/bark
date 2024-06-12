@@ -67,6 +67,7 @@ const Detail: React.FC<{
 
 	return (
 		<Modal
+			withDimmer
 			open={isOpen}
 			close={() => {
 				const edgeData = {
@@ -92,6 +93,7 @@ const Detail: React.FC<{
 					{incomingNodes.map((n) => {
 						return (
 							<Button
+								key={n.id}
 								type="secondary"
 								onClick={() => {
 									dispatch({
@@ -175,6 +177,7 @@ const Detail: React.FC<{
 					{outgoingNodes.map((n) => {
 						return (
 							<Button
+								key={n.id}
 								type="secondary"
 								onClick={() => {
 									dispatch({

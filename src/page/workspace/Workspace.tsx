@@ -16,6 +16,7 @@ import EditScene from '@/components/forms/scene/EditScene'
 import Modal from '@/components/modal/Modal'
 import DeleteScene from '@/components/forms/scene/DeleteScene'
 import Button from '@/components/Button/Button'
+import { Paragraph } from '@/components/Typography/text'
 import Canvas from './canvas/Canvas'
 import NodeGroup from './palette/NodeGroup'
 import Palette from './palette/Palette'
@@ -99,11 +100,7 @@ const Workspace: React.FC<{}> = (props) => {
 					}}
 				>
 					<CreateScene
-						forbidden={
-							workspaceScenes.length > 0
-								? workspaceScenes
-								: ['default']
-						}
+						forbidden={workspaceScenes}
 						cancel={() => setFormMode('')}
 						submit={(name) => {
 							dispatch({
@@ -162,6 +159,9 @@ const Workspace: React.FC<{}> = (props) => {
 			)}
 			<WorkspaceContainer>
 				<Palette>
+					<Paragraph style={{ padding: '8px 0px' }} color="whtie">
+						Workspace: {workspace.name ? workspace.name : 'NONE'}
+					</Paragraph>
 					<div style={{ marginBottom: 16 }}>
 						<TabLink
 							active={paletteMode === 'nodes'}
@@ -222,11 +222,6 @@ const Workspace: React.FC<{}> = (props) => {
 							>
 								<Button
 									type="secondary"
-									style={{
-										width: '100%',
-										marginBottom: 8,
-										cursor: 'pointer',
-									}}
 									onClick={() => setFormMode('createScene')}
 								>
 									New Scene

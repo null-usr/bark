@@ -117,9 +117,9 @@ export const ContextMenu: React.FC<{
 				<Paragraph>
 					node(s):{' '}
 					{ids.map((id, index, arr) => (
-						<>
+						<span key={id}>
 							[{id}]{index < arr.length - 1 && <>, </>}
-						</>
+						</span>
 					))}
 				</Paragraph>
 				<Divider />

@@ -7,8 +7,7 @@ import IconButton from '@/components/Button/IconButton'
 import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
 import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
 import { Paragraph } from '@/components/Typography/text'
-import { Group, SceneContainer } from './styles'
-import PaletteItem from './PaletteItem'
+import { SceneContainer } from './styles'
 
 const SceneGroup: React.FC<{
 	data: string[]
@@ -18,22 +17,6 @@ const SceneGroup: React.FC<{
 	const { dispatch } = useStore()
 	return (
 		<>
-			{Object.keys(data).length === 0 && (
-				<SceneContainer
-				// style={{
-				// 	background: '#ccc',
-				// 	cursor: 'not-allowed',
-				// 	borderColor: 'black',
-				// }}
-				>
-					<Paragraph
-						color="white"
-						style={{ flex: 1, textAlign: 'center' }}
-					>
-						DEFAULT
-					</Paragraph>
-				</SceneContainer>
-			)}
 			{data.map((s) => {
 				return (
 					<SceneContainer

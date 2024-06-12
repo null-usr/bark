@@ -28,18 +28,18 @@ const Detail: React.FC<{
 	const {
 		nodes,
 		edges,
-		nodeID,
+		editNodeID,
 		dispatch,
 		updateDialogueData,
 		updateNodeColor,
 	} = useStore()
 
-	if (!nodeID) return null
+	if (!editNodeID) return null
 
-	const editNode = nodes.find((n) => n.id === nodeID) as BasicNode
+	const editNode = nodes.find((n) => n.id === editNodeID) as BasicNode
 
-	const edgesOut = getOutgoingEdges(nodeID, edges)
-	const edgesIn = getIncomingEdges(nodeID, edges)
+	const edgesOut = getOutgoingEdges(editNodeID, edges)
+	const edgesIn = getIncomingEdges(editNodeID, edges)
 
 	const naturalOutgoingEdges = edgesOut.filter(
 		(e) => e.sourceHandle === null || e.sourceHandle === e.source
@@ -51,7 +51,7 @@ const Detail: React.FC<{
 
 	const [name, setName] = useState(editNode ? editNode.data.name || '' : '')
 	// const [color, setColor] = useState(editNode.data.color)
-	const [id, setID] = useState(nodeID || '')
+	const [id, setID] = useState(editNodeID || '')
 	const [fields, setFields] = useState<Field[]>(
 		editNode ? editNode.data.fields || [] : []
 	)
@@ -90,11 +90,11 @@ const Detail: React.FC<{
 	}
 
 	useEffect(() => {
-		setID(nodeID)
+		setID(editNodeID)
 		setName(editNode ? editNode.data.name : '')
 		setFields(editNode ? editNode.data.fields || [] : [])
 		setCount(fields.length)
-	}, [nodeID])
+	}, [editNodeID])
 
 	if (!editNode) return null
 
@@ -112,16 +112,16 @@ const Detail: React.FC<{
 
 				const idCheck = getCount(nodes, 'id', id)
 
-				if (idCheck === 1 && id !== nodeID) {
+				if (idCheck === 1 && id !== editNodeID) {
 					/* vendors contains the element we're looking for */
 					setIDError(true)
 					console.log('node ID conflict')
 				} else {
 					dispatch({
 						type: types.editNode,
-						data: { nodeID, nodeData },
+						data: { editNodeID, nodeData },
 					})
-					// updateDialogueData(nodeID, dialogue)
+					// updateDialogueData(editNodeID, dialogue)
 					close()
 				}
 			}}
@@ -133,6 +133,7 @@ const Detail: React.FC<{
 					{edgesIn.map((e) => {
 						return (
 							<Button
+								key={e.id}
 								type="secondary"
 								onClick={() =>
 									dispatch({
@@ -165,7 +166,7 @@ const Detail: React.FC<{
 					<div style={{ border: IDError ? '1px solid red' : '' }}>
 						{IDError && (
 							<p style={{ color: 'red' }}>
-								A node with ID: {nodeID} already exists
+								A node with ID: {editNodeID} already exists
 							</p>
 						)}
 						<input
@@ -290,7 +291,7 @@ const Detail: React.FC<{
 												).length === 0
 											}
 											onClick={() => {
-												const targetNodeID =
+												const targeteditNodeID =
 													edgesOut.filter(
 														(e) =>
 															e.sourceHandle ===
@@ -299,7 +300,7 @@ const Detail: React.FC<{
 
 												dispatch({
 													type: types.setNode,
-													data: targetNodeID,
+													data: targeteditNodeID,
 												})
 											}}
 										>
@@ -326,6 +327,7 @@ const Detail: React.FC<{
 					{naturalOutgoingEdges.map((e) => {
 						return (
 							<Button
+								key={e.id}
 								type="secondary"
 								onClick={() =>
 									dispatch({
@@ -365,6 +367,7 @@ const Detail: React.FC<{
 					{dataNodeEdges.map((e) => {
 						return (
 							<Button
+								key={e.id}
 								type="secondary"
 								onClick={() =>
 									dispatch({

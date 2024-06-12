@@ -5,31 +5,26 @@ import {
 	Edge,
 	Node,
 	OnConnectStartParams,
-	Position,
 	useReactFlow,
 	BackgroundVariant,
 	NodeChange,
 	EdgeChange,
-	useEdges,
 } from 'reactflow'
-import { v4 as uuid } from 'uuid'
-import Modal from '@/components/modal/Modal'
 import { DataEdge } from '@/helpers/classes/DataEdge'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
-import { encodeSchema } from '@/helpers/serialization/encodeSchema'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
-import EditNode from '@/components/forms/node/EditNode'
 import { ControlsStyled, MiniMapStyled, ReactFlowStyled } from '@/helpers/theme'
 import { NodeTypes, EdgeTypes } from '@/helpers/types'
 import Button from '@/components/Button/Button'
 import { ContextMenu } from '@/components/ContextMenu/ContextMenu'
 import { splitEdge } from '@/helpers/edgeHelpers'
+import { BasicNode } from '@/helpers/classes/BasicNode'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import EdgeDetail from '../../detail/EdgeDetail'
 import { CanvasContainer } from './styles'
 import { BottomBar } from '../styles'
-import { BasicNode } from '@/helpers/classes/BasicNode'
+import SaveModal from './SaveModal'
 
 const Canvas: React.FC<{
 	schemaName?: string | null
@@ -58,13 +53,12 @@ const Canvas: React.FC<{
 		activeScene,
 		customNodes: custom,
 		workspace,
-		edgeID,
-		nodeID,
+		editEdgeID,
+		editNodeID,
+		saveNodes,
 	} = useStore()
 	const { setViewport, fitView } = useReactFlow()
 
-	// for modal
-	const [sgModalOpen, setSGModalOpen] = useState(false)
 	const [showSGButton, setShowSGButton] = useState(false)
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
@@ -101,21 +95,11 @@ const Canvas: React.FC<{
 		}
 	}, [])
 
-	// zustand store
 	const dispatch = useStore((store) => store.dispatch)
-
-	function closeModal() {
-		setSGModalOpen(false)
-	}
 
 	useEffect(() => {
 		fitView()
 	}, [activeScene])
-
-	// useEffect(() => {
-	// 	console.log(nodes)
-	// 	console.log(edges)
-	// }, [nodes, edges])
 
 	// ================= CONNECTION BEHAVIOR ================================
 
@@ -255,8 +239,6 @@ const Canvas: React.FC<{
 					event.clientX + 200 < pane.width
 						? event.clientX
 						: event.clientX - 200,
-				// right: event.clientX + 200 >= pane.width && 200,
-				// bottom: event.clientY + 200 >= pane.height && 200,
 			})
 		},
 		[setContextMenuData]
@@ -294,59 +276,37 @@ const Canvas: React.FC<{
 		[setContextMenuData]
 	)
 
+	function closeModal() {
+		dispatch({ type: types.setSaveNodes, data: null })
+		onPaneClick()
+	}
+
 	return (
 		<CanvasContainer>
-			<Modal withDimmer open={sgModalOpen} close={closeModal}>
-				<EditNode
-					forbidden={forbiddenList}
-					cancel={() => setSGModalOpen(false)}
-					name={displayName || undefined}
-					color={schemaColor || undefined}
-					saveToEditor={
-						schemaName ? displayName === schemaName : false
+			{saveNodes && (
+				<SaveModal
+					name={displayName}
+					color={schemaColor}
+					schemaName={schemaName}
+					nodes={
+						mode === 'customize'
+							? nodes
+							: saveNodes || selectedNodes
 					}
-					submit={(name, color, saveToEditor) => {
-						const data = encodeSchema(
-							name,
-							color,
-							selectedNodes,
-							edges
-						)
-						if (saveToEditor) {
-							dispatch({
-								type: types.addCustomNode,
-								data,
-							})
-						} else {
-							dispatch({
-								type: types.addCustomWorkspaceNode,
-								data: {
-									...data,
-									name: `@workspace/${data.name}`,
-								},
-							})
-						}
-
-						setSGModalOpen(false)
-
-						// if we're in edit mode we need to get out of here
-						if (schemaName) {
-							setNodes([])
-							setEdges([])
-							dispatch({
-								type: types.customizeSchema,
-								data: { mode: 'active', schema: null },
-							})
-						}
-
-						onPaneClick()
-					}}
+					edges={edges}
+					close={closeModal}
+					forbiddenList={forbiddenList}
 				/>
-			</Modal>
+			)}
 			{contextMenuData && (
 				<ContextMenu
 					onClick={onPaneClick}
-					onSave={() => setSGModalOpen(true)}
+					onSave={() => {
+						dispatch({
+							type: types.setSaveNodes,
+							data: selectedNodes,
+						})
+					}}
 					// @ts-ignore
 					// eslint-disable-next-line react/jsx-props-no-spreading
 					{...contextMenuData}
@@ -390,8 +350,6 @@ const Canvas: React.FC<{
 							return
 						}
 
-						console.log('we are here')
-
 						const newEdges = splitEdge(hoveredEdge, nd)
 						onConnect(newEdges[0])
 						onConnect(newEdges[1])
@@ -409,15 +367,10 @@ const Canvas: React.FC<{
 					}}
 					// drag currently doesn't do the callback when a group is dragged
 					// onNodeDragStart={(e, n, nds) => {}}
-					// onNodeDragStop={(e, n, nds) => {
-					// 	console.log(nds)
-					// 	console.log(hoveredEdge)
-					// }}
+					// onNodeDragStop={(e, n, nds) => {}}
 					// onConnect={onConnect}
 					onConnect={onCustomConnect}
-					// @ts-ignore
 					onConnectStart={onConnectStart}
-					// @ts-ignore
 					onConnectEnd={onConnectEnd}
 					// onInit={onInit}
 					onDragOver={onDragOver}
@@ -432,7 +385,6 @@ const Canvas: React.FC<{
 					fitView
 					// onEdgeContextMenu={}
 					onEdgeMouseEnter={(event, edge) => {
-						// console.log(edge)
 						setHoveredEdge(edge)
 					}}
 					onEdgeMouseLeave={(event, edge) => {
@@ -480,12 +432,24 @@ const Canvas: React.FC<{
 			</div>
 			<BottomBar>
 				{(showSGButton || mode === 'customize') && (
-					<Button onClick={() => setSGModalOpen(true)}>
+					<Button
+						type="secondary"
+						onClick={() => {
+							dispatch({
+								type: types.setSaveNodes,
+								data:
+									mode === 'customize'
+										? nodes
+										: selectedNodes,
+							})
+						}}
+					>
 						Save Group
 					</Button>
 				)}
 				{mode === 'customize' && (
 					<Button
+						danger
 						onClick={() => {
 							setNodes([])
 							setEdges([])
@@ -499,15 +463,15 @@ const Canvas: React.FC<{
 					</Button>
 				)}
 			</BottomBar>
-			{nodeID && (
+			{editNodeID && (
 				<BasicNodeDetail
 					isOpen
 					close={() => dispatch({ type: types.setNode, data: null })}
 				/>
 			)}
-			{edgeID && (
+			{editEdgeID && (
 				<EdgeDetail
-					edgeID={edgeID}
+					edgeID={editEdgeID}
 					isOpen
 					close={() => dispatch({ type: types.setEdge, data: null })}
 				/>

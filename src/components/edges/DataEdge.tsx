@@ -56,7 +56,7 @@ export const DataEdge: FC<EdgeProps> = ({
 	const { onConnect, addNode } = useStore()
 	const dispatch = useStore((store) => store.dispatch)
 
-	const [name, setName] = useState(data.name || 'placeholder')
+	const [name, setName] = useState(data.name)
 	const [hovered, setHovered] = useState(false)
 
 	const updateName = (newName: string) => {

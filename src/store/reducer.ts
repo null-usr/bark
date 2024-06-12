@@ -16,10 +16,12 @@ export const types = {
 	addNode: 'ADD_NODE',
 	deleteNode: 'DELETE_NODE',
 	setNodes: 'SET_NODES',
+	setSaveNodes: 'SET_SAVE_NODES',
 
 	customizeSchema: 'CUSTOMIZE',
 
 	setEdge: 'SET_EDGE',
+	setEdges: 'SET_EDGES',
 	editEdge: 'EDIT_EDGE',
 	editEdgeHandle: 'EDIT_EDGE_HANDLE',
 	addEdge: 'ADD_EDGE',
@@ -51,8 +53,9 @@ export type RFState = {
 	theme: any
 	setTheme: (theme: any) => void
 
-	nodeID: string | null
-	edgeID: string | null
+	editNodeID: string | null
+	editEdgeID: string | null
+	saveNodes: Node[] | null
 
 	mode: string
 	schema: string | null
@@ -62,7 +65,7 @@ export type RFState = {
 	builtInNodes: Schema[]
 	customNodes: Schema[]
 
-	activeScene: string | null
+	activeScene: string
 	workspace: Workspace
 
 	// Reset
@@ -100,7 +103,7 @@ export const reducer = (
 ) => {
 	switch (type) {
 		case types.setNode:
-			return { nodeID: data }
+			return { editNodeID: data }
 		case types.addNode:
 			return { nodes: state.nodes.concat(data) }
 		// data is ID and new data
@@ -123,6 +126,9 @@ export const reducer = (
 		case types.setNodes:
 			return { nodes: data }
 
+		case types.setSaveNodes:
+			return { saveNodes: data }
+
 		case types.addEdge: {
 			return { edges: state.edges.concat(data) }
 		}
@@ -144,7 +150,10 @@ export const reducer = (
 			return {}
 		}
 		case types.setEdge: {
-			return { edgeID: data }
+			return { editEdgeID: data }
+		}
+		case types.setEdges: {
+			return { edges: data }
 		}
 
 		case types.updateSourceHandle: {
@@ -230,16 +239,13 @@ export const reducer = (
 				viewport: { x: 0, y: 0, zoom: 100 },
 			}
 
-			// if we're creating from a null scene we need to
-			// encode the current one
-			if (state.activeScene === null) {
-				scenes.default = {
-					name: 'default',
-					nodes: state.nodes,
-					edges: state.edges,
-					viewport: { x: 0, y: 0, zoom: 100 },
-				}
+			// save our current scene
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
 			}
+
 			return {
 				workspace: {
 					...state.workspace,
@@ -299,12 +305,10 @@ export const reducer = (
 			const newScene = state.workspace.scenes[data]
 
 			// save our current scene
-			if (state.activeScene !== null) {
-				scenes[state.activeScene] = {
-					...state.workspace.scenes[state.activeScene],
-					nodes: state.nodes,
-					edges: state.edges,
-				}
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
 			}
 
 			return {
@@ -341,7 +345,7 @@ export const reducer = (
 				workspace: {
 					name: data.workspaceName,
 					scenes: {
-						default: {
+						Default: {
 							name: data.workspaceName,
 							nodes: initialElements,
 							edges: [],
@@ -352,7 +356,7 @@ export const reducer = (
 					w_vars: {},
 				},
 				edges: [],
-				activeScene: 'untitled',
+				activeScene: 'Default',
 			}
 		}
 

@@ -4,14 +4,6 @@
 			"type": "source"
 		},
 		{
-			"name": "DEFAULT",
-			"type": "default"
-		},
-		{
-			"name": "OUTPUT",
-			"type": "output"
-		},
-		{
 			"name": "BASE",
 			"type": "base"
 		},
