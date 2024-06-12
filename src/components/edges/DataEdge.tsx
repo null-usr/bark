@@ -88,7 +88,7 @@ export const DataEdge: FC<EdgeProps> = ({
 						transform: `translate(-50%, -50%) 
 							translate(${centerX}px,${centerY}px)`,
 						pointerEvents: 'all',
-						backgroundColor: hovered ? 'blue' : 'white',
+						backgroundColor: hovered ? 'gray' : 'white',
 						border: '1px solid grey',
 						padding: 4,
 						borderRadius: 5,
@@ -129,7 +129,12 @@ export const DataEdge: FC<EdgeProps> = ({
 							},
 							newNodes[0]
 						)
-						onConnect(insertedEdges[0])
+
+						// if our incoming node is a source we discard
+						// the first part of the split
+						if (paletteItem.type !== 'source') {
+							onConnect(insertedEdges[0])
+						}
 						onConnect(insertedEdges[1])
 						dispatch({
 							type: types.deleteEdge,
