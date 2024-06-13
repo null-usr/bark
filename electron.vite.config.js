@@ -9,7 +9,7 @@ export default defineConfig({
 		build: {
 			rollupOptions: {
 				input: {
-					index: resolve(__dirname, 'electron/main/main.ts'),
+					main: resolve(__dirname, 'electron', 'main', 'main.ts'),
 				},
 			},
 		},
@@ -18,7 +18,12 @@ export default defineConfig({
 		build: {
 			rollupOptions: {
 				input: {
-					index: resolve(__dirname, 'electron/preload/preload.ts'),
+					preload: resolve(
+						__dirname,
+						'electron',
+						'preload',
+						'preload.ts'
+					),
 				},
 			},
 		},

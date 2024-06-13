@@ -26,7 +26,7 @@ function createWindow() {
 		width: 1280,
 		height: 720,
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
+			preload: path.join(__dirname, '..', 'preload', 'preload.js'),
 		},
 	})
 
@@ -35,7 +35,7 @@ function createWindow() {
 	// In development, set it to localhost to allow live/hot-reloading.
 	const appURL = app.isPackaged
 		? url.format({
-				pathname: path.join(__dirname, '../index.html'),
+				pathname: path.join(__dirname, '..', 'renderer', 'index.html'),
 				protocol: 'file:',
 				slashes: true,
 		  })
@@ -59,7 +59,7 @@ function createAboutWindow() {
 		width: 500,
 		height: 500,
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
+			preload: path.join(__dirname, '..', 'preload', 'preload.js'),
 		},
 	})
 
@@ -70,7 +70,7 @@ function createAboutWindow() {
 	// In development, set it to localhost to allow live/hot-reloading.
 	const appURL = app.isPackaged
 		? url.format({
-				pathname: path.join(__dirname, '../about.html'),
+				pathname: path.join(__dirname, '..', 'renderer', 'about.html'),
 				protocol: 'file:',
 				slashes: true,
 		  })

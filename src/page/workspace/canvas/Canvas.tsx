@@ -396,6 +396,7 @@ const Canvas: React.FC<{
 						onPaneClick()
 					}}
 					edgesFocusable
+					attributionPosition="top-right"
 					// onEdgeContextMenu={}
 				>
 					<MiniMapStyled

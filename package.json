@@ -5,7 +5,10 @@
   "private": true,
   "homepage": "./",
   "author": "Neil Clarke",
-  "main": "out/main/index.js",
+  "main": "out/main/main.js",
+  "extraMetadata": {
+    "main": "out/main/main.js"
+  },
   "dependencies": {
     "@reactflow/minimap": "^11.2.0",
     "@testing-library/jest-dom": "^5.16.1",
@@ -40,10 +43,11 @@
     "release": "standard-version",
     "lint:windows": "eslint ./src/**/*.{ts,tsx} --fix",
     "lint": "eslint './src/**/*{ts, tsx}'",
-    "electron:package:mac": "electron-builder -m -c.extraMetadata.main=./dist/electron/main.js",
     "electron:build": "electron-vite build",
-    "electron:package:win": "electron-builder -m -c.extraMetadata.main=./dist/electron/main.js",
-    "electron:package:linux": "electron-builder -l -c.extraMetadata.main=./dist/electron/main.js"
+    "electron:preview": "electron-vite preview",
+    "electron:package:mac": "electron-builder --mac --config electron-builder.yml --dir --config.asar=true",
+    "electron:package:win": "electron-builder --win --config electron-builder.yml --dir --config.asar=true",
+    "electron:package:linux": "electron-builder --linux --config electron-builder.yml --dir --config.asar=true"
   },
   "build": {
     "extends": null,
@@ -74,6 +78,7 @@
     "electromon": "^1.0.10",
     "electron": "^31.0.0",
     "electron-builder": "^24.0.0",
+    "electron-packager": "^17.1.2",
     "electron-vite": "^2.2.0",
     "electronmon": "^2.0.2",
     "eslint": "^8.6.0",
