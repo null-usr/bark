@@ -4,9 +4,9 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { FlexRow } from '@/components/styles'
 import IconButton from '@/components/Button/IconButton'
-import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
-import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
 import { Paragraph } from '@/components/Typography/text'
+import NotepadIcon from '@/components/Icons/Notepad'
+import CloseIcon from '@/components/Icons/Close'
 import { SceneContainer } from './styles'
 
 const SceneGroup: React.FC<{
@@ -42,7 +42,7 @@ const SceneGroup: React.FC<{
 						{activeScene !== s && (
 							<FlexRow style={{ alignItems: 'center' }}>
 								<IconButton
-									Icon={EditIcon}
+									Icon={NotepadIcon}
 									onClick={
 										activeScene === s
 											? undefined

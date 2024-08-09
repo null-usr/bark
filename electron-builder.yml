@@ -1,7 +1,7 @@
 appId: art.ferrohound.bark
 productName: Bark
 directories:
-  buildResources: build
+  buildResources: buildResources
 files:
   - '!**/.vscode/*'
   - '!src/*'
@@ -12,6 +12,8 @@ files:
   - '!docs/'
   - '!electron/'
   - '!public/'
+  - '!index.html'
+  - '!about.html'
   # - '!node_modules/'
 asarUnpack:
   - resources/**

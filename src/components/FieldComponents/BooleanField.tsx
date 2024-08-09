@@ -40,7 +40,9 @@ export const BooleanField: React.FC<{
 					Rename Key
 				</Button>
 			)}
-			<Button onClick={del ? () => del(k) : undefined}>Delete</Button>
+			<Button danger onClick={del ? () => del(k) : undefined}>
+				Delete
+			</Button>
 		</FieldContainer>
 	)
 }

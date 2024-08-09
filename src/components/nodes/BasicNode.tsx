@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow'
 
-import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
+// import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
 import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
-import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
+// import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
 import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
 import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 
@@ -23,6 +23,10 @@ import { CustomField } from '../FieldComponents/CustomField'
 import { FlexRow } from '../styles'
 import IconButton from '../Button/IconButton'
 import ColorInput from '../ColorInput'
+import NotepadIcon from '../Icons/Notepad'
+import CloseIcon from '../Icons/Close'
+import RibbonIcon from '../Icons/Ribbon'
+import BookmarkIcon from '../Icons/Bookmark'
 
 // https://www.carlrippon.com/react-forwardref-typescript/
 // https://stackoverflow.com/questions/37949981/call-child-method-from-parent
@@ -73,7 +77,7 @@ export default ({
 
 	const addField = (type: string) => {
 		let value
-		if (type === 'string') {
+		if (type === 'string' || 'text') {
 			value = `value ${count}`
 		} else if (type === 'number') {
 			value = 0
@@ -274,8 +278,9 @@ export default ({
 						<ButtonRow>
 							<IconButton
 								background="black"
-								stroke="white"
-								Icon={EditIcon}
+								radius="3px"
+								color="white"
+								Icon={NotepadIcon}
 								onClick={() =>
 									dispatch({ type: types.setNode, data: id })
 								}
@@ -285,9 +290,9 @@ export default ({
 							{mode !== 'customize' && (
 								<IconButton
 									background="black"
-									Icon={SaveIcon}
-									stroke="white"
-									fill="black"
+									radius="3px"
+									Icon={BookmarkIcon}
+									color="white"
 									onClick={() =>
 										dispatch({
 											type: types.setSaveNodes,
@@ -300,8 +305,8 @@ export default ({
 							)}
 							<IconButton
 								background="black"
-								stroke="white"
-								fill="white"
+								color="white"
+								radius="3px"
 								Icon={CloseIcon}
 								width={32}
 								height={32}

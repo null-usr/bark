@@ -42,7 +42,9 @@ export const StringField: React.FC<{
 			{k !== key && (
 				<Button onClick={() => updateKey(index, key)}>Save</Button>
 			)}
-			<Button onClick={del ? () => del(k) : undefined}>Delete</Button>
+			<Button danger onClick={del ? () => del(k) : undefined}>
+				Delete
+			</Button>
 		</FieldContainer>
 	)
 }

@@ -1,21 +1,8 @@
-import React, {
-	createRef,
-	forwardRef,
-	useImperativeHandle,
-	useState,
-	FC,
-	useContext,
-	useEffect,
-} from 'react'
+import React, { useState, FC, useEffect } from 'react'
 import {
-	applyEdgeChanges,
 	BaseEdge,
-	Connection,
-	Edge,
 	EdgeLabelRenderer,
 	EdgeProps,
-	getBezierPath,
-	getMarkerEnd,
 	getSmoothStepPath,
 	useReactFlow,
 } from 'reactflow'
@@ -24,6 +11,9 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { splitEdge } from '@/helpers/edgeHelpers'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
+import IconButton from '../Button/IconButton'
+import CloseIcon from '../Icons/Close'
+import NotepadIcon from '../Icons/Notepad'
 
 const foreignObjectSize = 40
 
@@ -40,7 +30,6 @@ export const DataEdge: FC<EdgeProps> = ({
 	sourceHandleId,
 	targetHandleId,
 	data,
-	markerEnd,
 }) => {
 	const [edgePath, centerX, centerY] = getSmoothStepPath({
 		sourceX,
@@ -50,8 +39,6 @@ export const DataEdge: FC<EdgeProps> = ({
 		targetY,
 		targetPosition,
 	})
-
-	const reactFlowInstance = useReactFlow()
 
 	const { onConnect, addNode } = useStore()
 	const dispatch = useStore((store) => store.dispatch)
@@ -149,27 +136,25 @@ export const DataEdge: FC<EdgeProps> = ({
 					}}
 					onFocus={() => {}}
 				>
-					<div>
-						<button
-							className="edgebutton nopan"
-							onClick={(event) =>
-								dispatch({ type: types.setEdge, data: id })
-							}
-						>
-							o
-						</button>
-					</div>
+					<IconButton
+						background="black"
+						radius="3px"
+						color="white"
+						Icon={NotepadIcon}
+						onClick={(event) =>
+							dispatch({ type: types.setEdge, data: id })
+						}
+					/>
 					{/* {sourceHandleId} */}
-					<div>
-						<button
-							className="edgebutton nopan"
-							onClick={(event) =>
-								dispatch({ type: types.deleteEdge, data: id })
-							}
-						>
-							×
-						</button>
-					</div>
+					<IconButton
+						background="black"
+						radius="3px"
+						color="white"
+						Icon={CloseIcon}
+						onClick={(event) =>
+							dispatch({ type: types.deleteEdge, data: id })
+						}
+					/>
 				</div>
 			</EdgeLabelRenderer>
 		</>

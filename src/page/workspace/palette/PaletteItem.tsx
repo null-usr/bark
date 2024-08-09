@@ -5,9 +5,9 @@ import DeleteNode from '@/components/forms/node/DeleteNode'
 import Modal from '@/components/modal/Modal'
 import { FlexRow } from '@/components/styles'
 import { Paragraph } from '@/components/Typography/text'
-import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
-import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
 import IconButton from '@/components/Button/IconButton'
+import NotepadIcon from '@/components/Icons/Notepad'
+import CloseIcon from '@/components/Icons/Close'
 import { NodeContainer } from './styles'
 
 const PaletteItem: React.FC<{
@@ -85,7 +85,7 @@ const PaletteItem: React.FC<{
 					{modable && (
 						<FlexRow style={{ alignItems: 'center' }}>
 							<IconButton
-								Icon={EditIcon}
+								Icon={NotepadIcon}
 								onClick={() => {
 									dispatch({
 										type: types.customizeSchema,

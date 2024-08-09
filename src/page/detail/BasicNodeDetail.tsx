@@ -7,7 +7,6 @@ import { BooleanField } from '@/components/FieldComponents/BooleanField'
 import { NumberField } from '@/components/FieldComponents/NumberField'
 import { StringField } from '@/components/FieldComponents/StringField'
 import { getCount } from '@/helpers/getCount'
-import { DialogueNode } from '@/components/nodes/DialogueNode'
 import { ButtonRow } from '@/helpers/styles'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
@@ -17,7 +16,11 @@ import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
 import ColorInput from '@/components/ColorInput'
 import { BasicNode } from '@/helpers/classes/BasicNode'
-import { Container } from './styles'
+import IconButton from '@/components/Button/IconButton'
+import LockIcon from '@/components/Icons/Lock'
+import UnlockIcon from '@/components/Icons/Unlock'
+import { Paragraph } from '@/components/Typography/text'
+import { Container, DataContainer } from './styles'
 
 const Detail: React.FC<{
 	close: () => void
@@ -126,7 +129,7 @@ const Detail: React.FC<{
 				}
 			}}
 		>
-			<FlexRow>
+			<FlexRow style={{ height: '80vh' }}>
 				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
 					INCOMING
 					<Divider />
@@ -151,7 +154,11 @@ const Detail: React.FC<{
 					DATA
 					<Divider />
 					<FlexRow
-						style={{ gap: 32, justifyContent: 'space-between' }}
+						style={{
+							gap: 32,
+							justifyContent: 'space-between',
+							width: '100%',
+						}}
 					>
 						<input
 							style={{ flex: 1 }}
@@ -163,7 +170,12 @@ const Detail: React.FC<{
 							onChange={(c) => updateNodeColor(editNode.id, c)}
 						/>
 					</FlexRow>
-					<div style={{ border: IDError ? '1px solid red' : '' }}>
+					<FlexRow
+						style={{
+							gap: '32px',
+							border: IDError ? '1px solid red' : '',
+						}}
+					>
 						{IDError && (
 							<p style={{ color: 'red' }}>
 								A node with ID: {editNodeID} already exists
@@ -174,11 +186,15 @@ const Detail: React.FC<{
 							value={id}
 							onChange={(e) => setID(e.target.value)}
 						/>
-						<Button onClick={() => setLockID(!lockID)}>
-							toggle ID lock
-						</Button>
-					</div>
-					<ButtonRow>
+						<IconButton
+							background="black"
+							color="white"
+							radius="3px"
+							Icon={lockID ? UnlockIcon : LockIcon}
+							onClick={() => setLockID(!lockID)}
+						/>
+					</FlexRow>
+					<ButtonRow style={{ width: '100%' }}>
 						<Button onClick={() => addField('string')}>
 							String
 						</Button>
@@ -191,134 +207,149 @@ const Detail: React.FC<{
 						</Button>
 						<Button onClick={() => addField('data')}>data</Button>
 					</ButtonRow>
-					{/*  */}
-					{fields.map((field, index) => {
-						switch (field.type) {
-							case 'string':
-								return (
-									<StringField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										// error={errors[index] || false}
-									/>
-								)
-							// TODO: proper implementation
-							case 'text':
-								return (
-									<>
-										{field.key}:
-										<textarea
-											style={{ maxWidth: '100%' }}
+					<DataContainer>
+						{fields.map((field, index) => {
+							switch (field.type) {
+								case 'string':
+									return (
+										<StringField
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+											updateValue={updateValue}
+											updateKey={updateKey}
+											del={deleteField}
+											// error={errors[index] || false}
 										/>
-									</>
-								)
-							case 'bool':
-								return (
-									<BooleanField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										// error={errors[index] || false}
-									/>
-								)
-							case 'number':
-								return (
-									<NumberField
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										updateValue={updateValue}
-										updateKey={updateKey}
-										del={deleteField}
-										// error={errors[index] || false}
-									/>
-								)
-							case 'data':
-								return (
-									<div>
-										<input
-											type="text"
-											value={field.value}
-											onChange={(e) => {
-												updateKey(index, e.target.value)
-											}}
-										/>
-										:
-										{/* TODO: this may have multiple target nodes, think of a UI/UX for this */}
-										<Button
-											onClick={() => {
-												const newNode = new BasicNode(
-													'basic',
-													editNode.position.x + 300,
-													editNode.position.y
-												)
-												const newEdge: Edge =
-													new DataEdge(
-														editNode.id,
-														newNode.id,
-														field.key,
-														null
-													)
-
-												dispatch({
-													type: types.addNode,
-													data: newNode,
-												})
-												dispatch({
-													type: types.addEdge,
-													data: newEdge,
-												})
+									)
+								// TODO: proper implementation
+								case 'text':
+									return (
+										<FlexColumn
+											style={{
+												minHeight: 64,
+												width: '80%',
 											}}
 										>
-											Create
-										</Button>
-										<Button
-											disabled={
-												edgesOut.filter(
-													(e) =>
-														e.sourceHandle ===
-														field.key
-												).length === 0
-											}
-											onClick={() => {
-												const targeteditNodeID =
+											<Paragraph
+												style={{
+													textAlign: 'center',
+													color: 'white',
+												}}
+											>
+												{field.key}:
+											</Paragraph>
+											<textarea
+												style={{ maxWidth: '100%' }}
+											/>
+											<Button
+												danger
+												onClick={() =>
+													deleteField(field.key)
+												}
+											>
+												Delete
+											</Button>
+										</FlexColumn>
+									)
+								case 'bool':
+									return (
+										<BooleanField
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+											updateValue={updateValue}
+											updateKey={updateKey}
+											del={deleteField}
+											// error={errors[index] || false}
+										/>
+									)
+								case 'number':
+									return (
+										<NumberField
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+											updateValue={updateValue}
+											updateKey={updateKey}
+											del={deleteField}
+											// error={errors[index] || false}
+										/>
+									)
+								case 'data':
+									return (
+										<div>
+											{field.key}:
+											<Button
+												onClick={() => {
+													const newNode =
+														new BasicNode(
+															'basic',
+															editNode.position
+																.x + 300,
+															editNode.position.y
+														)
+													const newEdge: Edge =
+														new DataEdge(
+															editNode.id,
+															newNode.id,
+															field.key,
+															null
+														)
+
+													dispatch({
+														type: types.addNode,
+														data: newNode,
+													})
+													dispatch({
+														type: types.addEdge,
+														data: newEdge,
+													})
+												}}
+											>
+												Create
+											</Button>
+											<Button
+												disabled={
 													edgesOut.filter(
 														(e) =>
 															e.sourceHandle ===
 															field.key
-													)[0]?.target
+													).length === 0
+												}
+												onClick={() => {
+													const targeteditNodeID =
+														edgesOut.filter(
+															(e) =>
+																e.sourceHandle ===
+																field.key
+														)[0]?.target
 
-												dispatch({
-													type: types.setNode,
-													data: targeteditNodeID,
-												})
-											}}
-										>
-											Go
-										</Button>
-									</div>
-								)
-							default:
-								return <></>
-						}
-					})}
-					{/* <textarea
+													dispatch({
+														type: types.setNode,
+														data: targeteditNodeID,
+													})
+												}}
+											>
+												Go
+											</Button>
+										</div>
+									)
+								default:
+									return <></>
+							}
+						})}
+						{/* <textarea
 					value={dialogue}
 					onChange={(e) => {
 						setDialogue(e.target.value)
 					}}
 				/> */}
-					{/* {dialogueNode.dialogue} */}
+						{/* {dialogueNode.dialogue} */}
+					</DataContainer>
 				</Container>
 				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
 					OUTGOING

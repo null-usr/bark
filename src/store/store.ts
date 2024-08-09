@@ -151,7 +151,7 @@ const useStore = create<RFState>((set, get) => ({
 				get()
 					.edges.filter(
 						(e) =>
-							e.sourceNode?.id !== id && e.targetNode?.id !== id
+							e.sourceNode?.id === id || e.targetNode?.id === id
 					)
 					.map((e) => {
 						return { id: e.id, type: 'remove' }

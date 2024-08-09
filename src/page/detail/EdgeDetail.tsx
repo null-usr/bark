@@ -12,7 +12,7 @@ import useStore from '@/store/store'
 import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
-import { Container } from './styles'
+import { Container, DataContainer } from './styles'
 
 const Detail: React.FC<{
 	close: () => void
@@ -86,7 +86,7 @@ const Detail: React.FC<{
 				close()
 			}}
 		>
-			<FlexRow>
+			<FlexRow style={{ height: '80vh' }}>
 				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
 					INCOMING NODES
 					<Divider />
@@ -114,10 +114,13 @@ const Detail: React.FC<{
 
 				<Container>
 					{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
-					<input
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-					/>
+					<div style={{ width: '100%' }}>
+						<input
+							style={{width: '100%' }}
+							value={name}
+							onChange={(e) => setName(e.target.value)}
+						/>
+					</div>
 					<ButtonRow>
 						<Button onClick={() => addField('string')}>Text</Button>
 						<Button onClick={() => addField('bool')}>
@@ -127,49 +130,51 @@ const Detail: React.FC<{
 							Number
 						</Button>
 					</ButtonRow>
-					{fields.map((field, index) => {
-						switch (field.type) {
-							case 'string':
-								return (
-									<StringField
-										updateKey={updateKey}
-										updateValue={updateValue}
-										del={deleteField}
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-										// error={errors[index] || false}
-									/>
-								)
-							case 'bool':
-								return (
-									<BooleanField
-										updateKey={updateKey}
-										updateValue={updateValue}
-										del={deleteField}
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-									/>
-								)
-							case 'number':
-								return (
-									<NumberField
-										updateKey={updateKey}
-										updateValue={updateValue}
-										del={deleteField}
-										index={index}
-										key={field.key}
-										k={field.key}
-										v={field.value}
-									/>
-								)
-							default:
-								return <></>
-						}
-					})}
+					<DataContainer>
+						{fields.map((field, index) => {
+							switch (field.type) {
+								case 'string':
+									return (
+										<StringField
+											updateKey={updateKey}
+											updateValue={updateValue}
+											del={deleteField}
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+											// error={errors[index] || false}
+										/>
+									)
+								case 'bool':
+									return (
+										<BooleanField
+											updateKey={updateKey}
+											updateValue={updateValue}
+											del={deleteField}
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+										/>
+									)
+								case 'number':
+									return (
+										<NumberField
+											updateKey={updateKey}
+											updateValue={updateValue}
+											del={deleteField}
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+										/>
+									)
+								default:
+									return <></>
+							}
+						})}
+					</DataContainer>
 				</Container>
 				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
 					OUTGOING NODES

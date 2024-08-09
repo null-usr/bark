@@ -1,9 +1,9 @@
 import React from 'react'
-import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
 import Dimmer from './Dimmer'
 import { CloseButton, Content, ModalContainer } from './styles'
 
 import IconButton from '../Button/IconButton'
+import CloseIcon from '../Icons/Close'
 
 const Modal: React.FC<{
 	withDimmer?: boolean
@@ -19,7 +19,9 @@ const Modal: React.FC<{
 				<ModalContainer>
 					<CloseButton>
 						<IconButton
-							fill="white"
+							width={32}
+							height={32}
+							color="white"
 							Icon={CloseIcon}
 							onClick={close}
 						/>

@@ -83,13 +83,13 @@ export type RFState = {
 		sources: string[],
 		targets: string[]
 	) => void
+	deleteNode: (id: string) => void
 
 	// Edges
 	setEdges: (newEdges: Edge[]) => void
 	onEdgesChange: OnEdgesChange
 	onConnect: (edge: Edge | Connection) => void
 	deleteEdge: (id: string) => void
-	deleteNode: (id: string) => void
 
 	// Utility
 	dispatch: (args: { type: any; data: any }) => void

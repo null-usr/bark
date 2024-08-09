@@ -5,16 +5,16 @@ import { SerializeNode } from '@/helpers/serialization/serialization'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { types } from '@/store/reducer'
-import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
-import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
-import { ReactComponent as DuplicateIcon } from '@/assets/icons/duplicate.svg'
+import { encodeSchema } from '@/helpers/serialization/encodeSchema'
 import { ContextButton, ContextMenuContainer } from './styles'
 import Divider from '../Divider'
-import Button from '../Button/Button'
 import { Paragraph } from '../Typography/text'
 import { FlexRow } from '../styles'
 
 import IconButton from '../Button/IconButton'
+import BookmarkIcon from '../Icons/Bookmark'
+import CloseIcon from '../Icons/Close'
+import FourSquaresIcon from '../Icons/FourSquares'
 
 export const ContextMenu: React.FC<{
 	ids: string[]
@@ -37,58 +37,12 @@ export const ContextMenu: React.FC<{
 			console.log('error finding nodes: ', ids)
 		}
 
-		const idMap: {
-			[key: string]: number
-		} = {} // string and index
+		const tmpSchema = encodeSchema('', '', nds, edges)
 
-		const data = {
-			type: 'group',
-			name: 'tmp',
-			color: 'blue',
-			nodes: [],
-			edges: [],
-		}
-
-		const groupEdges: Edge[] = []
-
-		nds.forEach((n) => {
-			const gN = SerializeNode(
-				n.data.name,
-				n.data.color,
-				'base',
-				n.data.fields
-			)
-			const o = {
-				...gN,
-				position: [n.position.x + 50, n.position.y + 50],
-			}
-
-			idMap[n.id] = data.nodes.length
-			// @ts-ignore
-			data.nodes.push(o)
-			groupEdges.push(...getOutgoingEdges(n.id, edges))
-		})
-
-		// filter & normalize edges
-		groupEdges.forEach((e) => {
-			// look into map, if the to and from both exist, use their
-			// ids & the to node's key for it
-			const from = idMap[e.source]
-			// eslint-disable-next-line no-nested-ternary
-			const handle = e.sourceHandle
-				? e.sourceHandle === e.source
-					? ''
-					: e.sourceHandle
-				: ''
-			const to = idMap[e.target]
-
-			if (to !== undefined && from !== undefined) {
-				// @ts-ignore
-				data.edges.push({ handle, to, from })
-			}
-		})
-
-		const { newNodes, newEdges } = decodeSchema({ x: 0, y: 0 }, data)
+		const { newNodes, newEdges } = decodeSchema(
+			{ x: left, y: top },
+			tmpSchema
+		)
 
 		newNodes.forEach((n) => addNode({ ...n, selected: true }))
 		newEdges.forEach((e) => onConnect(e))
@@ -127,14 +81,27 @@ export const ContextMenu: React.FC<{
 			<FlexRow style={{ justifyContent: 'space-between' }}>
 				<FlexRow>
 					<IconButton
-						fill="white"
-						Icon={DuplicateIcon}
+						color="white"
+						radius="3px"
+						width={32}
+						height={32}
+						Icon={FourSquaresIcon}
 						onClick={duplicateNode}
 					/>
-					<IconButton fill="white" Icon={SaveIcon} onClick={onSave} />
+					<IconButton
+						color="white"
+						radius="3px"
+						width={32}
+						height={32}
+						Icon={BookmarkIcon}
+						onClick={onSave}
+					/>
 				</FlexRow>
 				<IconButton
-					fill="white"
+					color="white"
+					radius="3px"
+					width={32}
+					height={32}
 					Icon={CloseIcon}
 					onClick={deleteNode}
 				/>

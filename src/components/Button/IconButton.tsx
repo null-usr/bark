@@ -7,6 +7,7 @@ const Container = styled.div<{
 	height?: number
 	background?: string
 	hover?: string
+	radius: string
 }>`
 	${({ disabled }) =>
 		disabled
@@ -24,7 +25,10 @@ const Container = styled.div<{
 	}
 
 	align-self: center;
-	display: inline-block;
+	display: grid;
+	align-items: center;
+	justify-items: center;
+	border-radius: ${({ radius }) => radius};
 	height: ${({ height }) => height}px;
 	width: ${({ width }) => width}px;
 	background: ${({ background }) => background || 'transparent'};
@@ -44,24 +48,24 @@ const IconButtonWrapper = styled.div<{
 const IconButton: React.FC<{
 	width?: number
 	height?: number
-	fill?: string
-	stroke?: string
+	color?: string
 	background?: string
 	hover?: string
 	active?: string
 	disabled?: boolean
-	Icon: React.FunctionComponent<
-		React.SVGProps<SVGSVGElement> & {
-			title?: string | undefined
-		}
-	>
+	radius?: string
+	Icon: React.FunctionComponent<{
+		color?: string
+		hover?: string
+		active?: string
+	}>
 	onClick?: (e?: any) => void
 }> = ({
 	width = 32,
 	height = 32,
-	fill = 'black',
-	stroke = 'black',
+	color = 'black',
 	background = 'transparent',
+	radius = '0px',
 	hover,
 	active,
 	disabled,
@@ -75,10 +79,11 @@ const IconButton: React.FC<{
 			disabled={disabled}
 			width={width}
 			height={height}
+			radius={radius}
 			background={background}
 		>
 			{/* @ts-ignore */}
-			<Icon fill={fill} stroke={stroke} />
+			<Icon color={color} />
 		</Container>
 	)
 }
