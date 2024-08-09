@@ -14,6 +14,9 @@ import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import IconButton from '../Button/IconButton'
 import CloseIcon from '../Icons/Close'
 import NotepadIcon from '../Icons/Notepad'
+import { FlexColumn } from '../styles'
+import ChevronDownIcon from '../Icons/ChevronDown'
+import ChevronUpIcon from '../Icons/ChevronUp'
 
 const foreignObjectSize = 40
 
@@ -45,6 +48,7 @@ export const DataEdge: FC<EdgeProps> = ({
 
 	const [name, setName] = useState(data.name)
 	const [hovered, setHovered] = useState(false)
+	const [collapsed, setCollapsed] = useState(true)
 
 	const updateName = (newName: string) => {
 		setName(newName)
@@ -136,25 +140,54 @@ export const DataEdge: FC<EdgeProps> = ({
 					}}
 					onFocus={() => {}}
 				>
-					<IconButton
-						background="black"
-						radius="3px"
-						color="white"
-						Icon={NotepadIcon}
-						onClick={(event) =>
-							dispatch({ type: types.setEdge, data: id })
-						}
-					/>
-					{/* {sourceHandleId} */}
-					<IconButton
-						background="black"
-						radius="3px"
-						color="white"
-						Icon={CloseIcon}
-						onClick={(event) =>
-							dispatch({ type: types.deleteEdge, data: id })
-						}
-					/>
+					{collapsed ? (
+						<>
+							<IconButton
+								background="black"
+								color="white"
+								Icon={ChevronDownIcon}
+								width={32}
+								onClick={() => setCollapsed(!collapsed)}
+							/>
+						</>
+					) : (
+						<>
+							<FlexColumn>
+								<IconButton
+									Icon={ChevronUpIcon}
+									background="black"
+									color="white"
+									width={32}
+									onClick={() => setCollapsed(!collapsed)}
+								/>
+								<IconButton
+									background="black"
+									radius="3px"
+									color="white"
+									Icon={NotepadIcon}
+									onClick={(event) =>
+										dispatch({
+											type: types.setEdge,
+											data: id,
+										})
+									}
+								/>
+								{/* {sourceHandleId} */}
+								<IconButton
+									background="black"
+									radius="3px"
+									color="white"
+									Icon={CloseIcon}
+									onClick={(event) =>
+										dispatch({
+											type: types.deleteEdge,
+											data: id,
+										})
+									}
+								/>
+							</FlexColumn>
+						</>
+					)}
 				</div>
 			</EdgeLabelRenderer>
 		</>

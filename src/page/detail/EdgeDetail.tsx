@@ -12,7 +12,7 @@ import useStore from '@/store/store'
 import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
-import { Container, DataContainer } from './styles'
+import { Container, DataContainer, ItemContainer } from './styles'
 
 const Detail: React.FC<{
 	close: () => void
@@ -61,6 +61,50 @@ const Detail: React.FC<{
 	// https://stackoverflow.com/questions/43230622/reactjs-how-to-delete-item-from-list/43230714
 	const deleteField = (fieldID: string) => {
 		setFields(fields.filter((el) => el.key !== fieldID))
+	}
+
+	const renderItem = (field: Field, index: number) => {
+		switch (field.type) {
+			case 'string':
+				return (
+					<StringField
+						updateKey={updateKey}
+						updateValue={updateValue}
+						del={deleteField}
+						index={index}
+						key={field.key}
+						k={field.key}
+						v={field.value}
+						// error={errors[index] || false}
+					/>
+				)
+			case 'bool':
+				return (
+					<BooleanField
+						updateKey={updateKey}
+						updateValue={updateValue}
+						del={deleteField}
+						index={index}
+						key={field.key}
+						k={field.key}
+						v={field.value}
+					/>
+				)
+			case 'number':
+				return (
+					<NumberField
+						updateKey={updateKey}
+						updateValue={updateValue}
+						del={deleteField}
+						index={index}
+						key={field.key}
+						k={field.key}
+						v={field.value}
+					/>
+				)
+			default:
+				return <></>
+		}
 	}
 
 	if (!editEdge) return null
@@ -143,47 +187,11 @@ const Detail: React.FC<{
 					</ButtonRow>
 					<DataContainer>
 						{fields.map((field, index) => {
-							switch (field.type) {
-								case 'string':
-									return (
-										<StringField
-											updateKey={updateKey}
-											updateValue={updateValue}
-											del={deleteField}
-											index={index}
-											key={field.key}
-											k={field.key}
-											v={field.value}
-											// error={errors[index] || false}
-										/>
-									)
-								case 'bool':
-									return (
-										<BooleanField
-											updateKey={updateKey}
-											updateValue={updateValue}
-											del={deleteField}
-											index={index}
-											key={field.key}
-											k={field.key}
-											v={field.value}
-										/>
-									)
-								case 'number':
-									return (
-										<NumberField
-											updateKey={updateKey}
-											updateValue={updateValue}
-											del={deleteField}
-											index={index}
-											key={field.key}
-											k={field.key}
-											v={field.value}
-										/>
-									)
-								default:
-									return <></>
-							}
+							return (
+								<ItemContainer>
+									{renderItem(field, index)}
+								</ItemContainer>
+							)
 						})}
 					</DataContainer>
 				</Container>
