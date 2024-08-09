@@ -28,6 +28,8 @@ import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.s
 import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { FlexColumn } from '../styles'
+import PlusCircleIcon from '../Icons/PlusCircle'
+import IconButton from '../Button/IconButton'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -223,13 +225,15 @@ export default ({
 								}}
 							/>
 						</div>
-						<button
-							className="nodrag"
-							key="sourceMore"
-							onClick={() => addField('data')}
-						>
-							+
-						</button>
+						<div className="nodrag">
+							<IconButton
+								background="black"
+								color="white"
+								radius="3px"
+								Icon={PlusCircleIcon}
+								onClick={() => addField('data')}
+							/>
+						</div>
 					</div>
 
 					<div style={{ alignSelf: 'center' }}>

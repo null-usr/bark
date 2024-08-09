@@ -18,13 +18,15 @@ import FourSquaresIcon from '../Icons/FourSquares'
 
 export const ContextMenu: React.FC<{
 	ids: string[]
+	x: number
+	y: number
 	top: number
 	left: number
 	right: number
 	bottom: number
 	onSave: () => void
 	close: () => void
-}> = ({ ids, top, left, right, bottom, onSave, close, ...props }) => {
+}> = ({ ids, x, y, top, left, right, bottom, onSave, close, ...props }) => {
 	const { nodes, edges, addNode, onConnect, setNodes, dispatch } = useStore()
 
 	const rfStore = useStoreApi()
@@ -39,8 +41,9 @@ export const ContextMenu: React.FC<{
 
 		const tmpSchema = encodeSchema('', '', nds, edges)
 
+		// 0, 0 is top left
 		const { newNodes, newEdges } = decodeSchema(
-			{ x: left, y: top },
+			{ x: x - 30, y: y - 30 },
 			tmpSchema
 		)
 
@@ -49,6 +52,7 @@ export const ContextMenu: React.FC<{
 
 		// resetSelectedElements()
 		addSelectedNodes(newNodes.map((n) => n.id))
+		close()
 	}, [ids, addNode])
 
 	const deleteNode = useCallback(() => {

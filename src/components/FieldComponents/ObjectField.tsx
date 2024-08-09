@@ -46,7 +46,9 @@ export const ObjectField: React.FC<{
 
 	return (
 		<FieldContainer error={error} ref={ref}>
-			<Button onClick={del ? () => del(k) : undefined}>Delete</Button>
+			<Button danger onClick={del ? () => del(k) : undefined}>
+				Delete
+			</Button>
 			<input
 				type="text"
 				value={value}

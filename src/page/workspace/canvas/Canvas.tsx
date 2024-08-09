@@ -231,6 +231,8 @@ const Canvas: React.FC<{
 			setContextMenuData({
 				// @ts-ignore
 				ids: [n.id],
+				x: event.clientX,
+				y: event.clientY,
 				top:
 					event.clientY + 200 < pane.height
 						? event.clientY
@@ -255,6 +257,8 @@ const Canvas: React.FC<{
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 
 			setContextMenuData({
+				x: event.clientX,
+				y: event.clientY,
 				// @ts-ignore
 				ids: nds.map((n) => n.id),
 				top: event.clientY + 200 < pane.height && event.clientY,
@@ -300,7 +304,7 @@ const Canvas: React.FC<{
 			)}
 			{contextMenuData && (
 				<ContextMenu
-					onClick={onPaneClick}
+					close={onPaneClick}
 					onSave={() => {
 						dispatch({
 							type: types.setSaveNodes,

@@ -25,7 +25,6 @@ import IconButton from '../Button/IconButton'
 import ColorInput from '../ColorInput'
 import NotepadIcon from '../Icons/Notepad'
 import CloseIcon from '../Icons/Close'
-import RibbonIcon from '../Icons/Ribbon'
 import BookmarkIcon from '../Icons/Bookmark'
 
 // https://www.carlrippon.com/react-forwardref-typescript/

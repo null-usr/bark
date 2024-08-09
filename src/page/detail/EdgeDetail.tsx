@@ -116,17 +116,28 @@ const Detail: React.FC<{
 					{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
 					<div style={{ width: '100%' }}>
 						<input
-							style={{width: '100%' }}
+							style={{ width: '100%' }}
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 						/>
 					</div>
 					<ButtonRow>
-						<Button onClick={() => addField('string')}>Text</Button>
-						<Button onClick={() => addField('bool')}>
+						<Button
+							type="secondary"
+							onClick={() => addField('string')}
+						>
+							Text
+						</Button>
+						<Button
+							type="secondary"
+							onClick={() => addField('bool')}
+						>
 							Boolean
 						</Button>
-						<Button onClick={() => addField('number')}>
+						<Button
+							type="secondary"
+							onClick={() => addField('number')}
+						>
 							Number
 						</Button>
 					</ButtonRow>
