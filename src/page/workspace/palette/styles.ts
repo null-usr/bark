@@ -32,6 +32,8 @@ export const PaletteContainer = styled.div`
 `
 
 export const SceneContainer = styled.div<{ active?: boolean }>`
+	box-sizing: border-box;
+	padding: 8px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;

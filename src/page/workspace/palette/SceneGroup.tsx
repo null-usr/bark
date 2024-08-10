@@ -42,6 +42,10 @@ const SceneGroup: React.FC<{
 						{activeScene !== s && (
 							<FlexRow style={{ alignItems: 'center' }}>
 								<IconButton
+									background="black"
+									color="white"
+									radius="3px"
+									width={32}
 									Icon={NotepadIcon}
 									onClick={
 										activeScene === s
@@ -55,6 +59,10 @@ const SceneGroup: React.FC<{
 								/>
 								<IconButton
 									Icon={CloseIcon}
+									background="black"
+									color="white"
+									radius="3px"
+									width={32}
 									onClick={
 										activeScene === s
 											? undefined

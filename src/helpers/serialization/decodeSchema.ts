@@ -24,7 +24,7 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 			)
 			break
 		case 'source':
-			newNodes.push(new SourceNode('Source', position.x, position.y))
+			newNodes.push(new SourceNode(name, position.x, position.y))
 			break
 		case 'base':
 			newNodes.push(
@@ -75,6 +75,11 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 									uuid(),
 									n.fields
 								)
+							)
+							break
+						case 'source':
+							newNodes.push(
+								new SourceNode(n.name, position.x, position.y)
 							)
 							break
 						case 'custom':

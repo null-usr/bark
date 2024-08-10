@@ -63,6 +63,13 @@ const Workspace: React.FC<{}> = (props) => {
 		setCustomizerEdges(applyEdgeChanges(changes, customizerEdges))
 	}
 
+	useEffect(() => {
+		if (mode !== 'customize') {
+			setCustomizerEdges([])
+			setCustomizerNodes([])
+		}
+	}, [mode])
+
 	useEffect(
 		() => {
 			async function loadBuiltInNodes() {
@@ -192,6 +199,8 @@ const Workspace: React.FC<{}> = (props) => {
 											data: {
 												mode: 'customize',
 												schema: null,
+												nodes: customizerNodes,
+												edges: customizerEdges,
 											},
 										})
 									}}

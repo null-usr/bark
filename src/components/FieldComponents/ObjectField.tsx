@@ -36,7 +36,7 @@ export const ObjectField: React.FC<{
 	useEffect(() => {
 		if (ref.current) {
 			// @ts-ignore
-			setYOffset(ref.current.offsetTop + 12)
+			setYOffset(ref.current.offsetTop + 16)
 			// to force a rerender so the last handle drag and drop is
 			// positioned correctly
 			// add(k)

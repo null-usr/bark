@@ -27,7 +27,7 @@ export const encodeSchema = (
 		const gN = SerializeNode(
 			n.data.name,
 			n.data.color,
-			'base',
+			n.type !== 'base' && n.type !== 'source' ? 'base' : n.type,
 			n.data.fields
 		)
 		const o = {

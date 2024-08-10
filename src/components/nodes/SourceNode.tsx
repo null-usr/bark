@@ -219,6 +219,7 @@ export default ({
 						<div style={{ flex: 2 }}>
 							{/* TODO: this should change the node's ID like a root node */}
 							<input
+								className="nodrag"
 								value={data.name}
 								onChange={(e) => {
 									updateNodeName(id, e.target.value)
@@ -307,24 +308,6 @@ export default ({
 						// style={{ background: '#555' }}
 						// isConnectable={isConnectable}
 					/>
-
-					{!expanded && (
-						<>
-							{sourceArray.map((h) => (
-								<Handle
-									type="source"
-									key={h}
-									id={h}
-									position={Position.Right}
-									onClick={undefined}
-									style={{
-										pointerEvents: 'none',
-									}}
-									isConnectable={false}
-								/>
-							))}
-						</>
-					)}
 				</FlexColumn>
 			</Node>
 		</>
