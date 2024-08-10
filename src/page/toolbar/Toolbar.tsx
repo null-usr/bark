@@ -196,30 +196,26 @@ function Toolbar() {
 	return (
 		<>
 			{formMode === 'newWorkspace' && (
-				<Modal open withDimmer close={() => setFormMode('')}>
-					<CreateWorkspace
-						cancel={() => setFormMode('')}
-						submit={(name) => {
-							onNewWorkspace(name)
-							setFormMode('')
-						}}
-					/>
-				</Modal>
+				<CreateWorkspace
+					cancel={() => setFormMode('')}
+					submit={(name) => {
+						onNewWorkspace(name)
+						setFormMode('')
+					}}
+				/>
 			)}
 			{formMode === 'edit' && (
-				<Modal open withDimmer close={() => setFormMode('')}>
-					<EditWorkspace
-						name={workspace.name}
-						submit={(name) => {
-							dispatch({
-								type: types.renameWorkspace,
-								data: { newName: name },
-							})
-							setFormMode('')
-						}}
-						cancel={() => setFormMode('')}
-					/>
-				</Modal>
+				<EditWorkspace
+					name={workspace.name}
+					submit={(name) => {
+						dispatch({
+							type: types.renameWorkspace,
+							data: { newName: name },
+						})
+						setFormMode('')
+					}}
+					cancel={() => setFormMode('')}
+				/>
 			)}
 			{/* Only render the visible toolbar if we're not in the electron app */}
 			{navigator.userAgent !== 'Electron' && (
@@ -251,13 +247,15 @@ function Toolbar() {
 							>
 								New Workspace
 							</Button>
-							<Button
-								type="subtle"
-								block
-								onClick={() => setFormMode('edit')}
-							>
-								Edit
-							</Button>
+							{workspace.name !== null && (
+								<Button
+									type="subtle"
+									block
+									onClick={() => setFormMode('edit')}
+								>
+									Edit Workspace
+								</Button>
+							)}
 						</ToolbarButton>
 						<ToolbarButton label="Help">
 							<></>
