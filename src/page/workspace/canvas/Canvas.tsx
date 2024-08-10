@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
 	Background,
@@ -63,7 +64,7 @@ const Canvas: React.FC<{
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
 
-	const [contextMenuData, setContextMenuData] = useState(null)
+	const [contextMenuData, setContextMenuData] = useState<any>(null)
 	const contextMenuRef = useRef(null)
 
 	const reactFlowInstance = useReactFlow()
@@ -77,6 +78,7 @@ const Canvas: React.FC<{
 	let schemaColor = null
 	let displayName = null
 
+	// eslint-disable-next-line max-len
 	// https://stackoverflow.com/questions/62336340/cannot-update-a-component-while-rendering-a-different-component-warning
 	useEffect(() => {
 		// If we are working with a schema, then the incoming nodes
@@ -229,7 +231,6 @@ const Canvas: React.FC<{
 			// @ts-ignore
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 			setContextMenuData({
-				// @ts-ignore
 				ids: [n.id],
 				x: event.clientX,
 				y: event.clientY,

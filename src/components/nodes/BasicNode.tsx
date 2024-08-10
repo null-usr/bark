@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useEffect, useRef } from 'react'
 import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow'
 
@@ -51,6 +52,8 @@ export default ({
 	const [nodeHeight, setNodeHeight] = useState(50)
 
 	const [fields, setFields] = useState<Field[]>(data.fields || [])
+	const [name, setName] = useState<string>(data.name)
+
 	const [count, setCount] = useState(fields.length)
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
@@ -63,11 +66,6 @@ export default ({
 
 	const [errors, setErrors] = useState<{ [key: number]: boolean }>({})
 
-	// ideally this would use a reference to get the position (offsetTop)
-	const positionHandle = (index: number) => {
-		return 104 + 22 * index
-	}
-
 	const addHandle = (key: string) => {
 		if (sourceArray.length < 10) {
 			setSourceArray([...sourceArray, key])
@@ -76,7 +74,7 @@ export default ({
 
 	const addField = (type: string) => {
 		let value
-		if (type === 'string' || 'text') {
+		if (type === 'string' || type === 'text') {
 			value = `value ${count}`
 		} else if (type === 'number') {
 			value = 0
@@ -102,8 +100,6 @@ export default ({
 		const indices: number[] = []
 		data.fields.forEach((f, i) => f.key === k && indices.push(i))
 		if (indices.length > 0) {
-			console.log('duplicate keys, highlight')
-
 			const ers = {}
 			// @ts-ignore
 			ers[index] = true
@@ -132,8 +128,6 @@ export default ({
 		const indices: number[] = []
 		data.fields.forEach((f, i) => f.key === k && indices.push(i))
 		if (indices.length > 0) {
-			console.log('duplicate keys, highlight')
-
 			const ers = {}
 			// @ts-ignore
 			ers[index] = true
@@ -201,20 +195,14 @@ export default ({
 		data.fields[index] = { ...data.fields[index], value: v }
 	}
 
-	// https://stackoverflow.com/questions/43230622/reactjs-how-to-delete-item-from-list/43230714
 	const deleteField = (fieldID: string) => {
 		setFields(fields.filter((el) => el.key !== fieldID))
 		data.fields = data.fields.filter((el) => el.key !== fieldID)
 	}
 
 	useEffect(() => {
-		// console.log(sourceArray)
 		updateNodeInternals(id)
 	}, [sourceArray])
-
-	// useEffect(() => {
-	// 	console.log(errors)
-	// }, [errors])
 
 	useEffect(() => {
 		setFields([...data.fields])
@@ -253,7 +241,7 @@ export default ({
 				type="target"
 				position={Position.Left}
 				// style={{ background: '#555' }}
-				onConnect={(params) => console.log('handle onConnect', params)}
+				onConnect={(params) => {}}
 				isConnectable={isConnectable}
 			/>
 			{/* {sourceHandles} */}
@@ -262,9 +250,12 @@ export default ({
 					<FlexRow style={{ justifyContent: 'space-between' }}>
 						<FlexRow style={{ alignItems: 'center' }}>
 							<input
-								value={data.name}
+								className="nodrag"
+								value={name}
 								onChange={(e) => {
-									updateNodeName(id, e.target.value)
+									// updateNodeName(id, e.target.value)
+									setName(e.target.value)
+									data.name = e.target.value
 								}}
 							/>
 							<ColorInput
@@ -284,7 +275,6 @@ export default ({
 									dispatch({ type: types.setNode, data: id })
 								}
 							/>
-							{/* If there is no workspace, save to editor is default */}
 							{/* we can only save in non-customize mode */}
 							{mode !== 'customize' && (
 								<IconButton
@@ -318,8 +308,6 @@ export default ({
 				<Container style={{ padding: 8 }}>
 					<div style={{ alignSelf: 'center' }}>
 						{expanded ? (
-							// @ts-ignore
-							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
 							<div
 								style={{ cursor: 'pointer' }}
 								onClick={() => setExpanded(!expanded)}
@@ -331,8 +319,6 @@ export default ({
 								/>
 							</div>
 						) : (
-							// @ts-ignore
-							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
 							<div
 								style={{ cursor: 'pointer' }}
 								onClick={() => setExpanded(!expanded)}
@@ -506,13 +492,8 @@ export default ({
 				type="source"
 				position={Position.Right}
 				id={id}
-				// style={{ background: '#555' }}
 				isConnectable={isConnectable}
 			/>
-			{/* When the node is collapsed, in order to force
-				reactflow to continue to render the edges, we stack
-				handles and make them unclickable/invisible
-			*/}
 			{!expanded && (
 				<>
 					{sourceArray.map((h) => (

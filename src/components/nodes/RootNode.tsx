@@ -192,6 +192,7 @@ export default ({
 				<div
 					style={{
 						display: 'flex',
+						gap: 8,
 						justifyContent: 'space-around',
 						alignItems: 'center',
 					}}

@@ -83,6 +83,7 @@ export default ({
 
 	const [errors, setErrors] = useState<{ [key: number]: boolean }>({})
 	const [expanded, setExpanded] = useState(true)
+	const [name, setName] = useState<string>(data.name)
 
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
@@ -123,8 +124,6 @@ export default ({
 		const indices: number[] = []
 		data.fields.forEach((f, i) => f.key === k && indices.push(i))
 		if (indices.length > 0) {
-			console.log('duplicate keys, highlight')
-
 			const ers = {}
 			// @ts-ignore
 			ers[index] = true
@@ -220,9 +219,11 @@ export default ({
 							{/* TODO: this should change the node's ID like a root node */}
 							<input
 								className="nodrag"
-								value={data.name}
+								value={name}
 								onChange={(e) => {
-									updateNodeName(id, e.target.value)
+									// updateNodeName(id, e.target.value)
+									setName(e.target.value)
+									data.name = e.target.value
 								}}
 							/>
 						</div>
