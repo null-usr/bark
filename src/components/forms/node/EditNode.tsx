@@ -40,7 +40,7 @@ const CreateNode: React.FC<{
 			}}
 			initialValues={{
 				name: name || '',
-				color: color || '#FFFFFF',
+				color: color || '#000000',
 				saveToEditor: saveToEditor || false,
 			}}
 			onSubmit={(values) => {
