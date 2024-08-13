@@ -33,9 +33,9 @@
     "zustand": "^4.0.0-rc.0"
   },
   "scripts": {
-    "start": "vite",
-    "start:electron": "electronmon ./dist/electron/main.js\"",
-    "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon ./dist/electron/main.js\"",
+    "start:vite": "vite",
+    "start:electron": "electronmon ./dist/electron/main/main.js\"",
+    "start": "tsc -p electron && concurrently -k \"cross-env BROWSER=none yarn start:vite\" \"electronmon ./dist/electron/main/main.js\"",
     "build:vite": "tsc && vite build",
     "build:electron": "tsc -p electron",
     "serve": "vite preview",

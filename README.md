@@ -15,18 +15,20 @@ Before I started this project, I had just gotten a job working with React. I was
 # Scripts, Build & Run
 ### Development
 ```
-yarn start
+yarn start:vite
 ```
 To run the application in-browser
 
 ```
 yarn build:electron
-yarn start
 yarn electron:start
 ```
 To build electron and run the app inside.
 
-yarn electron:start SHOULD start both the local and electronmon but electronmon doesn't seem like it wants to start so you have to run it manually. Very sad.
+```
+yarn start
+```
+Builds electron, starts vite (hopefully at localhost:3000) and spins up electron
 
 ```
 yarn build
