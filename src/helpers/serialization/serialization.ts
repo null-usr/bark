@@ -61,17 +61,6 @@ export function LoadScene(scene: string): ReactFlowJsonObject {
 	out.nodes = data.nodes
 	out.edges = data.edges
 
-	// for every element in our node list, if the fields key exists
-	// we create a basic node, otherwise just push the raw react component
-	// data.nodes.forEach((node) => {
-	// 	if (node.fields) {
-	// 		const newBasic = new BasicNode(node.x, node.y, node.id, node.fields)
-	// 		out.elements.push(newBasic)
-	// 	} else {
-	// 		out.elements.push(node)
-	// 	}
-	// })
-
 	return out
 }
 
@@ -81,19 +70,6 @@ export function SaveScene(scene: ReactFlowJsonObject) {
 		edges: [],
 		viewport: { x: 0, y: 0, zoom: 0 },
 	}
-
-	// scene.elements.forEach((element) => {
-	// 	const edge = element as Edge
-
-	// 	if (edge.source) {
-	// 		out.edges.push(edge)
-	// 	} else {
-	// 		out.nodes.push(element)
-	// 	}
-	// })
-
-	// out.zoom = scene.zoom
-	// out.position = scene.position
 
 	// to allow for encoding of general react components
 	return JSON.stringify(scene, (k, v) =>
@@ -107,14 +83,19 @@ export function SaveWorkspace(workspace: Workspace) {
 	)
 }
 
-export function LoadWorkspace(workspace: string): Workspace {
-	const data: any = JSON.parse(workspace, (k, v) => {
-		const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
+export function LoadWorkspace(workspace: string): Workspace | null {
+	try {
+		const data: any = JSON.parse(workspace, (k, v) => {
+			const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
-		return matches ? Symbol.for(matches[1]) : v
-	})
+			return matches ? Symbol.for(matches[1]) : v
+		})
 
-	return data
+		return data
+	} catch (e) {
+		console.log(e)
+		return null
+	}
 }
 
 export function SerializeScene(scene: ReactFlowJsonObject) {
