@@ -1,10 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { useState, useEffect, useRef } from 'react'
 import { Handle, Position, NodeProps, useUpdateNodeInternals } from 'reactflow'
-
-// import { ReactComponent as CloseIcon } from '@/assets/icons/close.svg'
-import { ReactComponent as SaveIcon } from '@/assets/icons/save.svg'
-// import { ReactComponent as EditIcon } from '@/assets/icons/edit.svg'
 import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
 import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 
@@ -13,24 +9,23 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Node } from '@/helpers/theme'
 import { Field } from '@/helpers/types'
-import { SerializeNode } from '@/helpers/serialization/serialization'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
-import { StringField } from '../FieldComponents/StringField'
-import { BooleanField } from '../FieldComponents/BooleanField'
-import { NumberField } from '../FieldComponents/NumberField'
-import { ObjectField } from '../FieldComponents/ObjectField'
-import { NodeHeader, ButtonRow, Container } from './styles'
-import { CustomField } from '../FieldComponents/CustomField'
-import { FlexRow } from '../styles'
-import IconButton from '../Button/IconButton'
-import ColorInput from '../ColorInput'
-import NotepadIcon from '../Icons/Notepad'
-import CloseIcon from '../Icons/Close'
-import BookmarkIcon from '../Icons/Bookmark'
+import { StringField } from '../../FieldComponents/StringField'
+import { BooleanField } from '../../FieldComponents/BooleanField'
+import { NumberField } from '../../FieldComponents/NumberField'
+import { ObjectField } from '../../FieldComponents/ObjectField'
+import { NodeHeader, ButtonRow, Container } from '../styles'
+import { CustomField } from '../../FieldComponents/CustomField'
+import { FlexColumn, FlexRow } from '../../styles'
+import IconButton from '../../Button/IconButton'
+import ColorInput from '../../ColorInput'
+import NotepadIcon from '../../Icons/Notepad'
+import CloseIcon from '../../Icons/Close'
+import BookmarkIcon from '../../Icons/Bookmark'
+import AddFields from './AddFields'
+import { renderField } from './renderField'
 
 // https://www.carlrippon.com/react-forwardref-typescript/
-// https://stackoverflow.com/questions/37949981/call-child-method-from-parent
-// need to do a check that all the keys are unique
 export default ({
 	id,
 	data,
@@ -43,13 +38,13 @@ export default ({
 		workspace,
 		mode,
 		updateNodeColor,
-		updateNodeName,
+		// updateNodeName,
 		deleteNode,
 	} = useStore()
 
 	const nodeRef = useRef<HTMLDivElement>(null)
-	const [nodeWidth, setNodeWidth] = useState(50)
-	const [nodeHeight, setNodeHeight] = useState(50)
+	// const [nodeWidth, setNodeWidth] = useState(50)
+	// const [nodeHeight, setNodeHeight] = useState(50)
 
 	const [fields, setFields] = useState<Field[]>(data.fields || [])
 	const [name, setName] = useState<string>(data.name)
@@ -67,9 +62,7 @@ export default ({
 	const [errors, setErrors] = useState<{ [key: number]: boolean }>({})
 
 	const addHandle = (key: string) => {
-		if (sourceArray.length < 10) {
-			setSourceArray([...sourceArray, key])
-		}
+		setSourceArray([...sourceArray, key])
 	}
 
 	const addField = (type: string) => {
@@ -170,7 +163,6 @@ export default ({
 
 		// need to force a re-render by updating node itnerals, aka
 		// by editing the sourcehandles array
-
 		const newHandles = sourceArray.filter((e) => e !== fields[index].key)
 		newHandles.push(k)
 
@@ -202,23 +194,23 @@ export default ({
 
 	useEffect(() => {
 		updateNodeInternals(id)
-	}, [sourceArray])
+	}, [sourceArray, expanded])
 
 	useEffect(() => {
 		setFields([...data.fields])
 	}, [data])
 
-	useEffect(() => {
-		if (nodeRef.current) {
-			setNodeWidth(nodeRef.current.offsetWidth)
-			setNodeHeight(nodeRef.current.offsetHeight)
-		}
-	}, [data, expanded])
+	// useEffect(() => {
+	// 	if (nodeRef.current) {
+	// 		setNodeWidth(nodeRef.current.offsetWidth)
+	// 		setNodeHeight(nodeRef.current.offsetHeight)
+	// 	}
+	// }, [data, expanded])
 
-	const controlStyle = {
-		background: 'transparent',
-		border: 'none',
-	}
+	// const controlStyle = {
+	// 	background: 'transparent',
+	// 	border: 'none',
+	// }
 
 	return (
 		<Node color={data.color} selected={selected}>
@@ -240,11 +232,10 @@ export default ({
 				}}
 				type="target"
 				position={Position.Left}
-				// style={{ background: '#555' }}
 				onConnect={(params) => {}}
 				isConnectable={isConnectable}
 			/>
-			{/* {sourceHandles} */}
+
 			<Container ref={nodeRef}>
 				<NodeHeader color={data.color}>
 					<FlexRow style={{ justifyContent: 'space-between' }}>
@@ -334,155 +325,46 @@ export default ({
 
 					{expanded && (
 						<>
-							<ButtonRow>
-								<Button
-									type="secondary"
-									onClick={() => addField('string')}
-								>
-									String
-								</Button>
-								<Button
-									type="secondary"
-									onClick={() => addField('text')}
-								>
-									Text
-								</Button>
-								<Button
-									type="secondary"
-									onClick={() => addField('bool')}
-								>
-									Boolean
-								</Button>
-								<Button
-									type="secondary"
-									onClick={() => addField('number')}
-								>
-									Number
-								</Button>
-								<Button
-									type="secondary"
-									onClick={() => addField('data')}
-								>
-									data
-								</Button>
-								<Button
-									type="secondary"
-									disabled={
-										Object.keys(workspace.w_vars).length ===
-										0
-									}
-									onClick={() => addField('custom')}
-								>
-									custom
-								</Button>
-							</ButtonRow>
-							<div
+							<AddFields
+								addField={addField}
+								hasCustomVars={
+									Object.keys(workspace.w_vars).length > 0
+								}
+							/>
+							<FlexColumn
 								style={{
-									display: 'flex',
-									flexDirection: 'column',
 									gap: 4,
 								}}
 								className="nodrag"
 							>
 								{fields.map((field, index) => {
-									switch (field.type) {
-										case 'string':
-											return (
-												<StringField
-													index={index}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													updateValue={updateValue}
-													updateKey={updateKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										case 'text':
-											return (
-												<StringField
-													index={index}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													updateValue={updateValue}
-													updateKey={updateKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										case 'bool':
-											return (
-												<BooleanField
-													index={index}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													updateValue={updateValue}
-													updateKey={updateKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										case 'number':
-											return (
-												<NumberField
-													index={index}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													updateValue={updateValue}
-													updateKey={updateKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										case 'data':
-											return (
-												<ObjectField
-													color={data.color}
-													add={addHandle}
-													id={id}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													index={index}
-													update={updateDataFieldKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										case 'custom':
-											return (
-												<CustomField
-													index={index}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													updateValue={updateValue}
-													updateKey={updateKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										default:
-											return <></>
-									}
+									return field.type === 'text' ? (
+										<StringField
+											index={index}
+											key={field.key}
+											k={field.key}
+											v={field.value}
+											updateValue={updateValue}
+											updateKey={updateKey}
+											del={deleteField}
+											error={errors[index] || false}
+										/>
+									) : (
+										renderField(
+											field,
+											index,
+											data.color,
+											errors[index] || false,
+											id,
+											updateKey,
+											deleteField,
+											updateValue,
+											updateDataFieldKey,
+											addHandle
+										)
+									)
 								})}
-							</div>
+							</FlexColumn>
 						</>
 					)}
 				</Container>
@@ -504,6 +386,7 @@ export default ({
 							position={Position.Right}
 							onClick={undefined}
 							style={{
+								top: 70,
 								pointerEvents: 'none',
 								background: data.color,
 							}}

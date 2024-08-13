@@ -1,13 +1,10 @@
+/* eslint-disable max-len */
 import React, { useEffect, useState } from 'react'
-import { Edge, useReactFlow } from 'reactflow'
+import { Edge } from 'reactflow'
 import Modal from '@/components/modal/Modal'
 import { getIncomingEdges, getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { DataEdge } from '@/helpers/classes/DataEdge'
-import { BooleanField } from '@/components/FieldComponents/BooleanField'
-import { NumberField } from '@/components/FieldComponents/NumberField'
-import { StringField } from '@/components/FieldComponents/StringField'
 import { getCount } from '@/helpers/getCount'
-import { ButtonRow } from '@/helpers/styles'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
@@ -19,23 +16,17 @@ import { BasicNode } from '@/helpers/classes/BasicNode'
 import IconButton from '@/components/Button/IconButton'
 import LockIcon from '@/components/Icons/Lock'
 import UnlockIcon from '@/components/Icons/Unlock'
-import { Paragraph } from '@/components/Typography/text'
+import { renderField } from '@/components/nodes/BasicNode/renderField'
+import AddFields from '@/components/nodes/BasicNode/AddFields'
 import { Container, DataContainer, ItemContainer } from './styles'
+import DetailDataField from './DetailDataField'
 
 const Detail: React.FC<{
 	close: () => void
 	isOpen: boolean
 }> = ({ close, isOpen }) => {
-	const reactFlowInstance = useReactFlow()
-
-	const {
-		nodes,
-		edges,
-		editNodeID,
-		dispatch,
-		updateDialogueData,
-		updateNodeColor,
-	} = useStore()
+	const { nodes, edges, editNodeID, workspace, dispatch, updateNodeColor } =
+		useStore()
 
 	if (!editNodeID) return null
 
@@ -53,8 +44,7 @@ const Detail: React.FC<{
 	)
 
 	const [name, setName] = useState(editNode ? editNode.data.name || '' : '')
-	// const [color, setColor] = useState(editNode.data.color)
-	console.log(editNode.data.fields)
+
 	const [id, setID] = useState(editNodeID || '')
 	const [fields, setFields] = useState<Field[]>(
 		editNode ? editNode.data.fields || [] : []
@@ -93,132 +83,6 @@ const Detail: React.FC<{
 		setFields(fields.filter((el) => el.key !== fieldID))
 	}
 
-	const renderItem = (field: Field, index: number) => {
-		switch (field.type) {
-			case 'string':
-				return (
-					<StringField
-						index={index}
-						key={field.key}
-						k={field.key}
-						v={field.value}
-						updateValue={updateValue}
-						updateKey={updateKey}
-						del={deleteField}
-						// error={errors[index] || false}
-					/>
-				)
-			// TODO: proper implementation
-			case 'text':
-				return (
-					<FlexColumn
-						style={{
-							minHeight: 64,
-							width: '80%',
-						}}
-					>
-						<Paragraph
-							style={{
-								textAlign: 'center',
-								color: 'white',
-							}}
-						>
-							{field.key}:
-						</Paragraph>
-						<textarea
-							value={field.value}
-							onChange={(event) => {
-								updateValue(index, event.target.value)
-							}}
-							style={{ maxWidth: '100%' }}
-						/>
-						<Button danger onClick={() => deleteField(field.key)}>
-							Delete
-						</Button>
-					</FlexColumn>
-				)
-			case 'bool':
-				return (
-					<BooleanField
-						index={index}
-						key={field.key}
-						k={field.key}
-						v={field.value}
-						updateValue={updateValue}
-						updateKey={updateKey}
-						del={deleteField}
-						// error={errors[index] || false}
-					/>
-				)
-			case 'number':
-				return (
-					<NumberField
-						index={index}
-						key={field.key}
-						k={field.key}
-						v={field.value}
-						updateValue={updateValue}
-						updateKey={updateKey}
-						del={deleteField}
-						// error={errors[index] || false}
-					/>
-				)
-			case 'data':
-				return (
-					<div>
-						{field.key}:
-						<Button
-							onClick={() => {
-								const newNode = new BasicNode(
-									'basic',
-									editNode.position.x + 300,
-									editNode.position.y
-								)
-								const newEdge: Edge = new DataEdge(
-									editNode.id,
-									newNode.id,
-									field.key,
-									null
-								)
-
-								dispatch({
-									type: types.addNode,
-									data: newNode,
-								})
-								dispatch({
-									type: types.addEdge,
-									data: newEdge,
-								})
-							}}
-						>
-							Create
-						</Button>
-						<Button
-							disabled={
-								edgesOut.filter(
-									(e) => e.sourceHandle === field.key
-								).length === 0
-							}
-							onClick={() => {
-								const targeteditNodeID = edgesOut.filter(
-									(e) => e.sourceHandle === field.key
-								)[0]?.target
-
-								dispatch({
-									type: types.setNode,
-									data: targeteditNodeID,
-								})
-							}}
-						>
-							Go
-						</Button>
-					</div>
-				)
-			default:
-				return <></>
-		}
-	}
-
 	useEffect(() => {
 		setID(editNodeID)
 		setName(editNode ? editNode.data.name : '')
@@ -243,7 +107,6 @@ const Detail: React.FC<{
 				const idCheck = getCount(nodes, 'id', id)
 
 				if (idCheck === 1 && id !== editNodeID) {
-					/* vendors contains the element we're looking for */
 					setIDError(true)
 					console.log('node ID conflict')
 				} else {
@@ -251,7 +114,6 @@ const Detail: React.FC<{
 						type: types.editNode,
 						data: { nodeID: editNodeID, nodeData },
 					})
-					// updateDialogueData(editNodeID, dialogue)
 					close()
 				}
 			}}
@@ -321,53 +183,40 @@ const Detail: React.FC<{
 							onClick={() => setLockID(!lockID)}
 						/>
 					</FlexRow>
-					<ButtonRow style={{ width: '100%' }}>
-						<Button
-							type="secondary"
-							onClick={() => addField('string')}
-						>
-							String
-						</Button>
-						<Button
-							type="secondary"
-							onClick={() => addField('text')}
-						>
-							Text
-						</Button>
-						<Button
-							type="secondary"
-							onClick={() => addField('bool')}
-						>
-							Boolean
-						</Button>
-						<Button
-							type="secondary"
-							onClick={() => addField('number')}
-						>
-							Number
-						</Button>
-						<Button
-							type="secondary"
-							onClick={() => addField('data')}
-						>
-							data
-						</Button>
-					</ButtonRow>
+					<AddFields
+						addField={addField}
+						hasCustomVars={Object.keys(workspace.w_vars).length > 0}
+					/>
 					<DataContainer>
 						{fields.map((field, index) => {
 							return (
 								<ItemContainer>
-									{renderItem(field, index)}
+									{field.type === 'data' ? (
+										<DetailDataField
+											key={field.key}
+											fieldKey={field.key}
+											index={index}
+											updateFieldKey={updateKey}
+											editNode={editNode}
+											edgesOut={edgesOut}
+										/>
+									) : (
+										renderField(
+											field,
+											index,
+											editNode.data.color,
+											false,
+											editNodeID,
+											updateKey,
+											deleteField,
+											updateValue,
+											undefined,
+											undefined
+										)
+									)}
 								</ItemContainer>
 							)
 						})}
-						{/* <textarea
-					value={dialogue}
-					onChange={(e) => {
-						setDialogue(e.target.value)
-					}}
-				/> */}
-						{/* {dialogueNode.dialogue} */}
 					</DataContainer>
 				</Container>
 				<FlexColumn style={{ flex: 1, alignItems: 'center' }}>
@@ -413,7 +262,6 @@ const Detail: React.FC<{
 					</Button>
 					data:
 					<br />
-					{/* outgoing edges not from a field */}
 					{dataNodeEdges.map((e) => {
 						return (
 							<Button

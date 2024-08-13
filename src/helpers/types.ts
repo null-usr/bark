@@ -1,6 +1,6 @@
 import { Edge, Node, Viewport } from 'reactflow'
 import DialogueNodeType, { DialogueNode } from '@/components/nodes/DialogueNode'
-import BasicNodeType from '@/components/nodes/BasicNode'
+import BasicNodeType from '@/components/nodes/BasicNode/BasicNode'
 import ColorChooserNode from '@/components/nodes/ColorChooserNode'
 import RootNodeType from '@/components/nodes/RootNode'
 import SourceNodeType from '@/components/nodes/SourceNode'

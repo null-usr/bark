@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import Button from '@/components/Button/Button'
 import ExpandButton from '@/components/Button/ExpandButton'
@@ -98,8 +99,8 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 												type: types.editWorkspaceVariable,
 												data: {
 													name,
-													// @ts-ignore
 													options:
+														// @ts-ignore
 														w_var.options.filter(
 															(
 																op:

@@ -24,7 +24,7 @@ export const NumberField: React.FC<{
 				type="text"
 				value={key}
 				onChange={(e) => setKey(e.target.value)}
-				onSubmit={() => updateKey(index, key)}
+				// onSubmit={() => updateKey(index, key)}
 			/>
 			:
 			<input
@@ -36,7 +36,9 @@ export const NumberField: React.FC<{
 				}}
 			/>
 			{k !== key && (
-				<Button onClick={() => updateKey(index, key)}>Save</Button>
+				<Button onClick={() => updateKey(index, key)}>
+					Update Key
+				</Button>
 			)}
 			<Button danger onClick={del ? () => del(k) : undefined}>
 				Delete

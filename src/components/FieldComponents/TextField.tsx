@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Button from '@/components/Button/Button'
-import { FieldContainer } from './styles'
+import { FlexColumn, FlexRow } from '../styles'
 
 export const TextField: React.FC<{
 	k: string
@@ -12,7 +12,7 @@ export const TextField: React.FC<{
 	index: number
 	updateKey(index: number, k: string): void
 	updateValue(index: number, v: any): void
-	del?(k: string): void
+	del(k: string): void
 	error?: boolean
 }> = ({ k, v, index, error, updateKey, updateValue, del }) => {
 	const [key, setKey] = useState(k)
@@ -23,25 +23,36 @@ export const TextField: React.FC<{
 		setValue(v)
 	}, [v])
 	return (
-		<FieldContainer error={error}>
-			<input
-				type="text"
-				value={key}
-				onChange={(e) => setKey(e.target.value)}
-			/>
-			:
-			<input
-				type="text"
-				value={value}
-				onChange={(e) => {
-					setValue(e.target.value)
-					updateValue(index, e.target.value)
+		<FlexColumn
+			style={{
+				minHeight: 64,
+				width: '80%',
+			}}
+		>
+			<FlexRow>
+				<input
+					type="text"
+					style={{ flex: 1 }}
+					value={key}
+					onChange={(e) => setKey(e.target.value)}
+					// onSubmit={() => updateKey(index, key)}
+				/>
+				{k !== key && (
+					<Button onClick={() => updateKey(index, key)}>
+						Update Key
+					</Button>
+				)}
+			</FlexRow>
+			<textarea
+				value={v}
+				onChange={(event) => {
+					updateValue(index, event.target.value)
 				}}
+				style={{ maxWidth: '100%' }}
 			/>
-			{k !== key && (
-				<Button onClick={() => updateKey(index, key)}>Save</Button>
-			)}
-			<Button onClick={del ? () => del(k) : undefined}>Delete</Button>
-		</FieldContainer>
+			<Button danger onClick={() => del(k)}>
+				Delete
+			</Button>
+		</FlexColumn>
 	)
 }

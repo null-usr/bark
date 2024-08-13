@@ -78,8 +78,6 @@ const Canvas: React.FC<{
 	let schemaColor = null
 	let displayName = null
 
-	// eslint-disable-next-line max-len
-	// https://stackoverflow.com/questions/62336340/cannot-update-a-component-while-rendering-a-different-component-warning
 	useEffect(() => {
 		// If we are working with a schema, then the incoming nodes
 		// and edges will be empty so we need to initialize them
@@ -317,7 +315,7 @@ const Canvas: React.FC<{
 					{...contextMenuData}
 				/>
 			)}
-			{/* {edgeContextMenuData && <ContextMenu />} */}
+
 			<div
 				style={{ width: '100%', height: '100%', position: 'relative' }}
 				className="reactflow-wrapper"
@@ -333,7 +331,6 @@ const Canvas: React.FC<{
 					edgeTypes={EdgeTypes}
 					nodeTypes={NodeTypes}
 					// onSelectionContextMenu={saveGroup}
-					// looks like this is the only one that works
 					onSelectionChange={(params) => {
 						setSelectedNodes(params.nodes)
 						if (params.nodes.length > 1 && !showSGButton) {

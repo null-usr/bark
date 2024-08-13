@@ -22,6 +22,7 @@ _SpecRunner.html
 __benchmarks__
 # production
 /build
+/out
 /dist/**/*
 remote-repo/
 # testing

@@ -36,7 +36,6 @@
     "start": "vite",
     "start:electron": "electronmon ./dist/electron/main.js\"",
     "electron:start": "concurrently -k \"cross-env BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electronmon ./dist/electron/main.js\"",
-    "build": "tsc && vite build && tsc -p electron",
     "build:vite": "tsc && vite build",
     "build:electron": "tsc -p electron",
     "serve": "vite preview",
@@ -45,6 +44,7 @@
     "lint": "eslint './src/**/*{ts, tsx}'",
     "electron:build": "electron-vite build",
     "electron:preview": "electron-vite preview",
+    "build": "tsc && vite build && tsc -p electron && electron-vite build",
     "electron:package:mac": "electron-builder --mac --config electron-builder.yml --dir --config.asar=false",
     "electron:package:win": "electron-builder --win --config electron-builder.yml --dir --config.asar=false",
     "electron:package:linux": "electron-builder --linux --config electron-builder.yml --dir --config.asar=false"

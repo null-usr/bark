@@ -46,20 +46,20 @@ export const ObjectField: React.FC<{
 
 	return (
 		<FieldContainer error={error} ref={ref}>
-			<Button danger onClick={del ? () => del(k) : undefined}>
-				Delete
-			</Button>
 			<input
 				type="text"
 				value={value}
 				onChange={(e) => {
 					setValue(e.target.value)
 				}}
-				onSubmit={() => update(index, value)}
+				// onSubmit={() => update(index, value)}
 			/>
 			{value !== k && (
-				<Button onClick={() => update(index, value)}>Save</Button>
+				<Button onClick={() => update(index, value)}>Update Key</Button>
 			)}
+			<Button danger onClick={del ? () => del(k) : undefined}>
+				Delete
+			</Button>
 			<Handle
 				key={k}
 				type="source"

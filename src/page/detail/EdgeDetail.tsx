@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import Modal from '@/components/modal/Modal'
 import React, { useState } from 'react'
 import { useReactFlow } from 'reactflow'
@@ -18,15 +19,12 @@ const Detail: React.FC<{
 	close: () => void
 	isOpen: boolean
 	edgeID: string
-	// dialogue: string
-	// setDialogue: Function
-}> = ({ close, /* dialogue */ edgeID, isOpen /* , setDialogue */ }) => {
+}> = ({ close, edgeID, isOpen }) => {
 	const reactFlowInstance = useReactFlow()
 	const { nodes, dispatch, updateDialogueData } = useStore()
 
 	const editEdge = reactFlowInstance.getEdge(edgeID) as DataEdge
 	const [name, setName] = useState(editEdge.data.name)
-	// const [id, setID] = useState(edgeID || '')
 
 	const incomingNodes = nodes.filter((n) => n.id === editEdge.source)
 	const outgoingNodes = nodes.filter((n) => n.id === editEdge.target)
@@ -119,14 +117,11 @@ const Detail: React.FC<{
 					edgeID,
 					fields,
 				}
-				// in this case ID doesn't matter because when we export
-				// the ID will be whatever is in data (hopefully)
 
 				dispatch({
 					type: types.editEdge,
 					data: { edgeID, edgeData },
 				})
-				// updateDialogueData(nodeID, dialogue)
 				close()
 			}}
 		>
@@ -157,7 +152,6 @@ const Detail: React.FC<{
 				</FlexColumn>
 
 				<Container>
-					{/* <input value={id} onChange={(e) => setID(e.target.value)} /> */}
 					<div style={{ width: '100%' }}>
 						<input
 							style={{ width: '100%' }}

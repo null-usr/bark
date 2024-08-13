@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { FlexColumn } from '../styles'
 
 export const NodeHeader = styled.div<{
 	color?: string
@@ -8,7 +9,7 @@ export const NodeHeader = styled.div<{
 	background-color: ${({ color }) => color || 'white'};
 `
 
-export const Container = styled.div`
+export const Container = styled(FlexColumn)`
 	display: flex;
 	flex-direction: column;
 `
