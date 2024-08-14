@@ -8,7 +8,8 @@ const NodeGroup: React.FC<{
 	data: Schema[]
 	title: string
 	modable?: boolean
-}> = ({ data, title, modable }) => {
+	flex?: number
+}> = ({ data, title, modable, flex = 1 }) => {
 	return (
 		<>
 			<H3 style={{ margin: 0 }} color="white">
@@ -17,6 +18,7 @@ const NodeGroup: React.FC<{
 			<div
 				style={{
 					padding: 8,
+					// flex,
 					overflowY: 'auto',
 					overflowX: 'hidden',
 				}}

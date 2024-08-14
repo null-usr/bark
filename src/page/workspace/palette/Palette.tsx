@@ -41,49 +41,53 @@ const Palette: React.FC<{
 			</div>
 			{/* nodes/scenes container */}
 			<div style={{ padding: 8, minHeight: 0 }}>
-				{paletteMode === 'nodes' && (
-					<FlexColumn style={{ height: '100%' }}>
-						<div className="description">
-							You can drag these nodes to the pane on the right.
-						</div>
-						<Button
-							type="secondary"
-							onClick={() => {
-								dispatch({
-									type: types.customizeSchema,
-									data: {
-										mode: 'customize',
-										schema: null,
-									},
-								})
-							}}
-							// block
-						>
-							Create Node
-						</Button>
-						<NodeGroup title="Basic Nodes" data={builtIn} />
-						<NodeGroup
-							title="Wrokspace Nodes"
-							data={workspace.schemas}
-							modable
-						/>
-					</FlexColumn>
-				)}
-				{paletteMode === 'scenes' && (
-					<FlexColumn>
-						<Button
-							type="secondary"
-							onClick={() => setFormMode('createScene')}
-						>
-							New Scene
-						</Button>
-						<SceneGroup
-							data={workspaceScenes}
-							activeScene={activeScene}
-							onEdit={setFormMode}
-						/>
-					</FlexColumn>
-				)}
+				<FlexColumn style={{ height: '100%' }}>
+					{paletteMode === 'nodes' && (
+						<>
+							<div className="description">
+								You can drag these nodes to the pane on the
+								right.
+							</div>
+							<Button
+								type="secondary"
+								onClick={() => {
+									dispatch({
+										type: types.customizeSchema,
+										data: {
+											mode: 'customize',
+											schema: null,
+										},
+									})
+								}}
+								// block
+							>
+								Create Node
+							</Button>
+							<NodeGroup title="Basic Nodes" data={builtIn} />
+							<NodeGroup
+								title="Wrokspace Nodes"
+								data={workspace.schemas}
+								// flex={2}
+								modable
+							/>
+						</>
+					)}
+					{paletteMode === 'scenes' && (
+						<>
+							<Button
+								type="secondary"
+								onClick={() => setFormMode('createScene')}
+							>
+								New Scene
+							</Button>
+							<SceneGroup
+								data={workspaceScenes}
+								activeScene={activeScene}
+								onEdit={setFormMode}
+							/>
+						</>
+					)}
+				</FlexColumn>
 			</div>
 		</PaletteContainer>
 	)
