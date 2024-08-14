@@ -13,8 +13,10 @@ const DeleteNode: React.FC<{
 }> = ({ name, submit, cancel }) => {
 	return (
 		<FlexColumn>
-			<Paragraph>Are you sure you want to delete {name}?</Paragraph>
-			<FlexRow>
+			<Paragraph color="white">
+				Are you sure you want to delete {name}?
+			</Paragraph>
+			<FlexRow style={{ justifyContent: 'center' }}>
 				<Button danger onClick={submit}>
 					Delete
 				</Button>

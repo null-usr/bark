@@ -16,7 +16,7 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { ControlsStyled, MiniMapStyled, ReactFlowStyled } from '@/helpers/theme'
-import { NodeTypes, EdgeTypes } from '@/helpers/types'
+import { NodeTypes, EdgeTypes, Schema } from '@/helpers/types'
 import Button from '@/components/Button/Button'
 import { ContextMenu } from '@/components/ContextMenu/ContextMenu'
 import { splitEdge } from '@/helpers/edgeHelpers'
@@ -28,7 +28,7 @@ import { BottomBar } from '../styles'
 import SaveModal from './SaveModal'
 
 const Canvas: React.FC<{
-	schemaName?: string | null
+	schema?: Schema | null
 	nodes: Node<any>[]
 	edges: Edge<any>[]
 	onNodesChange: (changes: NodeChange[]) => void
@@ -39,7 +39,7 @@ const Canvas: React.FC<{
 	setNodes: (nodes: Node<any>[]) => void
 	mode?: string
 }> = ({
-	schemaName,
+	schema,
 	nodes,
 	edges,
 	onNodesChange,
@@ -58,7 +58,7 @@ const Canvas: React.FC<{
 		editNodeID,
 		saveNodes,
 	} = useStore()
-	const { setViewport, fitView } = useReactFlow()
+	const { fitView } = useReactFlow()
 
 	const [showSGButton, setShowSGButton] = useState(false)
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
@@ -73,27 +73,10 @@ const Canvas: React.FC<{
 	const forbiddenList = [
 		...workspace.schemas.map((s) => s.name),
 		...custom.map((s) => s.name),
-	].filter((n) => n === schemaName)
+	]
 
-	let schemaColor = null
-	let displayName = null
-
-	useEffect(() => {
-		// If we are working with a schema, then the incoming nodes
-		// and edges will be empty so we need to initialize them
-		if (schemaName) {
-			displayName = schemaName.replace('@workspace/', '')
-
-			const workspaceNodes = workspace.schemas
-			const search = [...custom, ...workspaceNodes]
-			const s = search.filter((n) => n.name === schemaName)[0]
-			const out = decodeSchema({ x: 0, y: 0 }, s)
-
-			schemaColor = s.color
-			setEdges(out.newEdges)
-			setNodes(out.newNodes)
-		}
-	}, [])
+	const displayName = schema ? schema.name.replace('@workspace/', '') : ''
+	const schemaColor = schema ? schema.color : ''
 
 	const dispatch = useStore((store) => store.dispatch)
 
@@ -288,9 +271,9 @@ const Canvas: React.FC<{
 		<CanvasContainer>
 			{saveNodes && (
 				<SaveModal
-					name={displayName}
+					displayName={displayName}
 					color={schemaColor}
-					schemaName={schemaName}
+					schema={schema}
 					nodes={
 						mode === 'customize'
 							? nodes

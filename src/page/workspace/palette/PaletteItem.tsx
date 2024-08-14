@@ -70,7 +70,6 @@ const PaletteItem: React.FC<{
 				color={color}
 				active={false}
 				draggable="true"
-				className="node react-flow__node-default"
 				onDragStart={(event) => onDragStart(event)}
 			>
 				<FlexRow

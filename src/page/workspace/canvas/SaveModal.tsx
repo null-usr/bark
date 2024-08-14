@@ -1,20 +1,21 @@
 import EditNode from '@/components/forms/node/EditNode'
 import Modal from '@/components/modal/Modal'
 import { encodeSchema } from '@/helpers/serialization/encodeSchema'
+import { Schema } from '@/helpers/types'
 import { types } from '@/store/reducer'
 import useStore from '@/store/store'
 import React from 'react'
 import { Edge, Node } from 'reactflow'
 
 const SaveModal: React.FC<{
-	name?: string | null
+	displayName?: string | null
 	color?: string | null
-	schemaName?: string | null
+	schema?: Schema | null
 	nodes: Node[]
 	edges: Edge[]
 	forbiddenList: string[]
 	close: () => void
-}> = ({ nodes, edges, forbiddenList, name, color, schemaName, close }) => {
+}> = ({ nodes, edges, forbiddenList, displayName, color, schema, close }) => {
 	const { mode } = useStore()
 
 	const dispatch = useStore((store) => store.dispatch)
@@ -26,9 +27,10 @@ const SaveModal: React.FC<{
 					dispatch({ type: types.setSaveNodes, data: null })
 					close()
 				}}
-				name={name || undefined}
+				name={displayName || undefined}
+				schema={schema}
 				color={color || undefined}
-				saveToEditor={schemaName ? name === schemaName : false}
+				saveToEditor={schema ? displayName === schema.name : false}
 				submit={(
 					newName: string,
 					newColor: string,
@@ -52,8 +54,6 @@ const SaveModal: React.FC<{
 
 					// if we're in edit mode we need to get out of here
 					if (mode === 'customize') {
-						// setNodes([])
-						// setEdges([])
 						dispatch({
 							type: types.customizeSchema,
 							data: { mode: 'active', schema: null },
@@ -61,7 +61,6 @@ const SaveModal: React.FC<{
 					}
 
 					close()
-					// onPaneClick()
 				}}
 			/>
 		</Modal>

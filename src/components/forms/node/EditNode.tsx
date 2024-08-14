@@ -5,17 +5,20 @@ import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import { H1, H3 } from '@/components/Typography/headers'
 import ColorInput from '@/components/ColorInput'
+import { Schema } from '@/helpers/types'
+import { Paragraph } from '@/components/Typography/text'
 
 // Edit a custom editor or workspace node
 // Shared w/ Create Node
-const CreateNode: React.FC<{
+const EditNode: React.FC<{
 	name?: string | null
+	schema?: Schema | null
 	color?: string
 	saveToEditor?: boolean
 	forbidden?: string[]
 	submit: (name: string, color: string, saveToEditor: boolean) => void
 	cancel: () => void
-}> = ({ name, color, saveToEditor, forbidden, submit, cancel }) => {
+}> = ({ name, color, saveToEditor, forbidden, schema, submit, cancel }) => {
 	return (
 		<Formik
 			validateOnChange={false}
@@ -32,7 +35,7 @@ const CreateNode: React.FC<{
 					n = `@workspace/${n}`
 				}
 
-				if (forbidden?.includes(n)) {
+				if (forbidden?.includes(n) && (!schema || n !== schema.name)) {
 					errors.name = 'A node with this name already exists'
 				}
 
@@ -55,7 +58,11 @@ const CreateNode: React.FC<{
 						</H3>
 						<label htmlFor="name">Name</label>
 						<Field name="name" />
-						{errors.name ? <div>{errors.name}</div> : null}
+						{errors.name ? (
+							<Paragraph color="red">
+								<i>*{errors.name}</i>
+							</Paragraph>
+						) : null}
 						<label htmlFor="color">Color</label>
 						{/* <Field name="color" type="color" className="nodrag" /> */}
 						<ColorInput
@@ -79,4 +86,4 @@ const CreateNode: React.FC<{
 	)
 }
 
-export default CreateNode
+export default EditNode
