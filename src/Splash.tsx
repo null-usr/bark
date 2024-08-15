@@ -6,7 +6,9 @@ import reportWebVitals from './reportWebVitals'
 
 ReactDOM.render(
 	<React.StrictMode>
-		<Splash />
+		<div className="Splash">
+			<Splash />
+		</div>
 	</React.StrictMode>,
 	document.getElementById('root')
 )
