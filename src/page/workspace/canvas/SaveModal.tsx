@@ -20,7 +20,7 @@ const SaveModal: React.FC<{
 
 	const dispatch = useStore((store) => store.dispatch)
 	return (
-		<Modal withDimmer open close={close}>
+		<Modal title="Save Node(s)" withDimmer open close={close}>
 			<EditNode
 				forbidden={forbiddenList}
 				cancel={() => {

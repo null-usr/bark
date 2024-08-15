@@ -15,6 +15,7 @@ files:
   - '!public/'
   - '!index.html'
   - '!about.html'
+  - '!splash.html'
   # - '!node_modules/'
 asarUnpack:
   - resources/**

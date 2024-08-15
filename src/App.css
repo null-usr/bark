@@ -10,6 +10,12 @@ body {
 	overflow: hidden;
 }
 
+.Splash {
+	height: 100vh;
+	max-height: 100vh;
+	overflow: hidden;
+}
+
 /* override react-flow to force nodes to be below edges */
 .react-flow__node {
 	/* z-index: -1 !important; */

@@ -65,7 +65,7 @@ const Palette: React.FC<{
 							</Button>
 							<NodeGroup title="Basic Nodes" data={builtIn} />
 							<NodeGroup
-								title="Wrokspace Nodes"
+								title="Workspace Nodes"
 								data={workspace.schemas}
 								// flex={2}
 								modable

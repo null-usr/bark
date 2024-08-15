@@ -50,7 +50,12 @@ const PaletteItem: React.FC<{
 	return (
 		<>
 			{formMode === 'delete' && (
-				<Modal open withDimmer close={() => setFormMode('')}>
+				<Modal
+					title="Delete Schema"
+					open
+					withDimmer
+					close={() => setFormMode('')}
+				>
 					<DeleteNode
 						name={name}
 						submit={() => {

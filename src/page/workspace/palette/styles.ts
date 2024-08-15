@@ -78,13 +78,13 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 
 	cursor: pointer;
 
-	background-color: ${({ color, ...props }) => color || props.theme.nodeBg};
+	background-color: ${({ ...props }) => props.theme.nodeBg};
 
 	min-height: 50px;
 	border-radius: 3px;
 	border: 1px solid
-		${({ active, ...props }) =>
-			active ? `${props.theme.primary}` : '#fcfcfc'};
+		${({ active, color = '#fcfcfc', ...props }) =>
+			active ? `${props.theme.primary}` : color};
 
 	&:hover {
 		border: 1px solid ${(props) => props.theme.primary};

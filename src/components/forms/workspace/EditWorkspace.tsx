@@ -31,7 +31,12 @@ const EditWorkspace: React.FC<{
 	const [isCreating, setIsCreating] = useState(false)
 
 	return (
-		<Modal open withDimmer close={() => submit(newName)}>
+		<Modal
+			title={`Edit Workspace: ${name}`}
+			open
+			withDimmer
+			close={() => submit(newName)}
+		>
 			<Container>
 				<FlexRow style={{ gap: 16 }}>
 					<Paragraph color="white">Workspace Name:</Paragraph>

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Schema } from '@/helpers/types'
-import { FlexColumn } from '@/components/styles'
-import { H3 } from '@/components/Typography/headers'
+import { FlexColumn, FlexRow } from '@/components/styles'
+import { H3, H4 } from '@/components/Typography/headers'
 import PaletteItem from './PaletteItem'
 
 const NodeGroup: React.FC<{
@@ -11,16 +11,36 @@ const NodeGroup: React.FC<{
 	flex?: number
 }> = ({ data, title, modable, flex = 1 }) => {
 	return (
-		<>
-			<H3 style={{ margin: 0 }} color="white">
-				{title}
-			</H3>
+		<FlexColumn
+			style={{
+				minHeight: 0,
+				gap: 0,
+			}}
+		>
+			<FlexRow style={{ gap: 0 }}>
+				<H4
+					style={{
+						margin: 0,
+						padding: '8px 8px 0px 8px',
+						borderLeft: '1px solid white',
+						borderTop: '1px solid white',
+						borderRight: '1px solid white',
+					}}
+					color="white"
+				>
+					{title}
+				</H4>
+				<div style={{ flex: 1, borderBottom: '1px solid white' }} />
+			</FlexRow>
 			<div
 				style={{
+					minHeight: 0,
 					padding: 8,
-					// flex,
 					overflowY: 'auto',
 					overflowX: 'hidden',
+					borderLeft: '1px solid white',
+					borderBottom: '1px solid white',
+					borderRight: '1px solid white',
 				}}
 			>
 				<FlexColumn>
@@ -43,7 +63,7 @@ const NodeGroup: React.FC<{
 						})}
 				</FlexColumn>
 			</div>
-		</>
+		</FlexColumn>
 	)
 }
 

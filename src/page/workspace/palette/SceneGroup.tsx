@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import { Schema } from '@/helpers/types'
+import React from 'react'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { FlexColumn, FlexRow } from '@/components/styles'
@@ -18,8 +17,6 @@ const SceneGroup: React.FC<{
 	return (
 		<div
 			style={{
-				padding: 8,
-				// flex,
 				overflowY: 'auto',
 				overflowX: 'hidden',
 			}}
