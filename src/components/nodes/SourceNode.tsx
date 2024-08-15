@@ -203,6 +203,7 @@ export default ({
 							gap: 16,
 							justifyContent: 'space-around',
 							alignItems: 'center',
+							marginRight: 16,
 						}}
 					>
 						<div style={{ flex: 2 }}>
