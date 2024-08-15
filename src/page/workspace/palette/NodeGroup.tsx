@@ -2,6 +2,7 @@ import React from 'react'
 import { Schema } from '@/helpers/types'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import { H3, H4 } from '@/components/Typography/headers'
+import Button from '@/components/Button/Button'
 import PaletteItem from './PaletteItem'
 
 const NodeGroup: React.FC<{
@@ -9,7 +10,8 @@ const NodeGroup: React.FC<{
 	title: string
 	modable?: boolean
 	flex?: number
-}> = ({ data, title, modable, flex = 1 }) => {
+	onCreate?: () => void
+}> = ({ data, title, modable, onCreate, flex = 1 }) => {
 	return (
 		<FlexColumn
 			style={{
@@ -44,6 +46,12 @@ const NodeGroup: React.FC<{
 				}}
 			>
 				<FlexColumn>
+					{!data ||
+						(data.length === 0 && (
+							<Button type="secondary" onClick={onCreate}>
+								Create Node
+							</Button>
+						))}
 					{data &&
 						data.length > 0 &&
 						data.map((node, index) => {

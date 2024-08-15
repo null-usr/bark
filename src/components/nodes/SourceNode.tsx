@@ -1,15 +1,6 @@
-import React, {
-	memo,
-	useContext,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useRef,
-	useState,
-} from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
 	Handle,
-	isEdge,
 	NodeProps,
 	Position,
 	useReactFlow,
@@ -17,19 +8,18 @@ import {
 	XYPosition,
 } from 'reactflow'
 import { v4 as uuidv4 } from 'uuid'
-import { FlowContext } from '@/contexts/FlowContext'
 import useStore from '@/store/store'
 import { Node } from '@/helpers/theme'
 import { Field } from '@/helpers/types'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { types } from '@/store/reducer'
 
-import { ReactComponent as ChevronDownIcon } from '@/assets/icons/chevron_down.svg'
-import { ReactComponent as ChevronUpIcon } from '@/assets/icons/chevron_up.svg'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { FlexColumn } from '../styles'
 import PlusCircleIcon from '../Icons/PlusCircle'
 import IconButton from '../Button/IconButton'
+import ChevronUpIcon from '../Icons/ChevronUp'
+import ChevronDownIcon from '../Icons/ChevronDown'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -239,33 +229,13 @@ export default ({
 					</div>
 
 					<div style={{ alignSelf: 'center' }}>
-						{expanded ? (
-							// @ts-ignore
-							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-							<div
-								style={{ cursor: 'pointer' }}
-								onClick={() => setExpanded(!expanded)}
-							>
-								<ChevronUpIcon
-									stroke="white"
-									fill="white"
-									width={32}
-								/>
-							</div>
-						) : (
-							// @ts-ignore
-							// eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-							<div
-								style={{ cursor: 'pointer' }}
-								onClick={() => setExpanded(!expanded)}
-							>
-								<ChevronDownIcon
-									stroke="white"
-									fill="white"
-									width={32}
-								/>
-							</div>
-						)}
+						<IconButton
+							Icon={expanded ? ChevronUpIcon : ChevronDownIcon}
+							background="black"
+							color="white"
+							hover="gray"
+							onClick={() => setExpanded(!expanded)}
+						/>
 					</div>
 
 					{expanded && (

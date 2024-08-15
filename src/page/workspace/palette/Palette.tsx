@@ -63,8 +63,29 @@ const Palette: React.FC<{
 							>
 								Create Node
 							</Button>
-							<NodeGroup title="Basic Nodes" data={builtIn} />
 							<NodeGroup
+								onCreate={() => {
+									dispatch({
+										type: types.customizeSchema,
+										data: {
+											mode: 'customize',
+											schema: null,
+										},
+									})
+								}}
+								title="Basic Nodes"
+								data={builtIn}
+							/>
+							<NodeGroup
+								onCreate={() => {
+									dispatch({
+										type: types.customizeSchema,
+										data: {
+											mode: 'customize',
+											schema: null,
+										},
+									})
+								}}
 								title="Workspace Nodes"
 								data={workspace.schemas}
 								// flex={2}
