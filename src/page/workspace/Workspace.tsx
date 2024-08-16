@@ -89,9 +89,9 @@ const Workspace: React.FC<{}> = (props) => {
 			async function loadBuiltInNodes() {
 				fetch('./builtin.json')
 					.then((response) => response.json())
-					.then((d) =>
+					.then((d) => {
 						dispatch({ type: types.loadBuiltInNodes, data: d })
-					)
+					})
 			}
 
 			async function loadCustomNodes() {

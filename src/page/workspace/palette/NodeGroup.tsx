@@ -1,7 +1,7 @@
 import React from 'react'
 import { Schema } from '@/helpers/types'
 import { FlexColumn, FlexRow } from '@/components/styles'
-import { H3, H4 } from '@/components/Typography/headers'
+import { H4 } from '@/components/Typography/headers'
 import Button from '@/components/Button/Button'
 import PaletteItem from './PaletteItem'
 
@@ -37,7 +37,7 @@ const NodeGroup: React.FC<{
 			<div
 				style={{
 					minHeight: 0,
-					padding: 8,
+					padding: '16px 8px',
 					overflowY: 'auto',
 					overflowX: 'hidden',
 					borderLeft: '1px solid white',

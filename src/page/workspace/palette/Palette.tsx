@@ -73,7 +73,7 @@ const Palette: React.FC<{
 										},
 									})
 								}}
-								title="Basic Nodes"
+								title="BASIC NODES"
 								data={builtIn}
 							/>
 							<NodeGroup
@@ -86,7 +86,7 @@ const Palette: React.FC<{
 										},
 									})
 								}}
-								title="Workspace Nodes"
+								title="WORKSPACE NODES"
 								data={workspace.schemas}
 								// flex={2}
 								modable

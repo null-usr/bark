@@ -79,6 +79,7 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 	cursor: pointer;
 
 	background-color: ${({ ...props }) => props.theme.nodeBg};
+	/* background-color: white; */
 
 	min-height: 50px;
 	border-radius: 3px;
@@ -86,8 +87,13 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 		${({ active, color = '#fcfcfc', ...props }) =>
 			active ? `${props.theme.primary}` : color};
 
+	border-top: 16px solid
+		${({ active, color = '#fcfcfc', ...props }) =>
+			active ? `${props.theme.primary}` : color};
+
 	&:hover {
 		border: 1px solid ${(props) => props.theme.primary};
+		border-top: 16px solid ${(props) => props.theme.primary};
 	}
 `
 
