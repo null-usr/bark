@@ -91,7 +91,6 @@ export const DataEdge: FC<EdgeProps> = ({
 					onDrop={(e) => {
 						e.preventDefault()
 						e.stopPropagation()
-						// console.log(e)
 
 						const nodeData = e.dataTransfer.getData(
 							'application/reactflow'
@@ -134,9 +133,11 @@ export const DataEdge: FC<EdgeProps> = ({
 					}}
 					onMouseOver={(e) => {
 						setHovered(true)
+						setCollapsed(false)
 					}}
 					onMouseLeave={(e) => {
 						setHovered(false)
+						setCollapsed(true)
 					}}
 					onFocus={() => {}}
 				>
@@ -147,7 +148,9 @@ export const DataEdge: FC<EdgeProps> = ({
 								color="white"
 								Icon={ChevronDownIcon}
 								width={32}
-								onClick={() => setCollapsed(!collapsed)}
+								onClick={() => {
+									setCollapsed(false)
+								}}
 							/>
 						</>
 					) : (
@@ -158,7 +161,9 @@ export const DataEdge: FC<EdgeProps> = ({
 									background="black"
 									color="white"
 									width={32}
-									onClick={() => setCollapsed(!collapsed)}
+									onClick={() => {
+										setCollapsed(true)
+									}}
 								/>
 								<IconButton
 									background="black"

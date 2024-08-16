@@ -9,3 +9,7 @@ export const FlexRow = styled.div`
 export const FlexColumn = styled(FlexRow)`
 	flex-direction: column;
 `
+
+export const Grid = styled.div`
+	display: grid;
+`

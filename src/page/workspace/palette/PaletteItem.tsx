@@ -50,7 +50,12 @@ const PaletteItem: React.FC<{
 	return (
 		<>
 			{formMode === 'delete' && (
-				<Modal open withDimmer close={() => setFormMode('')}>
+				<Modal
+					title="Delete Schema"
+					open
+					withDimmer
+					close={() => setFormMode('')}
+				>
 					<DeleteNode
 						name={name}
 						submit={() => {
@@ -70,7 +75,6 @@ const PaletteItem: React.FC<{
 				color={color}
 				active={false}
 				draggable="true"
-				className="node react-flow__node-default"
 				onDragStart={(event) => onDragStart(event)}
 			>
 				<FlexRow

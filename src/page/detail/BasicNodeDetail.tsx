@@ -94,6 +94,7 @@ const Detail: React.FC<{
 
 	return (
 		<Modal
+			title="Node Detail"
 			open
 			withDimmer
 			close={() => {

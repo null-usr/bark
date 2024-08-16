@@ -12,7 +12,7 @@ const CreateWorkspace: React.FC<{
 	cancel: () => void
 }> = ({ name, submit, cancel }) => {
 	return (
-		<Modal open withDimmer close={cancel}>
+		<Modal title="Create Workspace" open withDimmer close={cancel}>
 			<Formik
 				validateOnChange={false}
 				validateOnBlur={false}

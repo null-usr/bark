@@ -3,16 +3,18 @@
 		{
 			"name": "SOURCE",
 			"type": "source",
+			"color": "white",
 			"fields": []
 		},
 		{
 			"name": "BASE",
-			"type": "base"
+			"type": "base",
+			"color": "green"
 		},
 		{
 			"name": "DIALOGUE NODE",
 			"type": "base",
-			"color": "#343435",
+			"color": "red",
 			"fields": [
 				{
 					"key": "characterName",
@@ -29,7 +31,7 @@
 		{
 			"name": "BRANCH",
 			"type": "group",
-			"color": "#343435",
+			"color": "blue",
 			"nodes": [
 				{
 					"name": "Branch",

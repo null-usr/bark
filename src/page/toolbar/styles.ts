@@ -9,7 +9,7 @@ export const HeaderContainer = styled.div<{
 	background: ${(props) => props.theme.secondaryBg || 'grey'};
 	color: white;
 	padding: 0px;
-	height: 54px;
+	height: 45px;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

@@ -3,6 +3,7 @@ import React from 'react'
 import { Formik, Form, Field } from 'formik'
 import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
+import { Paragraph } from '@/components/Typography/text'
 
 // Create a custom editor or workspace node
 const CreateScene: React.FC<{
@@ -40,7 +41,11 @@ const CreateScene: React.FC<{
 					<FlexColumn>
 						<label htmlFor="name">Name</label>
 						<Field name="name" />
-						{errors.name ? <div>{errors.name}</div> : null}
+						{errors.name ? (
+							<Paragraph>
+								<i>*{errors.name}</i>
+							</Paragraph>
+						) : null}
 
 						<FlexRow>
 							<Button submitType="submit">Save</Button>
