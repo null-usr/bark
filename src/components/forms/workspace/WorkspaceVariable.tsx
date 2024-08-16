@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import Button from '@/components/Button/Button'
-import ExpandButton from '@/components/Button/ExpandButton'
 import IconButton from '@/components/Button/IconButton'
 import Divider from '@/components/Divider'
 import ChevronDownIcon from '@/components/Icons/ChevronDown'

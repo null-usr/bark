@@ -34,6 +34,15 @@ export const Text = styled.p<TextProps>`
 	line-height: initial;
 `
 
+export const Caption1 = styled.caption<TextProps>`
+	color: ${({ color }) => color || 'black'};
+	${({ inline }) => inline && `display: ${inline};`}
+	${({ letterSpacing }) =>
+		letterSpacing ? `letter-spacing: ${letterSpacing}em;` : ''}
+	margin: 0;
+	line-height: initial;
+`
+
 export const Link = styled.a<ParagraphProps>`
 	color: ${({ color }) => color || 'blue'};
 	font-weight: ${({ weight }) => weight || 300};

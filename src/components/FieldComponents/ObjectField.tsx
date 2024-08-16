@@ -10,6 +10,7 @@ import Button from '@/components/Button/Button'
 import { types } from '@/store/reducer'
 import useStore from '@/store/store'
 import { FieldContainer } from './styles'
+import { FlexRow } from '../styles'
 
 export const ObjectField: React.FC<{
 	k: string
@@ -46,20 +47,24 @@ export const ObjectField: React.FC<{
 
 	return (
 		<FieldContainer error={error} ref={ref}>
-			<input
-				type="text"
-				value={value}
-				onChange={(e) => {
-					setValue(e.target.value)
-				}}
-				// onSubmit={() => update(index, value)}
-			/>
-			{value !== k && (
-				<Button onClick={() => update(index, value)}>Update Key</Button>
-			)}
-			<Button danger onClick={del ? () => del(k) : undefined}>
-				Delete
-			</Button>
+			<FlexRow style={{ marginRight: 16 }}>
+				<input
+					type="text"
+					value={value}
+					onChange={(e) => {
+						setValue(e.target.value)
+					}}
+					// onSubmit={() => update(index, value)}
+				/>
+				{value !== k && (
+					<Button onClick={() => update(index, value)}>
+						Update Key
+					</Button>
+				)}
+				<Button danger onClick={del ? () => del(k) : undefined}>
+					Delete
+				</Button>
+			</FlexRow>
 			<Handle
 				key={k}
 				type="source"

@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const PaletteContainer = styled.div`
-	// height: 100%;
+	/* height: 70vh; */
 	width: 300px;
 
 	overflow-y: auto;
@@ -31,6 +31,29 @@ export const PaletteContainer = styled.div`
 	}
 `
 
+export const TabLink = styled.button<{
+	active: boolean
+}>`
+	background-color: ${({ active, ...props }) =>
+		active ? props.theme.secondaryBg : props.theme.bg};
+	color: white;
+	float: left;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	padding: 14px 16px;
+	font-size: 17px;
+	width: 50%;
+
+	${({ active, ...props }) =>
+		active && `border-top: 2px solid ${props.theme.primary};`}
+
+	&:hover {
+		background-color: ${({ active }) => (active ? '' : '#777')};
+		color: ${({ active }) => (active ? '' : 'white')};
+	}
+`
+
 export const SceneContainer = styled.div<{ active?: boolean }>`
 	box-sizing: border-box;
 	padding: 8px;
@@ -55,16 +78,22 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 
 	cursor: pointer;
 
-	background-color: ${({ color, ...props }) => color || props.theme.nodeBg};
+	background-color: ${({ ...props }) => props.theme.nodeBg};
+	/* background-color: white; */
 
 	min-height: 50px;
 	border-radius: 3px;
 	border: 1px solid
-		${({ active, ...props }) =>
-			active ? `${props.theme.primary}` : '#fcfcfc'};
+		${({ active, color = '#fcfcfc', ...props }) =>
+			active ? `${props.theme.primary}` : color};
+
+	border-top: 16px solid
+		${({ active, color = '#fcfcfc', ...props }) =>
+			active ? `${props.theme.primary}` : color};
 
 	&:hover {
 		border: 1px solid ${(props) => props.theme.primary};
+		border-top: 16px solid ${(props) => props.theme.primary};
 	}
 `
 

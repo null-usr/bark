@@ -15,13 +15,11 @@ import CreateScene from '@/components/forms/scene/CreateScene'
 import EditScene from '@/components/forms/scene/EditScene'
 import Modal from '@/components/modal/Modal'
 import DeleteScene from '@/components/forms/scene/DeleteScene'
-import Button from '@/components/Button/Button'
-import { Paragraph } from '@/components/Typography/text'
+import { decodeSchema } from '@/helpers/serialization/decodeSchema'
+import { Schema } from '@/helpers/types'
 import Canvas from './canvas/Canvas'
-import NodeGroup from './palette/NodeGroup'
 import Palette from './palette/Palette'
-import { TabLink, WorkspaceContainer } from './styles'
-import SceneGroup from './palette/SceneGroup'
+import { WorkspaceContainer } from './styles'
 
 const Workspace: React.FC<{}> = (props) => {
 	const {
@@ -38,17 +36,18 @@ const Workspace: React.FC<{}> = (props) => {
 		workspace,
 		mode,
 		schema,
-		activeScene,
 		dispatch,
 	} = useStore()
 
 	const workspaceScenes = Object.keys(workspace.scenes)
 
-	const [paletteMode, setPaletteMode] = useState<'nodes' | 'scenes'>('nodes')
 	const [formMode, setFormMode] = useState('')
 
 	const [customizerNodes, setCustomizerNodes] = useState<Node<any>[]>([])
 	const [customizerEdges, setCustomizerEdges] = useState<Edge<any>[]>([])
+	const [customizerSchema, setCustomizerSchema] = useState<Schema | null>(
+		null
+	)
 
 	const onCustomizerConnect = (connection: Connection | Edge) => {
 		setCustomizerEdges(addEdge(connection, customizerEdges))
@@ -67,6 +66,21 @@ const Workspace: React.FC<{}> = (props) => {
 		if (mode !== 'customize') {
 			setCustomizerEdges([])
 			setCustomizerNodes([])
+			setCustomizerSchema(null)
+		} else if (mode === 'customize') {
+			if (!schema) {
+				setCustomizerEdges([])
+				setCustomizerNodes([])
+				setCustomizerSchema(null)
+				return
+			}
+			const workspaceNodes = workspace.schemas
+			const search = [...custom, ...workspaceNodes]
+			const s = search.filter((n) => n.name === schema)[0]
+			const out = decodeSchema({ x: 0, y: 0 }, s)
+			setCustomizerNodes(out.newNodes)
+			setCustomizerEdges(out.newEdges)
+			setCustomizerSchema(s)
 		}
 	}, [mode])
 
@@ -75,9 +89,9 @@ const Workspace: React.FC<{}> = (props) => {
 			async function loadBuiltInNodes() {
 				fetch('./builtin.json')
 					.then((response) => response.json())
-					.then((d) =>
+					.then((d) => {
 						dispatch({ type: types.loadBuiltInNodes, data: d })
-					)
+					})
 			}
 
 			async function loadCustomNodes() {
@@ -100,6 +114,7 @@ const Workspace: React.FC<{}> = (props) => {
 		<>
 			{formMode === 'createScene' && (
 				<Modal
+					title="Create Scene"
 					open
 					withDimmer
 					close={() => {
@@ -121,6 +136,7 @@ const Workspace: React.FC<{}> = (props) => {
 			)}
 			{formMode.includes('renameScene') && (
 				<Modal
+					title="Rename Scene"
 					open
 					withDimmer
 					close={() => {
@@ -146,6 +162,7 @@ const Workspace: React.FC<{}> = (props) => {
 			)}
 			{formMode.includes('deleteScene') && (
 				<Modal
+					title="Delete Scene"
 					open
 					withDimmer
 					close={() => {
@@ -165,85 +182,7 @@ const Workspace: React.FC<{}> = (props) => {
 				</Modal>
 			)}
 			<WorkspaceContainer>
-				<Palette>
-					<Paragraph style={{ padding: '8px 0px' }} color="whtie">
-						Workspace: {workspace.name ? workspace.name : 'NONE'}
-					</Paragraph>
-					<div style={{ marginBottom: 16 }}>
-						<TabLink
-							active={paletteMode === 'nodes'}
-							onClick={() => setPaletteMode('nodes')}
-						>
-							Nodes
-						</TabLink>
-						<TabLink
-							active={paletteMode === 'scenes'}
-							onClick={() => setPaletteMode('scenes')}
-						>
-							Scenes
-						</TabLink>
-					</div>
-					{/* nodes/scenes container */}
-					<div style={{ padding: 20 }}>
-						{paletteMode === 'nodes' && (
-							<>
-								<div className="description">
-									You can drag these nodes to the pane on the
-									right.
-								</div>
-								<Button
-									type="secondary"
-									onClick={() => {
-										dispatch({
-											type: types.customizeSchema,
-											data: {
-												mode: 'customize',
-												schema: null,
-												nodes: customizerNodes,
-												edges: customizerEdges,
-											},
-										})
-									}}
-									block
-								>
-									Create Node
-								</Button>
-								<NodeGroup title="Basic Nodes" data={builtIn} />
-								<NodeGroup
-									title="Custom Nodes"
-									data={custom}
-									modable
-								/>
-								<NodeGroup
-									title="Wrokspace Nodes"
-									data={workspace.schemas}
-									modable
-								/>
-							</>
-						)}
-						{paletteMode === 'scenes' && (
-							<div
-								style={{
-									display: 'flex',
-									flexDirection: 'column',
-									gap: 8,
-								}}
-							>
-								<Button
-									type="secondary"
-									onClick={() => setFormMode('createScene')}
-								>
-									New Scene
-								</Button>
-								<SceneGroup
-									data={workspaceScenes}
-									activeScene={activeScene}
-									onEdit={setFormMode}
-								/>
-							</div>
-						)}
-					</div>
-				</Palette>
+				<Palette setFormMode={setFormMode} />
 				{/* Find a way to merge these two into one */}
 				{mode !== 'customize' && (
 					<Canvas
@@ -259,7 +198,7 @@ const Workspace: React.FC<{}> = (props) => {
 				)}
 				{mode === 'customize' && (
 					<Canvas
-						schemaName={schema}
+						schema={customizerSchema}
 						nodes={customizerNodes}
 						edges={customizerEdges}
 						onNodesChange={onCustomizerNodesChange}

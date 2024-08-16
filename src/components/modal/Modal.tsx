@@ -1,31 +1,36 @@
 import React from 'react'
 import Dimmer from './Dimmer'
-import { CloseButton, Content, ModalContainer } from './styles'
+import { Content, ModalContainer, ModalHeader } from './styles'
 
 import IconButton from '../Button/IconButton'
 import CloseIcon from '../Icons/Close'
+import { Paragraph } from '../Typography/text'
 
 const Modal: React.FC<{
+	title?: string
 	withDimmer?: boolean
 	children?: React.ReactNode
 	close: () => void
 	open: boolean
-}> = ({ withDimmer, open, close, children }) => {
+}> = ({ withDimmer, open, title, close, children }) => {
 	return (
 		<>
 			{open && withDimmer && <Dimmer onClick={close} />}
 
 			{open && (
 				<ModalContainer>
-					<CloseButton>
+					<ModalHeader>
+						<Paragraph style={{ marginLeft: 32, flex: 1 }}>
+							{title}
+						</Paragraph>
+
 						<IconButton
 							width={32}
 							height={32}
-							color="white"
 							Icon={CloseIcon}
 							onClick={close}
 						/>
-					</CloseButton>
+					</ModalHeader>
 					<Content>{children}</Content>
 				</ModalContainer>
 			)}

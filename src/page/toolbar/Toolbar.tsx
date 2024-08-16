@@ -1,13 +1,7 @@
 import React, { useState } from 'react'
 import { useReactFlow } from 'reactflow'
-import { FlowContext } from '@/contexts/FlowContext'
-import { Dropdown } from '@/components/dropdown/Dropdown'
-import initialElements from '@/helpers/initial-elements'
 import {
-	LoadScene,
 	LoadWorkspace,
-	SaveScene,
-	SaveWorkspace,
 	SerializeScene,
 } from '@/helpers/serialization/serialization'
 import useStore from '@/store/store'
@@ -17,6 +11,7 @@ import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
 import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
+import SplashPage from '@/SplashPage'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
 
@@ -217,6 +212,18 @@ function Toolbar() {
 					cancel={() => setFormMode('')}
 				/>
 			)}
+			{formMode === 'about' && (
+				<Modal
+					close={() => setFormMode('')}
+					title="About"
+					open
+					withDimmer
+				>
+					<div style={{ width: 600, height: 600 }}>
+						<SplashPage />
+					</div>
+				</Modal>
+			)}
 			{/* Only render the visible toolbar if we're not in the electron app */}
 			{navigator.userAgent !== 'Electron' && (
 				<HeaderContainer>
@@ -258,7 +265,13 @@ function Toolbar() {
 							)}
 						</ToolbarButton>
 						<ToolbarButton label="Help">
-							<></>
+							<Button
+								type="subtle"
+								block
+								onClick={() => setFormMode('about')}
+							>
+								About
+							</Button>
 						</ToolbarButton>
 					</LeftButtonGroup>
 					{/* don't really have anything for this atm */}

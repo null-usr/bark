@@ -28,6 +28,15 @@ function createWindow() {
 		webPreferences: {
 			preload: path.join(__dirname, '..', 'preload', 'preload.js'),
 		},
+		show: false, // don't show until ready
+	})
+
+	const splashWindow = new BrowserWindow({
+		width: 600,
+		height: 660,
+		transparent: true,
+		frame: false,
+		alwaysOnTop: true,
 	})
 
 	// In production, set the initial browser path to the local bundle generated
@@ -41,8 +50,28 @@ function createWindow() {
 		  })
 		: 'http://localhost:3000'
 
+	const splashURL = app.isPackaged
+		? url.format({
+				pathname: path.join(__dirname, '..', 'renderer', 'splash.html'),
+				protocol: 'file:',
+				slashes: true,
+		  })
+		: 'http://localhost:3000/splash.html'
+
 	// set the user agent to electron so we can retrieve this on the app side
 	mainWindow.loadURL(appURL, { userAgent: 'Electron' })
+	splashWindow.loadURL(splashURL, { userAgent: 'Electron' })
+
+	setTimeout(() => {
+		splashWindow.destroy()
+		mainWindow!.show()
+	}, 3000)
+
+	// Show splash immediately after window's finished loading
+	// mainWindow.webContents.on('did-finish-load', () => {
+	// 	splashWindow.destroy()
+	// 	mainWindow!.show()
+	// })
 
 	// Automatically open Chrome's DevTools in development mode.
 	if (!app.isPackaged) {
@@ -56,8 +85,8 @@ function createWindow() {
 function createAboutWindow() {
 	const win = new BrowserWindow({
 		title: 'About',
-		width: 500,
-		height: 500,
+		width: 600,
+		height: 600,
 		webPreferences: {
 			preload: path.join(__dirname, '..', 'preload', 'preload.js'),
 		},
@@ -287,6 +316,7 @@ app.whenReady().then(() => {
 	// remove mainWindow from memory on close
 	if (mainWindow) {
 		mainWindow.on('closed', () => {
+			mainWindow?.destroy()
 			mainWindow = null
 		})
 	}
