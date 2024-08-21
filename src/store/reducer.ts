@@ -35,6 +35,7 @@ export const types = {
 	deleteCustomNode: 'DELETE_CUSTOM',
 
 	createScene: 'SCENE_CREATE',
+	addScene: 'SCENE_ADD',
 	deleteScene: 'SCENE_DELETE',
 	renameScene: 'SCENE_RENAME',
 	changeScene: 'SCENE_CHANGE',
@@ -322,6 +323,28 @@ export const reducer = (
 			}
 		}
 
+		case types.addScene: {
+			const { scenes } = state.workspace
+			const newScene = data
+
+			// save our current scene
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
+			}
+
+			// add our new scene
+			scenes[newScene.name] = newScene
+
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
 		// WORKSPACE ===================================================
 
 		case types.createWorkspace: {
@@ -362,26 +385,29 @@ export const reducer = (
 
 		case types.loadWorkspace: {
 			let hasScenes = false
-			if (data.scenes && data.activeScene) {
-				if (data.scenes[data.activeScene]) {
+			const { workspace } = data
+			if (workspace && data.activeScene) {
+				if (workspace.scenes[data.activeScene]) {
 					hasScenes = true
 				}
 			}
 			return {
-				workspace: data.workspace,
+				workspace,
 				// eslint-disable-next-line no-nested-ternary
 				nodes: hasScenes
-					? data.scenes[data.activeScene].nodes
+					? workspace.scenes[data.activeScene].nodes
 					: data.nodes
 					? data.nodes
 					: [],
 				// eslint-disable-next-line no-nested-ternary
 				edges: hasScenes
-					? data.scenes[data.activeScene].edges
+					? workspace.scenes[data.activeScene].edges
 					: data.edges
 					? data.edges
 					: [],
-				viewport: data.viewport ? data.viewport : undefined,
+				viewport: workspace.scenes[data.activeScene].viewport
+					? workspace.scenes[data.activeScene].viewport
+					: undefined,
 				activeScene: data.activeScene || null,
 			}
 		}

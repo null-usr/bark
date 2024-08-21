@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
-import { useReactFlow } from 'reactflow'
+import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
+import JSZip from 'jszip'
+import FileSaver from 'file-saver'
 import {
+	LoadScene,
 	LoadWorkspace,
 	SerializeScene,
+	SerializeWorkspace,
 } from '@/helpers/serialization/serialization'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
@@ -26,11 +30,7 @@ function buildFileSelector() {
 function Toolbar() {
 	const { setViewport, fitView } = useReactFlow()
 	const reactFlowInstance = useReactFlow()
-	const { nodes, setNodes, setEdges, edges, workspace, activeScene } =
-		useStore()
-
-	const reset = useStore((state) => state.reset)
-	const dispatch = useStore((store) => store.dispatch)
+	const { dispatch, reset, workspace, activeScene } = useStore()
 
 	const [formMode, setFormMode] = useState('')
 
@@ -40,24 +40,38 @@ function Toolbar() {
 		const content = fileReader.result
 
 		// originally type workspace but it's more like workspace+
-		const data: Workspace | null = LoadWorkspace(content as string)
+		const data: { workspace?: Workspace } | null = LoadWorkspace(
+			content as string
+		)
 
 		if (data) {
 			// if there's no name, we're loading an exported json
-			if (!data.name) {
-				// @ts-ignore
-				const scene = data as Scene
-				scene.name = 'Default'
-				dispatch({ type: types.setNodes, data: scene.nodes })
-				dispatch({ type: types.setEdges, data: scene.edges })
-				setViewport(scene.viewport)
-			} else {
+			if (data.workspace) {
 				dispatch({ type: types.loadWorkspace, data })
 			}
 		}
 	}
 
+	const handleSceneRead = (e: any) => {
+		const content = fileReader.result
+
+		// originally type workspace but it's more like workspace+
+		const data: ReactFlowJsonObject | null = LoadScene(content as string)
+
+		if (data) {
+			const scene = data as Scene
+			if (!scene.name) scene.name = 'Default'
+			scene.name = workspace.scenes[scene.name]
+				? `${scene.name} (2)`
+				: scene.name
+
+			dispatch({ type: types.addScene, data: scene })
+			dispatch({ type: types.changeScene, data: scene.name })
+		}
+	}
+
 	const fileSelector = buildFileSelector()
+	const sceneFileSelector = buildFileSelector()
 
 	// once our fileselector changes, we know a file has been selected
 	// so we read it
@@ -65,56 +79,92 @@ function Toolbar() {
 		fileReader.onloadend = handleFileRead
 		fileReader.readAsText((e.target as HTMLInputElement).files![0])
 	}
+	// once our fileselector changes, we know a file has been selected
+	// so we read it
+	sceneFileSelector.onchange = (e) => {
+		fileReader.onloadend = handleSceneRead
+		fileReader.readAsText((e.target as HTMLInputElement).files![0])
+	}
 
-	const save = () => {
-		let currentScene: any = reactFlowInstance.toObject()
+	const saveWorkspace = () => {
+		const currentScene: any = reactFlowInstance.toObject()
 
-		// if our activeScene isn't null, then we can discard current
-		// for the next part
 		if (activeScene !== null) {
 			workspace.scenes[activeScene] = {
 				name: activeScene,
 				...currentScene,
 			}
-			currentScene = {}
 		}
-		// const w = SaveWorkspace(workspace)
 
 		const out = {
 			workspace,
 			activeScene,
-			...currentScene,
 		}
 
 		return JSON.stringify(out, (k, v) =>
 			typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
 		)
 	}
+	const exportWorkspace = () => {
+		// const serializedScenes = SerializeWorkspace(workspace)
+		if (navigator.userAgent !== 'Electron') {
+			const sceneKeys = Object.keys(workspace.scenes)
+			const zip = new JSZip()
 
-	const onSave = () => {
+			sceneKeys.forEach((scene) => {
+				zip.file(
+					`${scene}.json`,
+					JSON.stringify(workspace.scenes[scene])
+				)
+			})
+
+			zip.generateAsync({ type: 'blob' }).then((content) => {
+				FileSaver.saveAs(
+					content,
+					workspace.name ? `${workspace.name}.zip` : 'download.zip'
+				)
+			})
+
+			return ''
+		} else {
+			const sceneKeys = Object.keys(workspace.scenes)
+			const out: any[] = []
+			sceneKeys.forEach((scene) => {
+				out.push(workspace.scenes[scene])
+			})
+			return JSON.stringify(out)
+		}
+	}
+
+	const onSaveWorkspace = () => {
 		// const flow = reactFlowInstance.toObject()
 		// const out = SaveScene(flow)
 
-		const out = save()
+		const out = saveWorkspace()
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
 		const link = document.createElement('a')
 		link.href = href
-		link.download = `${workspace.name ? workspace.name : 'file'}.json`
+		link.download = `${workspace.name ? workspace.name : activeScene}.bark`
 		document.body.appendChild(link)
 		link.click()
 		document.body.removeChild(link)
 	}
 
-	const onExport = () => {
-		const out = SerializeScene(reactFlowInstance.toObject())
+	const onWorkspaceExport = () => {
+		exportWorkspace()
+	}
+
+	const onSceneExport = () => {
+		// const out = SerializeScene(reactFlowInstance.toObject())
+		const out = JSON.stringify(workspace.scenes[activeScene])
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
 		const link = document.createElement('a')
 		link.href = href
-		link.download = 'file.json'
+		link.download = `${activeScene}.woof`
 		document.body.appendChild(link)
 		link.click()
 		document.body.removeChild(link)
@@ -129,7 +179,7 @@ function Toolbar() {
 	}
 
 	// load our initial elemnets up
-	const onNew = () => {
+	const onResetWorkspace = () => {
 		reset()
 		setViewport({ x: 100, y: 100, zoom: 1 })
 		fitView()
@@ -138,15 +188,13 @@ function Toolbar() {
 	const handleFileSelect = () => {
 		fileSelector.click()
 	}
+	const handleSceneFileSelect = () => {
+		sceneFileSelector.click()
+	}
 
 	// ELECTRON =======================================================
 	// @ts-ignore
 	if (window.ipcRenderer) {
-		// @ts-ignore
-		window.ipcRenderer.on('window:new', () => {
-			onNew()
-		})
-
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:new', () => {
 			setFormMode('newWorkspace')
@@ -157,10 +205,30 @@ function Toolbar() {
 			setFormMode('edit')
 		})
 
+		// @ts-ignore
+		window.ipcRenderer.on('workspace:open', (data) => {
+			// originally type workspace but it's more like workspace+
+			const ws: { workspace?: Workspace } | null = LoadWorkspace(
+				data as string
+			)
+
+			if (ws) {
+				// if there's no name, we're loading an exported json
+				if (ws.workspace) {
+					dispatch({ type: types.loadWorkspace, data: ws })
+				}
+			}
+		})
+
+		// @ts-ignore
+		window.ipcRenderer.on('scene:open', (data) => {
+			handleSceneRead(data)
+		})
+
 		// saveWorkspace
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:saveWorkspace', (data) => {
-			const out = { path: data.path, data: save() }
+			const out = { path: data.path, data: saveWorkspace() }
 
 			// send the stringified content up and out to electron's main.ts
 			// @ts-ignore
@@ -169,8 +237,8 @@ function Toolbar() {
 
 		// exportJSON
 		// @ts-ignore
-		window.ipcRenderer.on('workspace:saveJSON', (data) => {
-			const out = { path: data.path, data: save() }
+		window.ipcRenderer.on('workspace:exportJSON', (data) => {
+			const out = { path: data.path, data: exportWorkspace() }
 
 			// send the stringified content up and out to electron's main.ts
 			// @ts-ignore
@@ -228,24 +296,6 @@ function Toolbar() {
 			{navigator.userAgent !== 'Electron' && (
 				<HeaderContainer>
 					<LeftButtonGroup style={{ gap: 0 }}>
-						<ToolbarButton label="File">
-							<Button type="subtle" block onClick={onNew}>
-								New File
-							</Button>
-							<Button
-								type="subtle"
-								block
-								onClick={handleFileSelect}
-							>
-								Open
-							</Button>
-							<Button type="subtle" block onClick={onSave}>
-								Save
-							</Button>
-							<Button type="subtle" block onClick={onExport}>
-								Export
-							</Button>
-						</ToolbarButton>
 						<ToolbarButton label="Workspace">
 							<Button
 								type="subtle"
@@ -254,15 +304,49 @@ function Toolbar() {
 							>
 								New Workspace
 							</Button>
-							{workspace.name !== null && (
-								<Button
-									type="subtle"
-									block
-									onClick={() => setFormMode('edit')}
-								>
-									Edit Workspace
-								</Button>
-							)}
+							<Button
+								type="subtle"
+								block
+								onClick={handleFileSelect}
+							>
+								Open
+							</Button>
+							<Button
+								type="subtle"
+								block
+								onClick={() => setFormMode('edit')}
+							>
+								Edit Workspace
+							</Button>
+							<Button
+								type="subtle"
+								block
+								onClick={onSaveWorkspace}
+							>
+								Save Workspace
+							</Button>
+							<Button
+								type="subtle"
+								block
+								onClick={onWorkspaceExport}
+							>
+								Export Project
+							</Button>
+						</ToolbarButton>
+						<ToolbarButton label="Scene">
+							{/* <Button type="subtle" block onClick={onNew}>
+								New Scene
+							</Button> */}
+							<Button
+								type="subtle"
+								block
+								onClick={handleSceneFileSelect}
+							>
+								Load Scene
+							</Button>
+							<Button type="subtle" block onClick={onSceneExport}>
+								Export Scene
+							</Button>
 						</ToolbarButton>
 						<ToolbarButton label="Help">
 							<Button

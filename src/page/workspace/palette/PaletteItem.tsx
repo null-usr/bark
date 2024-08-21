@@ -78,7 +78,11 @@ const PaletteItem: React.FC<{
 				onDragStart={(event) => onDragStart(event)}
 			>
 				<FlexRow
-					style={{ justifyContent: 'space-between', width: '100%' }}
+					style={{
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						width: '100%',
+					}}
 				>
 					<Paragraph
 						color="white"

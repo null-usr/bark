@@ -8,6 +8,8 @@ import { SourceNode } from '../classes/SourceNode'
 export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 	const { name, type, fields, color } = paletteItem
 
+	console.log(paletteItem)
+
 	const newNodes: any[] = []
 	const newEdges: any[] = []
 
@@ -24,7 +26,16 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 			)
 			break
 		case 'source':
-			newNodes.push(new SourceNode(name, position.x, position.y))
+			newNodes.push(
+				new SourceNode(
+					name,
+					position.x,
+					position.y,
+					undefined,
+					fields,
+					color
+				)
+			)
 			break
 		case 'base':
 			newNodes.push(

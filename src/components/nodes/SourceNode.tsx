@@ -51,23 +51,10 @@ export default ({
 	name: string
 	fields: Field[]
 }>) => {
-	const {
-		nodes,
-		edges,
-		workspace,
-		mode,
-		updateNodeColor,
-		updateNodeName,
-		deleteNode,
-	} = useStore()
-	const updateHandles = useStore((state) => state.updateNodeHandles)
-	const dispatch = useStore((store) => store.dispatch)
+	const { edges, dispatch } = useStore()
 
 	// when updating handles programmatically, this is needed
 	const updateNodeInternals = useUpdateNodeInternals()
-
-	const nodeRef: any = useRef()
-	const reactFlowInstance = useReactFlow()
 
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
@@ -182,15 +169,14 @@ export default ({
 
 	useEffect(() => {
 		updateNodeInternals(id)
-	}, [sourceArray])
+	}, [sourceArray, expanded])
+
+	useEffect(() => {
+		setFields([...data.fields])
+	}, [data])
 
 	return (
 		<>
-			{/* {dragging && 
-			
-			
-			} */}
-
 			<Node
 				dragging={dragging}
 				selected={selected}

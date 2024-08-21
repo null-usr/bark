@@ -2,7 +2,7 @@
 // serialize lite versions to be loaded by the game engines
 
 import { Edge, Node, ReactFlowJsonObject } from 'reactflow'
-import { Field, Workspace } from '../types'
+import { Field, Scene, Workspace } from '../types'
 
 export interface ISceneData extends ReactFlowJsonObject {
 	scenes?: string[]
@@ -43,27 +43,6 @@ export const SerializeGroup = (
 	return out
 }
 
-export function LoadScene(scene: string): ReactFlowJsonObject {
-	// https://www.thomasmaximini.com/json-stringify-symbols-and-react-components
-	// in order to properly stringafy & parse generic react components
-	const data: ReactFlowJsonObject = JSON.parse(scene, (k, v) => {
-		const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
-
-		return matches ? Symbol.for(matches[1]) : v
-	})
-
-	const out: ReactFlowJsonObject = {
-		nodes: [],
-		edges: [],
-		viewport: data.viewport,
-	}
-
-	out.nodes = data.nodes
-	out.edges = data.edges
-
-	return out
-}
-
 export function SaveScene(scene: ReactFlowJsonObject) {
 	const out: ISceneData = {
 		nodes: [],
@@ -83,7 +62,34 @@ export function SaveWorkspace(workspace: Workspace) {
 	)
 }
 
-export function LoadWorkspace(workspace: string): Workspace | null {
+export function LoadScene(scene: string): ReactFlowJsonObject | null {
+	try {
+		// https://www.thomasmaximini.com/json-stringify-symbols-and-react-components
+		// in order to properly stringafy & parse generic react components
+		const data: ReactFlowJsonObject = JSON.parse(scene, (k, v) => {
+			const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
+
+			return matches ? Symbol.for(matches[1]) : v
+		})
+
+		const out: ReactFlowJsonObject = {
+			nodes: [],
+			edges: [],
+			viewport: data.viewport,
+		}
+
+		out.nodes = data.nodes
+		out.edges = data.edges
+
+		return out
+	} catch (e) {
+		return null
+	}
+}
+
+export function LoadWorkspace(
+	workspace: string
+): { workspace?: Workspace } | null {
 	try {
 		const data: any = JSON.parse(workspace, (k, v) => {
 			const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
@@ -124,4 +130,14 @@ export function SerializeScene(scene: ReactFlowJsonObject) {
 	// })
 
 	return JSON.stringify(scene)
+}
+
+// return an array of the workspace's serialized scenes
+export function SerializeWorkspace(workspace: Workspace) {
+	const sceneKeys = Object.keys(workspace.scenes)
+	const out: string[] = []
+	sceneKeys.forEach((scene) => {
+		out.push(JSON.stringify(workspace.scenes[scene]))
+	})
+	return out
 }

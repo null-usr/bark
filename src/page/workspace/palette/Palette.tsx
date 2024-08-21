@@ -20,6 +20,16 @@ const Palette: React.FC<{
 	} = useStore()
 	const workspaceScenes = Object.keys(workspace.scenes)
 	const [paletteMode, setPaletteMode] = useState<'nodes' | 'scenes'>('nodes')
+
+	// ELECTRON =======================================================
+	// @ts-ignore
+	if (window.ipcRenderer) {
+		// @ts-ignore
+		window.ipcRenderer.on('scene:new', () => {
+			setPaletteMode('scenes')
+			setFormMode('createScene')
+		})
+	}
 	return (
 		<PaletteContainer>
 			<Paragraph style={{ padding: '8px 0px' }} color="whtie">

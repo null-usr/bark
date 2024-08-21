@@ -59,7 +59,7 @@ export class SourceNode {
 			color: this.color,
 			name: this.name,
 			fields: this.fields,
-			type: 'base',
+			type: 'source',
 		}
 	}
 
