@@ -42,10 +42,7 @@ export const ContextMenu: React.FC<{
 		const tmpSchema = encodeSchema('', '', nds, edges)
 
 		// 0, 0 is top left
-		const { newNodes, newEdges } = decodeSchema(
-			{ x: x - 30, y: y - 30 },
-			tmpSchema
-		)
+		const { newNodes, newEdges } = decodeSchema({ x, y }, tmpSchema)
 
 		newNodes.forEach((n) => addNode({ ...n, selected: true }))
 		newEdges.forEach((e) => onConnect(e))
