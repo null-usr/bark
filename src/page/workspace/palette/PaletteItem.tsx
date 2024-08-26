@@ -101,6 +101,7 @@ const PaletteItem: React.FC<{
 				<FlexRow
 					style={{
 						padding: 8,
+						boxSizing: 'border-box',
 						alignItems: 'center',
 						justifyContent: 'space-between',
 						width: '100%',
