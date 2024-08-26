@@ -111,12 +111,12 @@ function createAboutWindow() {
 }
 
 // IPC ============================================
-function createNew() {
-	mainWindow!.webContents.send('window:new')
-}
-
 function createNewWorkspace() {
 	mainWindow!.webContents.send('workspace:new')
+}
+
+function createNewScene() {
+	mainWindow!.webContents.send('scene:new')
 }
 
 function editWorkspace() {
@@ -125,7 +125,26 @@ function editWorkspace() {
 
 // I/O ===========================================
 
-function openFile() {
+function openWorkspace() {
+	// returns a promise
+	dialog
+		.showOpenDialog(mainWindow!, {
+			properties: ['openFile'],
+			filters: [{ name: 'Bark File', extensions: ['bark'] }],
+		})
+		.then((result) => {
+			// If we didn't cancel, then load the file and send data to the app
+			if (!result.canceled) {
+				readFile(result.filePaths[0], (err, data) => {
+					if (!err) {
+						mainWindow!.webContents.send('workspace:open', data)
+					}
+				})
+			}
+		})
+}
+
+function openScene() {
 	// returns a promise
 	dialog
 		.showOpenDialog(mainWindow!, {
@@ -140,7 +159,7 @@ function openFile() {
 			if (!result.canceled) {
 				readFile(result.filePaths[0], (err, data) => {
 					if (!err) {
-						mainWindow!.webContents.send('window:open', data)
+						mainWindow!.webContents.send('scene:open', data)
 					}
 				})
 			}
@@ -153,10 +172,7 @@ function saveWorkspace() {
 	dialog
 		.showSaveDialog(mainWindow!, {
 			properties: ['showOverwriteConfirmation'],
-			filters: [
-				{ name: 'JSON', extensions: ['json'] },
-				{ name: 'Dialogue File', extensions: ['dlg'] },
-			],
+			filters: [{ name: 'Dialogue File', extensions: ['bark'] }],
 		})
 		.then((result) => {
 			// If we didn't cancel, then load the file and send data to the app
@@ -169,7 +185,25 @@ function saveWorkspace() {
 		})
 }
 
-function exportJSON() {
+function saveScene() {
+	// returns a promise
+	dialog
+		.showSaveDialog(mainWindow!, {
+			properties: ['showOverwriteConfirmation'],
+			filters: [{ name: 'Dialogue File', extensions: ['dlg'] }],
+		})
+		.then((result) => {
+			// If we didn't cancel, then load the file and send data to the app
+			if (!result.canceled) {
+				// if there's no extension, add .whatever to the end
+				mainWindow!.webContents.send('scene:saveScene', {
+					path: result.filePath,
+				})
+			}
+		})
+}
+
+function exportWorkspaceJSON() {
 	// returns a promise
 	dialog
 		.showSaveDialog(mainWindow!, {
@@ -183,7 +217,28 @@ function exportJSON() {
 			// If we didn't cancel, then load the file and send data to the app
 			if (!result.canceled) {
 				// if there's no extension, add .json to the end
-				mainWindow!.webContents.send('workspace:saveJSON', {
+				mainWindow!.webContents.send('workspace:exportJSON', {
+					path: result.filePath,
+				})
+			}
+		})
+}
+
+function exportSceneJSON() {
+	// returns a promise
+	dialog
+		.showSaveDialog(mainWindow!, {
+			properties: ['showOverwriteConfirmation'],
+			filters: [
+				{ name: 'JSON', extensions: ['json'] },
+				{ name: 'Dialogue File', extensions: ['dlg'] },
+			],
+		})
+		.then((result) => {
+			// If we didn't cancel, then load the file and send data to the app
+			if (!result.canceled) {
+				// if there's no extension, add .json to the end
+				mainWindow!.webContents.send('scene:exportJSON', {
 					path: result.filePath,
 				})
 			}
@@ -237,16 +292,16 @@ const template = [
 		  ]
 		: []),
 	{
-		label: 'File',
+		label: 'Workspace',
 		submenu: [
 			{
-				label: 'New',
-				click: createNew,
+				label: 'New Workspace',
+				click: createNewWorkspace,
 				accelerator: 'CmdOrCtrl+Shift+N',
 			},
 			{
-				label: 'Open',
-				click: openFile,
+				label: 'Open Workspace',
+				click: openWorkspace,
 				accelerator: 'CmdOrCtrl+O',
 			},
 			{
@@ -255,8 +310,13 @@ const template = [
 				accelerator: 'CmdOrCtrl+S',
 			},
 			{
-				label: 'Export',
-				click: exportJSON,
+				label: 'Edit Workspace',
+				click: editWorkspace,
+				// accelerator: 'CmdOrCtrl+W',
+			},
+			{
+				label: 'Export Project',
+				click: exportWorkspaceJSON,
 				accelerator: 'CmdOrCtrl+Shift+E',
 			},
 			{ type: 'separator' },
@@ -268,15 +328,23 @@ const template = [
 		],
 	},
 	{
-		label: 'Workspace',
+		label: 'Scene',
 		submenu: [
 			{
-				label: 'New',
-				click: createNewWorkspace,
+				label: 'New Scene',
+				click: createNewScene,
 			},
 			{
-				label: 'Edit',
-				click: editWorkspace,
+				label: 'Load Scene',
+				click: openScene,
+			},
+			{
+				label: 'Save Scene',
+				click: saveScene,
+			},
+			{
+				label: 'Export Scene',
+				click: exportSceneJSON,
 				// accelerator: 'CmdOrCtrl+W',
 			},
 		],
@@ -294,7 +362,7 @@ const template = [
 							label: 'Learn More',
 							click: async () => {
 								await shell.openExternal(
-									'https://www.nclarke.dev/projects/dialogue/'
+									'https://www.nclarke.dev/projects/bark/'
 								)
 							},
 						},

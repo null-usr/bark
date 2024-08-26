@@ -213,8 +213,8 @@ const Canvas: React.FC<{
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 			setContextMenuData({
 				ids: [n.id],
-				x: event.clientX,
-				y: event.clientY,
+				x: n.position.x + 30,
+				y: n.position.y + 30,
 				top:
 					event.clientY + 200 < pane.height
 						? event.clientY
@@ -239,8 +239,8 @@ const Canvas: React.FC<{
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 
 			setContextMenuData({
-				x: event.clientX,
-				y: event.clientY,
+				x: nds[0].position.x + 100,
+				y: nds[0].position.y + 100,
 				// @ts-ignore
 				ids: nds.map((n) => n.id),
 				top: event.clientY + 200 < pane.height && event.clientY,

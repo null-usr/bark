@@ -76,6 +76,7 @@ export const ObjectField: React.FC<{
 					right: -3,
 					zIndex: 100,
 					background: color,
+					borderColor: 'black',
 				}}
 				onContextMenu={(event) => {
 					event.preventDefault()

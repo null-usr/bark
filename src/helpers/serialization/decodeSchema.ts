@@ -24,7 +24,16 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 			)
 			break
 		case 'source':
-			newNodes.push(new SourceNode(name, position.x, position.y))
+			newNodes.push(
+				new SourceNode(
+					name,
+					position.x,
+					position.y,
+					undefined,
+					fields,
+					color
+				)
+			)
 			break
 		case 'base':
 			newNodes.push(
@@ -53,6 +62,7 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 					type: any
 					fields: any
 					position: number[]
+					color?: string
 				}) => {
 					switch (n.type) {
 						case 'dialogue':
@@ -73,13 +83,21 @@ export const decodeSchema = (position: XYPosition, paletteItem: any) => {
 									n.position[0] + position.x,
 									n.position[1] + position.y,
 									uuid(),
-									n.fields
+									n.fields,
+									n.color
 								)
 							)
 							break
 						case 'source':
 							newNodes.push(
-								new SourceNode(n.name, position.x, position.y)
+								new SourceNode(
+									n.name,
+									n.position[0] + position.x,
+									n.position[1] + position.y,
+									uuid(),
+									n.fields,
+									n.color
+								)
 							)
 							break
 						case 'custom':
