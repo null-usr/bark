@@ -15,11 +15,16 @@ import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { types } from '@/store/reducer'
 
 import { ObjectField } from '../FieldComponents/ObjectField'
-import { FlexColumn } from '../styles'
+import { FlexColumn, FlexRow } from '../styles'
 import PlusCircleIcon from '../Icons/PlusCircle'
 import IconButton from '../Button/IconButton'
 import ChevronUpIcon from '../Icons/ChevronUp'
 import ChevronDownIcon from '../Icons/ChevronDown'
+import ColorInput from '../ColorInput'
+import { ButtonRow, NodeHeader } from './styles'
+import NotepadIcon from '../Icons/Notepad'
+import BookmarkIcon from '../Icons/Bookmark'
+import CloseIcon from '../Icons/Close'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -50,8 +55,10 @@ export default ({
 	id: string
 	name: string
 	fields: Field[]
+	color: string
 }>) => {
-	const { edges, dispatch } = useStore()
+	const { edges, mode, nodes, deleteNode, dispatch, updateNodeColor } =
+		useStore()
 
 	// when updating handles programmatically, this is needed
 	const updateNodeInternals = useUpdateNodeInternals()
@@ -178,89 +185,159 @@ export default ({
 	return (
 		<>
 			<Node
+				color={data.color}
 				dragging={dragging}
 				selected={selected}
-				style={{ padding: 8 }}
+				// style={{ padding: 8 }}
 			>
 				<FlexColumn>
-					<div
-						style={{
-							display: 'flex',
-							gap: 16,
-							justifyContent: 'space-around',
-							alignItems: 'center',
-							marginRight: 16,
-						}}
-					>
-						<div style={{ flex: 2 }}>
-							{/* TODO: this should change the node's ID like a root node */}
-							<input
-								className="nodrag"
-								value={name}
-								onChange={(e) => {
-									// updateNodeName(id, e.target.value)
-									setName(e.target.value)
-									data.name = e.target.value
-								}}
-							/>
-						</div>
-						<div className="nodrag">
+					<NodeHeader color={data.color}>
+						<div
+							style={{
+								display: 'flex',
+								gap: 16,
+								justifyContent: 'space-around',
+								alignItems: 'center',
+								marginRight: 16,
+							}}
+						>
+							<FlexRow style={{ flex: 2 }}>
+								{/* TODO: this should change the node's ID like a root node */}
+								<input
+									className="nodrag"
+									value={name}
+									onChange={(e) => {
+										// updateNodeName(id, e.target.value)
+										setName(e.target.value)
+										data.name = e.target.value
+									}}
+								/>
+								<ColorInput
+									width="32px"
+									height="32px"
+									value={data.color}
+									onChange={(color) =>
+										updateNodeColor(id, color)
+									}
+								/>
+							</FlexRow>
+							<div className="nodrag">
+								<IconButton
+									background="black"
+									color="white"
+									radius="3px"
+									Icon={PlusCircleIcon}
+									onClick={() => addField('data')}
+								/>
+							</div>
 							<IconButton
 								background="black"
 								color="white"
 								radius="3px"
-								Icon={PlusCircleIcon}
-								onClick={() => addField('data')}
+								Icon={CloseIcon}
+								width={32}
+								height={32}
+								onClick={() => deleteNode(id)}
 							/>
 						</div>
-					</div>
+					</NodeHeader>
 
-					<div style={{ alignSelf: 'center' }}>
-						<IconButton
-							Icon={expanded ? ChevronUpIcon : ChevronDownIcon}
-							background="black"
-							color="white"
-							hover="gray"
-							onClick={() => setExpanded(!expanded)}
-						/>
-					</div>
-
-					{expanded && (
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'column',
-								gap: 4,
-							}}
-							className="nodrag"
-						>
-							{fields.map((field, index) => {
-								switch (field.type) {
-									case 'data':
-										return (
-											<ObjectField
-												// color={data.color}
-												add={addHandle}
-												id={id}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												index={index}
-												update={updateDataFieldKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									default:
-										return <></>
+					<FlexColumn style={{ padding: 16 }}>
+						<div style={{ alignSelf: 'center' }}>
+							<IconButton
+								Icon={
+									expanded ? ChevronUpIcon : ChevronDownIcon
 								}
-							})}
+								background="black"
+								color="white"
+								hover="gray"
+								onClick={() => setExpanded(!expanded)}
+							/>
 						</div>
-					)}
+						{expanded && (
+							<ButtonRow style={{ alignSelf: 'center' }}>
+								<IconButton
+									background="black"
+									color="white"
+									radius="3px"
+									Icon={PlusCircleIcon}
+									onClick={() => addField('data')}
+								/>
+								<IconButton
+									background="black"
+									radius="3px"
+									color="white"
+									Icon={NotepadIcon}
+									onClick={() =>
+										dispatch({
+											type: types.setNode,
+											data: id,
+										})
+									}
+								/>
+								{/* we can only save in non-customize mode */}
+								{mode !== 'customize' && (
+									<IconButton
+										background="black"
+										radius="3px"
+										Icon={BookmarkIcon}
+										color="white"
+										onClick={() =>
+											dispatch({
+												type: types.setSaveNodes,
+												data: nodes.filter(
+													(n) => n.id === id
+												),
+											})
+										}
+									/>
+								)}
+							</ButtonRow>
+						)}
+
+						{expanded && (
+							<div
+								style={{
+									display: 'flex',
+									flexDirection: 'column',
+									gap: 4,
+								}}
+								className="nodrag"
+							>
+								{fields.map((field, index) => {
+									switch (field.type) {
+										case 'data':
+											return (
+												<ObjectField
+													color={data.color}
+													add={addHandle}
+													id={id}
+													key={field.key}
+													k={field.key}
+													v={field.value}
+													index={index}
+													update={updateDataFieldKey}
+													del={deleteField}
+													error={
+														errors[index] || false
+													}
+												/>
+											)
+										default:
+											return <></>
+									}
+								})}
+							</div>
+						)}
+					</FlexColumn>
 
 					<Handle
 						type="source"
-						style={{ top: 20 }}
+						style={{
+							background: data.color,
+							borderColor: 'black',
+							top: 25,
+						}}
 						position={Position.Right}
 						id={id}
 						// style={{ background: '#555' }}

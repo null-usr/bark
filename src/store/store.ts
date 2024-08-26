@@ -9,6 +9,7 @@ import {
 	NodeChange,
 	Position,
 } from 'reactflow'
+import { v4 as uuid } from 'uuid'
 import { create } from 'zustand'
 import initialElements from '../helpers/initial-elements'
 import { reducer, RFState } from './reducer'
@@ -41,20 +42,25 @@ const useStore = create<RFState>((set, get) => ({
 		w_vars: {},
 	},
 	reset: () => {
+		const newID = uuid()
 		const tmpNodes = [
 			{
-				id: 'root',
-				type: 'root',
+				id: newID,
+				type: 'source',
 				selectable: true,
 				position: { x: 100, y: 100 },
 				sourcePosition: Position.Left,
 				targetPosition: Position.Right,
 				data: {
-					label: 'ROOT',
+					name: 'ROOT',
+					type: 'source',
+					color: 'green',
 					sources: [],
 					targets: [],
-					id: 'root,',
+					fields: [],
+					id: newID,
 				},
+				fields: [],
 			},
 		]
 

@@ -77,8 +77,30 @@ const PaletteItem: React.FC<{
 				draggable="true"
 				onDragStart={(event) => onDragStart(event)}
 			>
+				<FlexRow style={{ height: 16, backgroundColor: color }}>
+					{/* <div
+						style={{
+							border: '1px solid black',
+							backgroundColor: 'white',
+							borderRadius: '50%',
+							height: 8,
+							width: 8,
+						}}
+					/>
+					<div
+						style={{
+							border: '1px solid black',
+							backgroundColor: 'white',
+							borderRadius: 3,
+							height: 8,
+							width: 'auto',
+							flex: 1,
+						}}
+					/> */}
+				</FlexRow>
 				<FlexRow
 					style={{
+						padding: 8,
 						alignItems: 'center',
 						justifyContent: 'space-between',
 						width: '100%',

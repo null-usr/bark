@@ -47,7 +47,7 @@ export const ContextMenu: React.FC<{
 		newNodes.forEach((n) => addNode({ ...n, selected: true }))
 		newEdges.forEach((e) => onConnect(e))
 
-		// resetSelectedElements()
+		resetSelectedElements()
 		addSelectedNodes(newNodes.map((n) => n.id))
 		close()
 	}, [ids, addNode])

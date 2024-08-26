@@ -2,12 +2,7 @@ import React, { useState } from 'react'
 import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import {
-	LoadScene,
-	LoadWorkspace,
-	SerializeScene,
-	SerializeWorkspace,
-} from '@/helpers/serialization/serialization'
+import { LoadScene, LoadWorkspace } from '@/helpers/serialization/serialization'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Scene, Workspace } from '@/helpers/types'
@@ -172,8 +167,8 @@ function Toolbar() {
 
 	// load our initial elemnets up
 	const onNewWorkspace = (name: string) => {
-		reset()
-		setViewport({ x: 100, y: 100, zoom: 1 })
+		// reset()
+		// setViewport({ x: 100, y: 100, zoom: 1 })
 		fitView()
 		dispatch({ type: types.createWorkspace, data: { workspaceName: name } })
 	}

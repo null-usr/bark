@@ -74,7 +74,8 @@ export const SceneContainer = styled.div<{ active?: boolean }>`
 
 export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 	display: grid;
-	align-content: center;
+	overflow: hidden;
+	/* align-content: center; */
 
 	cursor: pointer;
 
@@ -82,18 +83,18 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 	/* background-color: white; */
 
 	min-height: 50px;
-	border-radius: 3px;
-	border: 1px solid
+	border-radius: 8px;
+	border: 2px solid
 		${({ active, color = '#fcfcfc', ...props }) =>
 			active ? `${props.theme.primary}` : color};
 
-	border-top: 16px solid
+	/* border-top: 16px solid
 		${({ active, color = '#fcfcfc', ...props }) =>
-			active ? `${props.theme.primary}` : color};
+		active ? `${props.theme.primary}` : color}; */
 
 	&:hover {
-		border: 1px solid ${(props) => props.theme.primary};
-		border-top: 16px solid ${(props) => props.theme.primary};
+		border: 2px solid ${(props) => props.theme.primary};
+		/* border-top: 16px solid ${(props) => props.theme.primary}; */
 	}
 `
 

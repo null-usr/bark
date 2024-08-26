@@ -8,11 +8,14 @@ import {
 	Position,
 	updateEdge,
 } from 'reactflow'
+import { v4 as uuid } from 'uuid'
+import { getCount } from '@/helpers/getCount'
 import { Schema, Workspace } from '../helpers/types'
 
 export const types = {
 	setNode: 'SET_NODE',
 	editNode: 'EDIT_NODE',
+	updateNodeID: 'UPDATE_NODE_ID',
 	addNode: 'ADD_NODE',
 	deleteNode: 'DELETE_NODE',
 	setNodes: 'SET_NODES',
@@ -113,16 +116,46 @@ export const reducer = (
 			// in order to notify react flow about the change
 			const newNodes = state.nodes.map((node) => {
 				if (node.id === data.nodeID) {
-					// if the ID is different, we'll need to modify
-					// edges as well
-					if (data.nodeData.id !== node.id) {
-						node.id = data.nodeData.id
-					}
 					node.data = { ...data.nodeData }
 				}
 				return node
 			})
 			return { nodes: newNodes }
+		}
+		case types.updateNodeID: {
+			const { oldID, newID } = data
+			const idCheck = getCount(state.nodes, 'id', newID)
+
+			// no duplicate IDs
+			if (idCheck > 0) return {}
+
+			const newNodes = state.nodes.map((node) => {
+				if (node.id === oldID) {
+					node.id = newID
+					// it's important that you create a new object here
+					// in order to notify react flow about the change
+					node.data = { ...node.data }
+				}
+				return node
+			})
+
+			const newEdges = state.edges.map((edge) => {
+				if (edge.source === oldID) {
+					edge.source = newID
+				}
+				if (edge.sourceHandle === oldID) {
+					edge.sourceHandle = newID
+				}
+				if (edge.target === oldID) {
+					edge.target = newID
+				}
+				if (edge.targetHandle === oldID) {
+					edge.targetHandle = newID
+				}
+				return edge
+			})
+
+			return { nodes: newNodes, edges: newEdges }
 		}
 		case types.setNodes:
 			return { nodes: data }
@@ -348,20 +381,24 @@ export const reducer = (
 		// WORKSPACE ===================================================
 
 		case types.createWorkspace: {
+			const newID = uuid()
 			return {
 				nodes: [
 					{
-						id: 'root',
-						type: 'root',
+						id: newID,
+						type: 'source',
 						selectable: true,
 						position: { x: 100, y: 100 },
 						sourcePosition: Position.Left,
 						targetPosition: Position.Right,
 						data: {
-							label: 'ROOT',
+							name: 'ROOT',
+							type: 'source',
+							color: 'green',
 							sources: [],
 							targets: [],
-							id: 'root,',
+							fields: [],
+							id: newID,
 						},
 					},
 				],

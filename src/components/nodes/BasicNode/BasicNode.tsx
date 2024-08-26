@@ -222,6 +222,7 @@ export default ({
 			)} */}
 			<Handle
 				style={{
+					borderColor: 'black',
 					background: data.color,
 					top: 70,
 				}}
@@ -365,7 +366,11 @@ export default ({
 				</Container>
 			</Container>
 			<Handle
-				style={{ background: data.color, top: 70 }}
+				style={{
+					background: data.color,
+					top: 70,
+					borderColor: 'black',
+				}}
 				type="source"
 				position={Position.Right}
 				id={id}
@@ -383,6 +388,7 @@ export default ({
 							style={{
 								top: 70,
 								pointerEvents: 'none',
+								borderColor: 'black',
 								background: data.color,
 							}}
 							isConnectable={false}
