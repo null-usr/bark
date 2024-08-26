@@ -14,6 +14,7 @@ import { Field } from '@/helpers/types'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { types } from '@/store/reducer'
 
+import { getCount } from '@/helpers/getCount'
 import { ObjectField } from '../FieldComponents/ObjectField'
 import { FlexColumn, FlexRow } from '../styles'
 import PlusCircleIcon from '../Icons/PlusCircle'
@@ -25,6 +26,10 @@ import { ButtonRow, NodeHeader } from './styles'
 import NotepadIcon from '../Icons/Notepad'
 import BookmarkIcon from '../Icons/Bookmark'
 import CloseIcon from '../Icons/Close'
+import { Paragraph } from '../Typography/text'
+import UnlockIcon from '../Icons/Unlock'
+import LockIcon from '../Icons/Lock'
+import Button from '../Button/Button'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -68,6 +73,10 @@ export default ({
 	const [errors, setErrors] = useState<{ [key: number]: boolean }>({})
 	const [expanded, setExpanded] = useState(true)
 	const [name, setName] = useState<string>(data.name)
+
+	const [lockID, setLockID] = useState(true)
+	const [displayID, setDisplayID] = useState<string>(id)
+	const [IDError, setIDError] = useState(false)
 
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
@@ -203,7 +212,7 @@ export default ({
 						>
 							<FlexRow style={{ flex: 2 }}>
 								{/* TODO: this should change the node's ID like a root node */}
-								<input
+								{/* <input
 									className="nodrag"
 									value={name}
 									onChange={(e) => {
@@ -211,7 +220,8 @@ export default ({
 										setName(e.target.value)
 										data.name = e.target.value
 									}}
-								/>
+								/> */}
+								<Paragraph style={{ flex: 1 }}>{id}</Paragraph>
 								<ColorInput
 									width="32px"
 									height="32px"
@@ -255,79 +265,163 @@ export default ({
 							/>
 						</div>
 						{expanded && (
-							<ButtonRow style={{ alignSelf: 'center' }}>
-								<IconButton
-									background="black"
-									color="white"
-									radius="3px"
-									Icon={PlusCircleIcon}
-									onClick={() => addField('data')}
-								/>
-								<IconButton
-									background="black"
-									radius="3px"
-									color="white"
-									Icon={NotepadIcon}
-									onClick={() =>
-										dispatch({
-											type: types.setNode,
-											data: id,
-										})
-									}
-								/>
-								{/* we can only save in non-customize mode */}
-								{mode !== 'customize' && (
+							<>
+								<FlexRow style={{ alignSelf: 'center' }}>
+									<input
+										style={{
+											// gap: '32px',
+											border: IDError
+												? '1px solid red'
+												: '',
+										}}
+										disabled={lockID}
+										value={displayID}
+										onChange={(e) =>
+											setDisplayID(e.target.value)
+										}
+									/>
+									{!lockID && (
+										<>
+											<Button
+												danger
+												onClick={() => {
+													const idCheck = getCount(
+														nodes,
+														'id',
+														displayID
+													)
+
+													if (
+														idCheck > 0 &&
+														id !== displayID
+													) {
+														setIDError(true)
+													} else {
+														dispatch({
+															type: types.updateNodeID,
+															data: {
+																oldID: id,
+																newID: displayID,
+															},
+														})
+														dispatch({
+															type: types.setNode,
+															data: id,
+														})
+														setLockID(true)
+														setIDError(false)
+													}
+												}}
+											>
+												SAVE
+											</Button>
+											<Button
+												type="secondary"
+												onClick={() => {
+													setDisplayID(id)
+													setIDError(false)
+													setLockID(true)
+												}}
+											>
+												CANCEL
+											</Button>
+										</>
+									)}
+									{lockID && (
+										<IconButton
+											background="black"
+											color="white"
+											radius="3px"
+											Icon={
+												lockID ? UnlockIcon : LockIcon
+											}
+											onClick={() => setLockID(!lockID)}
+										/>
+									)}
+								</FlexRow>
+								{IDError && (
+									<Paragraph
+										style={{ textAlign: 'center' }}
+										color="red"
+									>
+										*A node with ID: {displayID} already
+										exists
+									</Paragraph>
+								)}
+								<ButtonRow style={{ alignSelf: 'center' }}>
+									<IconButton
+										background="black"
+										color="white"
+										radius="3px"
+										Icon={PlusCircleIcon}
+										onClick={() => addField('data')}
+									/>
 									<IconButton
 										background="black"
 										radius="3px"
-										Icon={BookmarkIcon}
 										color="white"
+										Icon={NotepadIcon}
 										onClick={() =>
 											dispatch({
-												type: types.setSaveNodes,
-												data: nodes.filter(
-													(n) => n.id === id
-												),
+												type: types.setNode,
+												data: id,
 											})
 										}
 									/>
-								)}
-							</ButtonRow>
-						)}
-
-						{expanded && (
-							<div
-								style={{
-									display: 'flex',
-									flexDirection: 'column',
-									gap: 4,
-								}}
-								className="nodrag"
-							>
-								{fields.map((field, index) => {
-									switch (field.type) {
-										case 'data':
-											return (
-												<ObjectField
-													color={data.color}
-													add={addHandle}
-													id={id}
-													key={field.key}
-													k={field.key}
-													v={field.value}
-													index={index}
-													update={updateDataFieldKey}
-													del={deleteField}
-													error={
-														errors[index] || false
-													}
-												/>
-											)
-										default:
-											return <></>
-									}
-								})}
-							</div>
+									{/* we can only save in non-customize mode */}
+									{mode !== 'customize' && (
+										<IconButton
+											background="black"
+											radius="3px"
+											Icon={BookmarkIcon}
+											color="white"
+											onClick={() =>
+												dispatch({
+													type: types.setSaveNodes,
+													data: nodes.filter(
+														(n) => n.id === id
+													),
+												})
+											}
+										/>
+									)}
+								</ButtonRow>
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'column',
+										gap: 4,
+									}}
+									className="nodrag"
+								>
+									{fields.map((field, index) => {
+										switch (field.type) {
+											case 'data':
+												return (
+													<ObjectField
+														color={data.color}
+														add={addHandle}
+														id={id}
+														key={field.key}
+														k={field.key}
+														v={field.value}
+														index={index}
+														update={
+															updateDataFieldKey
+														}
+														del={deleteField}
+														error={
+															errors[index] ||
+															false
+														}
+													/>
+												)
+											default:
+												return <></>
+										}
+									})}
+								</div>
+							</>
 						)}
 					</FlexColumn>
 

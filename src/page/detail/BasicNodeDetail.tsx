@@ -195,6 +195,7 @@ const Detail: React.FC<{
 												data: id,
 											})
 											setLockID(true)
+											setIDError(false)
 										}
 									}}
 								>
@@ -204,6 +205,7 @@ const Detail: React.FC<{
 									type="secondary"
 									onClick={() => {
 										setID(id)
+										setIDError(false)
 										setLockID(true)
 									}}
 								>
