@@ -32,7 +32,7 @@ Builds electron, starts vite (hopefully at localhost:3000) and spins up electron
 
 ```
 yarn build
-yarn delectron:package:<win/mac/linux> 
+yarn electron:package:<win/mac/linux> 
 ```
 
 To create an executable for the target platform. As far as I'm aware, you need to be building on the corresponding platform for it to create the executable.
