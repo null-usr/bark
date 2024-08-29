@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
@@ -215,94 +215,97 @@ function Toolbar() {
 	}
 
 	// ELECTRON =======================================================
-	// @ts-ignore
-	if (window.ipcRenderer) {
-		// @ts-ignore
-		window.ipcRenderer.on('workspace:new', () => {
-			setFormMode('newWorkspace')
-		})
 
+	useEffect(() => {
 		// @ts-ignore
-		window.ipcRenderer.on('workspace:edit', () => {
-			setFormMode('edit')
-		})
+		if (window.ipcRenderer) {
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:new', () => {
+				setFormMode('newWorkspace')
+			})
 
-		// @ts-ignore
-		window.ipcRenderer.on('workspace:open', (data) => {
-			const decodedData = new TextDecoder().decode(data)
-			// originally type workspace but it's more like workspace+
-			const ws: { workspace?: Workspace } | null = LoadWorkspace(
-				decodedData as string
-			)
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:edit', () => {
+				setFormMode('edit')
+			})
 
-			if (ws) {
-				// if there's no name, we're loading an exported json
-				if (ws.workspace) {
-					dispatch({ type: types.loadWorkspace, data: ws })
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:open', (data) => {
+				const decodedData = new TextDecoder().decode(data)
+				// originally type workspace but it's more like workspace+
+				const ws: { workspace?: Workspace } | null = LoadWorkspace(
+					decodedData as string
+				)
+
+				if (ws) {
+					// if there's no name, we're loading an exported json
+					if (ws.workspace) {
+						dispatch({ type: types.loadWorkspace, data: ws })
+					}
 				}
-			}
-		})
+			})
 
-		// @ts-ignore
-		window.ipcRenderer.on('scene:open', (data) => {
-			const decodedData = new TextDecoder().decode(data)
-
-			if (decodedData) {
-				const scene = JSON.parse(decodedData) as Scene
-				if (!scene.name) scene.name = 'Default'
-				scene.name = workspace.scenes[scene.name]
-					? `${scene.name} (2)`
-					: scene.name
-
-				dispatch({ type: types.addScene, data: scene })
-				dispatch({ type: types.changeScene, data: scene.name })
-			}
-
-			handleSceneRead(decodedData)
-		})
-
-		// saveWorkspace
-		// @ts-ignore
-		window.ipcRenderer.on('workspace:saveWorkspace', (data) => {
-			const out = { path: data.path, data: saveWorkspace() }
-
-			// send the stringified content up and out to electron's main.ts
 			// @ts-ignore
-			window.ipcRenderer.send('window:write', out)
-		})
+			window.ipcRenderer.on('scene:open', (data) => {
+				const decodedData = new TextDecoder().decode(data)
 
-		// saveWorkspace
-		// @ts-ignore
-		window.ipcRenderer.on('scene:saveScene', (data) => {
-			const out = { path: data.path, data: saveScene() }
+				if (decodedData) {
+					const scene = JSON.parse(decodedData) as Scene
+					if (!scene.name) scene.name = 'Default'
+					scene.name = workspace.scenes[scene.name]
+						? `${scene.name} (2)`
+						: scene.name
 
-			// send the stringified content up and out to electron's main.ts
+					dispatch({ type: types.addScene, data: scene })
+					dispatch({ type: types.changeScene, data: scene.name })
+				}
+
+				handleSceneRead(decodedData)
+			})
+
+			// saveWorkspace
 			// @ts-ignore
-			window.ipcRenderer.send('window:write', out)
-		})
+			window.ipcRenderer.on('workspace:saveWorkspace', (data) => {
+				const out = { path: data.path, data: saveWorkspace() }
 
-		// exportJSON
-		// @ts-ignore
-		window.ipcRenderer.on('workspace:exportJSON', (data) => {
-			const decodedData = new TextDecoder().decode(data)
-			const dataStruct = JSON.parse(decodedData)
-			const out = { path: dataStruct.path, data: exportWorkspace() }
+				// send the stringified content up and out to electron's main.ts
+				// @ts-ignore
+				window.ipcRenderer.send('window:write', out)
+			})
 
-			// send the stringified content up and out to electron's main.ts
+			// saveWorkspace
 			// @ts-ignore
-			window.ipcRenderer.send('window:write', out)
-		})
+			window.ipcRenderer.on('scene:saveScene', (data) => {
+				const out = { path: data.path, data: saveScene() }
 
-		// successful or failed writes, have a modal for this
-		// @ts-ignore
-		window.ipcRenderer.on('window:writeSuccess', () => {
-			console.log('successful write')
-		})
-		// @ts-ignore
-		window.ipcRenderer.on('window:writeFailed', () => {
-			console.log('failed write')
-		})
-	}
+				// send the stringified content up and out to electron's main.ts
+				// @ts-ignore
+				window.ipcRenderer.send('window:write', out)
+			})
+
+			// exportJSON
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:exportJSON', (data) => {
+				const decodedData = new TextDecoder().decode(data)
+				const dataStruct = JSON.parse(decodedData)
+				const out = { path: dataStruct.path, data: exportWorkspace() }
+
+				// send the stringified content up and out to electron's main.ts
+				// @ts-ignore
+				window.ipcRenderer.send('window:write', out)
+			})
+
+			// successful or failed writes, have a modal for this
+			// @ts-ignore
+			window.ipcRenderer.on('window:writeSuccess', () => {
+				console.log('successful write')
+			})
+			// @ts-ignore
+			window.ipcRenderer.on('window:writeFailed', () => {
+				console.log('failed write')
+			})
+		}
+	}, [])
 
 	return (
 		<>
