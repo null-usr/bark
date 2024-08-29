@@ -16,6 +16,7 @@ import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
+import { decode } from 'punycode'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
 
@@ -101,6 +102,20 @@ function Toolbar() {
 			typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
 		)
 	}
+
+	const saveScene = () => {
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		const out = workspace.scenes[activeScene]
+
+		return JSON.stringify(out, (k, v) =>
+			typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
+		)
+	}
+
 	const exportWorkspace = () => {
 		const serializedScenes = SerializeWorkspace(workspace)
 		dispatch({
@@ -214,9 +229,10 @@ function Toolbar() {
 
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:open', (data) => {
+			const decodedData = new TextDecoder().decode(data)
 			// originally type workspace but it's more like workspace+
 			const ws: { workspace?: Workspace } | null = LoadWorkspace(
-				data as string
+				decodedData as string
 			)
 
 			if (ws) {
@@ -229,7 +245,20 @@ function Toolbar() {
 
 		// @ts-ignore
 		window.ipcRenderer.on('scene:open', (data) => {
-			handleSceneRead(data)
+			const decodedData = new TextDecoder().decode(data)
+
+			if (decodedData) {
+				const scene = JSON.parse(decodedData) as Scene
+				if (!scene.name) scene.name = 'Default'
+				scene.name = workspace.scenes[scene.name]
+					? `${scene.name} (2)`
+					: scene.name
+
+				dispatch({ type: types.addScene, data: scene })
+				dispatch({ type: types.changeScene, data: scene.name })
+			}
+
+			handleSceneRead(decodedData)
 		})
 
 		// saveWorkspace
@@ -242,10 +271,22 @@ function Toolbar() {
 			window.ipcRenderer.send('window:write', out)
 		})
 
+		// saveWorkspace
+		// @ts-ignore
+		window.ipcRenderer.on('scene:saveScene', (data) => {
+			const out = { path: data.path, data: saveScene() }
+
+			// send the stringified content up and out to electron's main.ts
+			// @ts-ignore
+			window.ipcRenderer.send('window:write', out)
+		})
+
 		// exportJSON
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:exportJSON', (data) => {
-			const out = { path: data.path, data: exportWorkspace() }
+			const decodedData = new TextDecoder().decode(data)
+			const dataStruct = JSON.parse(decodedData)
+			const out = { path: dataStruct.path, data: exportWorkspace() }
 
 			// send the stringified content up and out to electron's main.ts
 			// @ts-ignore

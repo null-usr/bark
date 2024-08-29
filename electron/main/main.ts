@@ -208,10 +208,7 @@ function exportWorkspaceJSON() {
 	dialog
 		.showSaveDialog(mainWindow!, {
 			properties: ['showOverwriteConfirmation'],
-			filters: [
-				{ name: 'JSON', extensions: ['json'] },
-				{ name: 'Dialogue File', extensions: ['dlg'] },
-			],
+			filters: [{ name: 'Project Files', extensions: ['zip'] }],
 		})
 		.then((result) => {
 			// If we didn't cancel, then load the file and send data to the app
@@ -401,6 +398,7 @@ app.whenReady().then(() => {
 // Respond to ipcRenerer =====================================================
 // options is the data that we sent
 ipcMain.on('window:write', (event, options) => {
+	console.log(options)
 	const pathName = options.path
 	const { data } = options
 

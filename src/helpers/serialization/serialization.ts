@@ -92,12 +92,14 @@ export function LoadWorkspace(
 	workspace: string
 ): { workspace?: Workspace } | null {
 	try {
-		const data: any = JSON.parse(workspace, (k, v) => {
+		let data = JSON.stringify(workspace)
+		data = JSON.parse(workspace, (k, v) => {
 			const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
 			return matches ? Symbol.for(matches[1]) : v
 		})
 
+		// @ts-ignore
 		return data
 	} catch (e) {
 		console.log(e)
