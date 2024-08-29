@@ -150,15 +150,15 @@ export function SerializeScene(scene: Scene) {
 		}
 	})
 
-	return JSON.stringify(out)
+	return out
 }
 
 // return an array of the workspace's serialized scenes
 export function SerializeWorkspace(workspace: Workspace) {
 	const sceneKeys = Object.keys(workspace.scenes)
-	const out: string[] = []
+	const out: { [key: string]: any }[] = []
 	sceneKeys.forEach((scene) => {
-		out.push(SerializeScene(workspace.scenes[scene]))
+		out.push({ name: scene, data: SerializeScene(workspace.scenes[scene]) })
 	})
 	return out
 }
