@@ -39,6 +39,7 @@ export const types = {
 
 	createScene: 'SCENE_CREATE',
 	addScene: 'SCENE_ADD',
+	saveScene: 'SCENE_SAVE',
 	deleteScene: 'SCENE_DELETE',
 	renameScene: 'SCENE_RENAME',
 	changeScene: 'SCENE_CHANGE',
@@ -251,24 +252,30 @@ export const reducer = (
 
 		case types.createScene: {
 			const { scenes } = state.workspace
+			// const newID = uuid()
+
+			const nodes = [
+				{
+					id: 'root',
+					type: 'source',
+					selectable: true,
+					position: { x: 100, y: 100 },
+					sourcePosition: Position.Left,
+					targetPosition: Position.Right,
+					data: {
+						name: 'ROOT',
+						type: 'source',
+						color: '#00FF00',
+						sources: [],
+						targets: [],
+						fields: [],
+						id: 'root',
+					},
+				},
+			]
 			scenes[data] = {
 				name: data,
-				nodes: [
-					{
-						id: 'root',
-						type: 'root',
-						selectable: true,
-						position: { x: 100, y: 100 },
-						sourcePosition: Position.Left,
-						targetPosition: Position.Right,
-						data: {
-							label: 'ROOT',
-							sources: [],
-							targets: [],
-							id: 'root,',
-						},
-					},
-				],
+				nodes,
 				edges: [],
 				viewport: { x: 0, y: 0, zoom: 100 },
 			}
@@ -285,22 +292,7 @@ export const reducer = (
 					...state.workspace,
 					scenes,
 				},
-				nodes: [
-					{
-						id: 'root',
-						type: 'root',
-						selectable: true,
-						position: { x: 100, y: 100 },
-						sourcePosition: Position.Left,
-						targetPosition: Position.Right,
-						data: {
-							label: 'ROOT',
-							sources: [],
-							targets: [],
-							id: 'root,',
-						},
-					},
-				],
+				nodes,
 				edges: [],
 				activeScene: data,
 			}
@@ -356,6 +348,23 @@ export const reducer = (
 			}
 		}
 
+		case types.saveScene: {
+			const { scenes } = state.workspace
+
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
+			}
+
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
 		case types.addScene: {
 			const { scenes } = state.workspace
 			const newScene = data
@@ -394,7 +403,7 @@ export const reducer = (
 						data: {
 							name: 'ROOT',
 							type: 'source',
-							color: 'green',
+							color: '#00FF00',
 							sources: [],
 							targets: [],
 							fields: [],

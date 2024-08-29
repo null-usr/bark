@@ -2,7 +2,11 @@ import React, { useState } from 'react'
 import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import { LoadScene, LoadWorkspace } from '@/helpers/serialization/serialization'
+import {
+	LoadScene,
+	LoadWorkspace,
+	SerializeScene,
+} from '@/helpers/serialization/serialization'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Scene, Workspace } from '@/helpers/types'
@@ -82,14 +86,18 @@ function Toolbar() {
 	}
 
 	const saveWorkspace = () => {
-		const currentScene: any = reactFlowInstance.toObject()
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+		// const currentScene: any = reactFlowInstance.toObject()
 
-		if (activeScene !== null) {
-			workspace.scenes[activeScene] = {
-				name: activeScene,
-				...currentScene,
-			}
-		}
+		// if (activeScene !== null) {
+		// 	workspace.scenes[activeScene] = {
+		// 		name: activeScene,
+		// 		...currentScene,
+		// 	}
+		// }
 
 		const out = {
 			workspace,
@@ -102,6 +110,11 @@ function Toolbar() {
 	}
 	const exportWorkspace = () => {
 		// const serializedScenes = SerializeWorkspace(workspace)
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
 		if (navigator.userAgent !== 'Electron') {
 			const sceneKeys = Object.keys(workspace.scenes)
 			const zip = new JSZip()
@@ -135,6 +148,11 @@ function Toolbar() {
 		// const flow = reactFlowInstance.toObject()
 		// const out = SaveScene(flow)
 
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
 		const out = saveWorkspace()
 
 		const blob = new Blob([out], { type: 'application/json' })
@@ -152,8 +170,12 @@ function Toolbar() {
 	}
 
 	const onSceneExport = () => {
-		// const out = SerializeScene(reactFlowInstance.toObject())
-		const out = JSON.stringify(workspace.scenes[activeScene])
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		const out = SerializeScene(workspace.scenes[activeScene])
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
