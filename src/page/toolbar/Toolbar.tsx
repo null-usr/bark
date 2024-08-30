@@ -127,10 +127,7 @@ function Toolbar() {
 			const zip = new JSZip()
 
 			serializedScenes.forEach((scene) => {
-				zip.file(
-					`${scene.name}.json`,
-					JSON.stringify(workspace.scenes[scene.data])
-				)
+				zip.file(`${scene.name}.json`, JSON.stringify(scene.data))
 			})
 
 			zip.generateAsync({ type: 'blob' }).then((content) => {
@@ -146,7 +143,7 @@ function Toolbar() {
 			// serializedScenes.forEach((scene) => {
 			// 	out.push(workspace.scenes[scene])
 			// })
-			return JSON.stringify(serializedScenes)
+			return serializedScenes
 		}
 	}
 
@@ -286,13 +283,17 @@ function Toolbar() {
 			// exportJSON
 			// @ts-ignore
 			window.ipcRenderer.on('workspace:exportJSON', (data) => {
-				const decodedData = new TextDecoder().decode(data)
-				const dataStruct = JSON.parse(decodedData)
-				const out = { path: dataStruct.path, data: exportWorkspace() }
+				const out = {
+					path: data.path,
+					data: {
+						workspaceName: workspace.name,
+						scenes: exportWorkspace(),
+					},
+				}
 
 				// send the stringified content up and out to electron's main.ts
 				// @ts-ignore
-				window.ipcRenderer.send('window:write', out)
+				window.ipcRenderer.send('window:writeZip', out)
 			})
 
 			// successful or failed writes, have a modal for this
