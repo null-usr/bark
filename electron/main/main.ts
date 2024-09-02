@@ -178,8 +178,8 @@ function saveWorkspace() {
 		.then((result) => {
 			// If we didn't cancel, then load the file and send data to the app
 			if (!result.canceled) {
-				// if there's no extension, add .json to the end
-				mainWindow!.webContents.send('workspace:exportJSON', {
+				// if there's no extension, add .whatever to the end
+				mainWindow!.webContents.send('workspace:saveWorkspace', {
 					path: result.filePath,
 				})
 			}
