@@ -16,8 +16,7 @@ import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
-import { decode } from 'punycode'
-import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
+import { HeaderContainer, LeftButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
 
 // create an input which we then call click upon
