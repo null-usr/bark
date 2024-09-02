@@ -74,6 +74,8 @@ export default ({
 			data.fields = [...data.fields, { key: `key:${count}`, value, type }]
 			setCount(count + 1)
 			return
+		} else if (type === 'custom') {
+			value = { workspaceVar: '', value: '' }
 		} else {
 			value = false
 		}
@@ -173,6 +175,7 @@ export default ({
 	}
 
 	const updateValue = (index: number, v: any) => {
+		console.log(v)
 		const f = [...fields]
 		const item = { ...f[index] }
 		item.value = v

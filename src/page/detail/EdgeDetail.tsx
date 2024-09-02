@@ -13,6 +13,7 @@ import useStore from '@/store/store'
 import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
+import { CustomField } from '@/components/FieldComponents/CustomField'
 import { Container, DataContainer, ItemContainer } from './styles'
 
 const Detail: React.FC<{
@@ -98,6 +99,19 @@ const Detail: React.FC<{
 						key={field.key}
 						k={field.key}
 						v={field.value}
+					/>
+				)
+			case 'custom':
+				return (
+					<CustomField
+						index={index}
+						key={field.key}
+						k={field.key}
+						v={field.value}
+						updateValue={updateValue!}
+						updateKey={updateKey}
+						del={deleteField}
+						// error={error || false}
 					/>
 				)
 			default:

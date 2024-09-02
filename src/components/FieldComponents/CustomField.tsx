@@ -7,7 +7,7 @@ import { FieldContainer } from './styles'
 
 export const CustomField: React.FC<{
 	k: string
-	v: string
+	v: { workspaceVar: string; value: string }
 	index: number
 	updateKey(index: number, k: string): void
 	updateValue(index: number, v: any): void
@@ -17,13 +17,13 @@ export const CustomField: React.FC<{
 	const { workspace } = useStore()
 	const { w_vars } = workspace
 	const [key, setKey] = useState(k)
-	const [value, setValue] = useState(v)
+	const [value, setValue] = useState(v.value)
 
-	const [customVar, setCustomVar] = useState<string | null>(null)
+	const [customVar, setCustomVar] = useState<string | null>(v.workspaceVar)
 
 	// Forward changing values from the node details
 	useEffect(() => {
-		setValue(v)
+		setValue(v.value)
 	}, [v])
 	return (
 		<FieldContainer error={error}>
@@ -36,7 +36,14 @@ export const CustomField: React.FC<{
 			:
 			<select
 				name="workspaceVar"
-				onChange={(e) => setCustomVar(e.target.value)}
+				value={v.workspaceVar ? v.workspaceVar : undefined}
+				onChange={(e) => {
+					updateValue(index, {
+						workspaceVar: e.target.value,
+						value: '',
+					})
+					setCustomVar(e.target.value)
+				}}
 			>
 				<option value="" selected disabled hidden>
 					Choose workspace variable
@@ -49,12 +56,16 @@ export const CustomField: React.FC<{
 					)
 				})}
 			</select>
-			{customVar !== null && (
+			{customVar && w_vars[customVar] && (
 				<select
 					name="option"
+					value={v.value ? v.value : undefined}
 					onChange={(e) => {
 						setValue(e.target.value)
-						updateValue(index, e.target.value)
+						updateValue(index, {
+							workspaceVar: v.workspaceVar,
+							value: e.target.value,
+						})
 					}}
 				>
 					<option value="" selected disabled hidden>

@@ -1,8 +1,21 @@
+<<<<<<< HEAD
 import React, { useState } from 'react'
 import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { LoadScene, LoadWorkspace } from '@/helpers/serialization/serialization'
+=======
+import React, { useEffect, useState } from 'react'
+import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
+import JSZip from 'jszip'
+import FileSaver from 'file-saver'
+import {
+	LoadScene,
+	LoadWorkspace,
+	SerializeScene,
+	SerializeWorkspace,
+} from '@/helpers/serialization/serialization'
+>>>>>>> development
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Scene, Workspace } from '@/helpers/types'
@@ -11,6 +24,7 @@ import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
+import { decode } from 'punycode'
 import { HeaderContainer, LeftButtonGroup, RightButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
 
@@ -82,6 +96,7 @@ function Toolbar() {
 	}
 
 	const saveWorkspace = () => {
+<<<<<<< HEAD
 		const currentScene: any = reactFlowInstance.toObject()
 
 		if (activeScene !== null) {
@@ -90,6 +105,12 @@ function Toolbar() {
 				...currentScene,
 			}
 		}
+=======
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+>>>>>>> development
 
 		const out = {
 			workspace,
@@ -131,9 +152,61 @@ function Toolbar() {
 		}
 	}
 
+<<<<<<< HEAD
 	const onSaveWorkspace = () => {
 		// const flow = reactFlowInstance.toObject()
 		// const out = SaveScene(flow)
+=======
+	const saveScene = () => {
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		const out = workspace.scenes[activeScene]
+
+		return JSON.stringify(out, (k, v) =>
+			typeof v === 'symbol' ? `$$Symbol:${Symbol.keyFor(v)}` : v
+		)
+	}
+
+	const exportWorkspace = () => {
+		const serializedScenes = SerializeWorkspace(workspace)
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		if (navigator.userAgent !== 'Electron') {
+			const zip = new JSZip()
+
+			serializedScenes.forEach((scene) => {
+				zip.file(`${scene.name}.json`, JSON.stringify(scene.data))
+			})
+
+			zip.generateAsync({ type: 'blob' }).then((content) => {
+				FileSaver.saveAs(
+					content,
+					workspace.name ? `${workspace.name}.zip` : 'download.zip'
+				)
+			})
+
+			return ''
+		} else {
+			// const out: any[] = []
+			// serializedScenes.forEach((scene) => {
+			// 	out.push(workspace.scenes[scene])
+			// })
+			return serializedScenes
+		}
+	}
+
+	const onSaveWorkspace = () => {
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+>>>>>>> development
 
 		const out = saveWorkspace()
 
@@ -152,8 +225,19 @@ function Toolbar() {
 	}
 
 	const onSceneExport = () => {
+<<<<<<< HEAD
 		// const out = SerializeScene(reactFlowInstance.toObject())
 		const out = JSON.stringify(workspace.scenes[activeScene])
+=======
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		const out = JSON.stringify(
+			SerializeScene(workspace.scenes[activeScene])
+		)
+>>>>>>> development
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
@@ -188,18 +272,30 @@ function Toolbar() {
 	}
 
 	// ELECTRON =======================================================
+<<<<<<< HEAD
 	// @ts-ignore
 	if (window.ipcRenderer) {
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:new', () => {
 			setFormMode('newWorkspace')
 		})
+=======
 
+	useEffect(() => {
 		// @ts-ignore
-		window.ipcRenderer.on('workspace:edit', () => {
-			setFormMode('edit')
-		})
+		if (window.ipcRenderer) {
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:new', () => {
+				setFormMode('newWorkspace')
+			})
+>>>>>>> development
 
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:edit', () => {
+				setFormMode('edit')
+			})
+
+<<<<<<< HEAD
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:open', (data) => {
 			// originally type workspace but it's more like workspace+
@@ -224,32 +320,96 @@ function Toolbar() {
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:saveWorkspace', (data) => {
 			const out = { path: data.path, data: saveWorkspace() }
-
-			// send the stringified content up and out to electron's main.ts
+=======
 			// @ts-ignore
-			window.ipcRenderer.send('window:write', out)
-		})
+			window.ipcRenderer.on('workspace:open', (data) => {
+				const decodedData = new TextDecoder().decode(data)
+				// originally type workspace but it's more like workspace+
+				const ws: { workspace?: Workspace } | null = LoadWorkspace(
+					decodedData as string
+				)
 
+				if (ws) {
+					// if there's no name, we're loading an exported json
+					if (ws.workspace) {
+						dispatch({ type: types.loadWorkspace, data: ws })
+					}
+				}
+			})
+>>>>>>> development
+
+			// @ts-ignore
+			window.ipcRenderer.on('scene:open', (data) => {
+				const decodedData = new TextDecoder().decode(data)
+
+<<<<<<< HEAD
 		// exportJSON
 		// @ts-ignore
 		window.ipcRenderer.on('workspace:exportJSON', (data) => {
 			const out = { path: data.path, data: exportWorkspace() }
+=======
+				if (decodedData) {
+					const scene = JSON.parse(decodedData) as Scene
+					if (!scene.name) scene.name = 'Default'
+					scene.name = workspace.scenes[scene.name]
+						? `${scene.name} (2)`
+						: scene.name
 
-			// send the stringified content up and out to electron's main.ts
+					dispatch({ type: types.addScene, data: scene })
+					dispatch({ type: types.changeScene, data: scene.name })
+				}
+
+				handleSceneRead(decodedData)
+			})
+>>>>>>> development
+
+			// saveWorkspace
 			// @ts-ignore
-			window.ipcRenderer.send('window:write', out)
-		})
+			window.ipcRenderer.on('workspace:saveWorkspace', (data) => {
+				const out = { path: data.path, data: saveWorkspace() }
 
-		// successful or failed writes, have a modal for this
-		// @ts-ignore
-		window.ipcRenderer.on('window:writeSuccess', () => {
-			console.log('successful write')
-		})
-		// @ts-ignore
-		window.ipcRenderer.on('window:writeFailed', () => {
-			console.log('failed write')
-		})
-	}
+				// send the stringified content up and out to electron's main.ts
+				// @ts-ignore
+				window.ipcRenderer.send('window:write', out)
+			})
+
+			// saveWorkspace
+			// @ts-ignore
+			window.ipcRenderer.on('scene:saveScene', (data) => {
+				const out = { path: data.path, data: saveScene() }
+
+				// send the stringified content up and out to electron's main.ts
+				// @ts-ignore
+				window.ipcRenderer.send('window:write', out)
+			})
+
+			// exportJSON
+			// @ts-ignore
+			window.ipcRenderer.on('workspace:exportJSON', (data) => {
+				const out = {
+					path: data.path,
+					data: {
+						workspaceName: workspace.name,
+						scenes: exportWorkspace(),
+					},
+				}
+
+				// send the stringified content up and out to electron's main.ts
+				// @ts-ignore
+				window.ipcRenderer.send('window:writeZip', out)
+			})
+
+			// successful or failed writes, have a modal for this
+			// @ts-ignore
+			window.ipcRenderer.on('window:writeSuccess', () => {
+				console.log('successful write')
+			})
+			// @ts-ignore
+			window.ipcRenderer.on('window:writeFailed', () => {
+				console.log('failed write')
+			})
+		}
+	}, [])
 
 	return (
 		<>
@@ -312,6 +472,8 @@ function Toolbar() {
 								onClick={() => setFormMode('edit')}
 							>
 								Edit Workspace
+<<<<<<< HEAD
+=======
 							</Button>
 							<Button
 								type="subtle"
@@ -319,10 +481,21 @@ function Toolbar() {
 								onClick={onSaveWorkspace}
 							>
 								Save Workspace
+>>>>>>> development
 							</Button>
 							<Button
 								type="subtle"
 								block
+<<<<<<< HEAD
+								onClick={onSaveWorkspace}
+							>
+								Save Workspace
+							</Button>
+							<Button
+								type="subtle"
+								block
+=======
+>>>>>>> development
 								onClick={onWorkspaceExport}
 							>
 								Export Project

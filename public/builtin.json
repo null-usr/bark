@@ -17,7 +17,7 @@
 			"color": "#b9e3f6",
 			"fields": [
 				{
-					"key": "characterName",
+					"key": "name",
 					"type": "string",
 					"value": ""
 				},

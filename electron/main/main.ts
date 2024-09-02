@@ -4,12 +4,13 @@ import {
 	BrowserWindow,
 	protocol,
 	Menu,
-	MenuItem,
 	shell,
 	ipcMain,
 	dialog,
 } from 'electron'
+import FileSaver = require('file-saver')
 import { readFile, writeFile } from 'fs'
+import JSZip = require('jszip')
 import * as path from 'path'
 import * as url from 'url'
 
@@ -257,6 +258,30 @@ function writeJSON(savePath: string, data: any) {
 	})
 }
 
+// create a zip file for several files
+function writeJSONZip(savePath: string, data: any) {
+	const zip = new JSZip()
+
+	data.scenes.forEach((scene: { name: string; data: any }) => {
+		zip.file(`${scene.name}.json`, JSON.stringify(scene.data))
+	})
+
+	zip.generateAsync({ type: 'blob' }).then((content) => {
+		content.arrayBuffer().then((b) => {
+			const buffer = Buffer.from(b)
+
+			writeFile(savePath, buffer, (err) => {
+				if (err) {
+					console.log(err)
+					mainWindow!.webContents.send('window:writeFailed')
+				} else {
+					mainWindow!.webContents.send('window:writeSuccess')
+				}
+			})
+		})
+	})
+}
+
 // exportworkspace
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -405,6 +430,13 @@ ipcMain.on('window:write', (event, options) => {
 	const { data } = options
 
 	writeJSON(pathName, data)
+})
+
+ipcMain.on('window:writeZip', (event, options) => {
+	const pathName = options.path
+	const { data } = options
+
+	writeJSONZip(pathName, data)
 })
 
 app.on('window-all-closed', () => {

@@ -268,6 +268,7 @@ export default ({
 							<>
 								<FlexRow style={{ alignSelf: 'center' }}>
 									<input
+										className="nodrag"
 										style={{
 											// gap: '32px',
 											border: IDError

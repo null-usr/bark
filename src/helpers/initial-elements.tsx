@@ -11,7 +11,7 @@ const initialElements: Node[] = [
 		data: {
 			name: 'ROOT',
 			type: 'source',
-			color: 'green',
+			color: '#00FF00',
 			sources: [],
 			targets: [],
 			fields: [],
