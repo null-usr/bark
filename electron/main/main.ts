@@ -178,8 +178,8 @@ function saveWorkspace() {
 		.then((result) => {
 			// If we didn't cancel, then load the file and send data to the app
 			if (!result.canceled) {
-				// if there's no extension, add .whatever to the end
-				mainWindow!.webContents.send('workspace:saveWorkspace', {
+				// if there's no extension, add .json to the end
+				mainWindow!.webContents.send('workspace:exportJSON', {
 					path: result.filePath,
 				})
 			}
@@ -209,10 +209,7 @@ function exportWorkspaceJSON() {
 	dialog
 		.showSaveDialog(mainWindow!, {
 			properties: ['showOverwriteConfirmation'],
-			filters: [
-				{ name: 'JSON', extensions: ['json'] },
-				{ name: 'Dialogue File', extensions: ['dlg'] },
-			],
+			filters: [{ name: 'Project Files', extensions: ['zip'] }],
 		})
 		.then((result) => {
 			// If we didn't cancel, then load the file and send data to the app
