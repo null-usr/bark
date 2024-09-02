@@ -37,6 +37,7 @@ const PaletteItem: React.FC<{
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		const data = JSON.stringify({
 			name,
+			color,
 			type,
 			fields,
 			nodes,

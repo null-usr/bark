@@ -386,20 +386,15 @@ const Canvas: React.FC<{
 				>
 					<MiniMapStyled
 						nodeStrokeColor={(n) => {
-							if (n.style?.background)
-								return n.style.background as string
-							if (n.type === 'input') return '#0041d0'
-							if (n.type === 'output') return '#ff0072'
-							if (n.type === 'default') return '#1a192b'
+							if (n.data.color) return n.data.color
 
 							return '#1a192b'
 						}}
 						nodeColor={(n) => {
-							if (n.style?.background)
-								return n.style.background as string
+							// if (n.style?.background)
+							// 	return n.style.background as string
 
-							if (n.type === 'base')
-								return n.data.color ? n.data.color : '#1a192b'
+							if (n.data.color) return n.data.color
 
 							return '#fff'
 						}}
