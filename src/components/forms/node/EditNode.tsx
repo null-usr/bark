@@ -44,10 +44,19 @@ const EditNode: React.FC<{
 			initialValues={{
 				name: name || '',
 				color: color || '#000000',
-				saveToEditor: saveToEditor || false,
+				saveToEditor:
+					navigator.userAgent === 'electron'
+						? saveToEditor || false
+						: false,
 			}}
 			onSubmit={(values) => {
-				submit(values.name, values.color, values.saveToEditor)
+				submit(
+					values.name,
+					values.color,
+					navigator.userAgent !== 'electron'
+						? false
+						: values.saveToEditor
+				)
 			}}
 		>
 			{({ values, errors, touched, handleSubmit, setFieldValue }) => (
@@ -69,10 +78,14 @@ const EditNode: React.FC<{
 							name="color"
 							onChange={(c) => setFieldValue('color', c)}
 						/>
-						<div>
-							<label htmlFor="saveToEditor">Save to Editor</label>
-							<Field name="saveToEditor" type="checkbox" />
-						</div>
+						{navigator.userAgent === 'electron' && (
+							<div>
+								<label htmlFor="saveToEditor">
+									Save to Editor
+								</label>
+								<Field name="saveToEditor" type="checkbox" />
+							</div>
+						)}
 						<FlexRow>
 							<Button submitType="submit">Save</Button>
 							<Button type="subtle" onClick={cancel}>

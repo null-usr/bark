@@ -8,11 +8,14 @@ import {
 	Position,
 	updateEdge,
 } from 'reactflow'
+import { v4 as uuid } from 'uuid'
+import { getCount } from '@/helpers/getCount'
 import { Schema, Workspace } from '../helpers/types'
 
 export const types = {
 	setNode: 'SET_NODE',
 	editNode: 'EDIT_NODE',
+	updateNodeID: 'UPDATE_NODE_ID',
 	addNode: 'ADD_NODE',
 	deleteNode: 'DELETE_NODE',
 	setNodes: 'SET_NODES',
@@ -35,6 +38,8 @@ export const types = {
 	deleteCustomNode: 'DELETE_CUSTOM',
 
 	createScene: 'SCENE_CREATE',
+	addScene: 'SCENE_ADD',
+	saveScene: 'SCENE_SAVE',
 	deleteScene: 'SCENE_DELETE',
 	renameScene: 'SCENE_RENAME',
 	changeScene: 'SCENE_CHANGE',
@@ -112,16 +117,46 @@ export const reducer = (
 			// in order to notify react flow about the change
 			const newNodes = state.nodes.map((node) => {
 				if (node.id === data.nodeID) {
-					// if the ID is different, we'll need to modify
-					// edges as well
-					if (data.nodeData.id !== node.id) {
-						node.id = data.nodeData.id
-					}
 					node.data = { ...data.nodeData }
 				}
 				return node
 			})
 			return { nodes: newNodes }
+		}
+		case types.updateNodeID: {
+			const { oldID, newID } = data
+			const idCheck = getCount(state.nodes, 'id', newID)
+
+			// no duplicate IDs
+			if (idCheck > 0) return {}
+
+			const newNodes = state.nodes.map((node) => {
+				if (node.id === oldID) {
+					node.id = newID
+					// it's important that you create a new object here
+					// in order to notify react flow about the change
+					node.data = { ...node.data }
+				}
+				return node
+			})
+
+			const newEdges = state.edges.map((edge) => {
+				if (edge.source === oldID) {
+					edge.source = newID
+				}
+				if (edge.sourceHandle === oldID) {
+					edge.sourceHandle = newID
+				}
+				if (edge.target === oldID) {
+					edge.target = newID
+				}
+				if (edge.targetHandle === oldID) {
+					edge.targetHandle = newID
+				}
+				return edge
+			})
+
+			return { nodes: newNodes, edges: newEdges }
 		}
 		case types.setNodes:
 			return { nodes: data }
@@ -217,24 +252,30 @@ export const reducer = (
 
 		case types.createScene: {
 			const { scenes } = state.workspace
+			// const newID = uuid()
+
+			const nodes = [
+				{
+					id: 'root',
+					type: 'source',
+					selectable: true,
+					position: { x: 100, y: 100 },
+					sourcePosition: Position.Left,
+					targetPosition: Position.Right,
+					data: {
+						name: 'ROOT',
+						type: 'source',
+						color: '#00FF00',
+						sources: [],
+						targets: [],
+						fields: [],
+						id: 'root',
+					},
+				},
+			]
 			scenes[data] = {
 				name: data,
-				nodes: [
-					{
-						id: 'root',
-						type: 'root',
-						selectable: true,
-						position: { x: 100, y: 100 },
-						sourcePosition: Position.Left,
-						targetPosition: Position.Right,
-						data: {
-							label: 'ROOT',
-							sources: [],
-							targets: [],
-							id: 'root,',
-						},
-					},
-				],
+				nodes,
 				edges: [],
 				viewport: { x: 0, y: 0, zoom: 100 },
 			}
@@ -251,22 +292,7 @@ export const reducer = (
 					...state.workspace,
 					scenes,
 				},
-				nodes: [
-					{
-						id: 'root',
-						type: 'root',
-						selectable: true,
-						position: { x: 100, y: 100 },
-						sourcePosition: Position.Left,
-						targetPosition: Position.Right,
-						data: {
-							label: 'ROOT',
-							sources: [],
-							targets: [],
-							id: 'root,',
-						},
-					},
-				],
+				nodes,
 				edges: [],
 				activeScene: data,
 			}
@@ -322,23 +348,66 @@ export const reducer = (
 			}
 		}
 
+		case types.saveScene: {
+			const { scenes } = state.workspace
+
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
+			}
+
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
+		case types.addScene: {
+			const { scenes } = state.workspace
+			const newScene = data
+
+			// save our current scene
+			scenes[state.activeScene] = {
+				...state.workspace.scenes[state.activeScene],
+				nodes: state.nodes,
+				edges: state.edges,
+			}
+
+			// add our new scene
+			scenes[newScene.name] = newScene
+
+			return {
+				workspace: {
+					...state.workspace,
+					scenes,
+				},
+			}
+		}
+
 		// WORKSPACE ===================================================
 
 		case types.createWorkspace: {
+			const newID = uuid()
 			return {
 				nodes: [
 					{
-						id: 'root',
-						type: 'root',
+						id: newID,
+						type: 'source',
 						selectable: true,
 						position: { x: 100, y: 100 },
 						sourcePosition: Position.Left,
 						targetPosition: Position.Right,
 						data: {
-							label: 'ROOT',
+							name: 'ROOT',
+							type: 'source',
+							color: '#00FF00',
 							sources: [],
 							targets: [],
-							id: 'root,',
+							fields: [],
+							id: newID,
 						},
 					},
 				],
@@ -362,26 +431,29 @@ export const reducer = (
 
 		case types.loadWorkspace: {
 			let hasScenes = false
-			if (data.scenes && data.activeScene) {
-				if (data.scenes[data.activeScene]) {
+			const { workspace } = data
+			if (workspace && data.activeScene) {
+				if (workspace.scenes[data.activeScene]) {
 					hasScenes = true
 				}
 			}
 			return {
-				workspace: data.workspace,
+				workspace,
 				// eslint-disable-next-line no-nested-ternary
 				nodes: hasScenes
-					? data.scenes[data.activeScene].nodes
+					? workspace.scenes[data.activeScene].nodes
 					: data.nodes
 					? data.nodes
 					: [],
 				// eslint-disable-next-line no-nested-ternary
 				edges: hasScenes
-					? data.scenes[data.activeScene].edges
+					? workspace.scenes[data.activeScene].edges
 					: data.edges
 					? data.edges
 					: [],
-				viewport: data.viewport ? data.viewport : undefined,
+				viewport: workspace.scenes[data.activeScene].viewport
+					? workspace.scenes[data.activeScene].viewport
+					: undefined,
 				activeScene: data.activeScene || null,
 			}
 		}

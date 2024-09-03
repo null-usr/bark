@@ -14,12 +14,22 @@ import { Field } from '@/helpers/types'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { types } from '@/store/reducer'
 
+import { getCount } from '@/helpers/getCount'
 import { ObjectField } from '../FieldComponents/ObjectField'
-import { FlexColumn } from '../styles'
+import { FlexColumn, FlexRow } from '../styles'
 import PlusCircleIcon from '../Icons/PlusCircle'
 import IconButton from '../Button/IconButton'
 import ChevronUpIcon from '../Icons/ChevronUp'
 import ChevronDownIcon from '../Icons/ChevronDown'
+import ColorInput from '../ColorInput'
+import { ButtonRow, NodeHeader } from './styles'
+import NotepadIcon from '../Icons/Notepad'
+import BookmarkIcon from '../Icons/Bookmark'
+import CloseIcon from '../Icons/Close'
+import { Paragraph } from '../Typography/text'
+import UnlockIcon from '../Icons/Unlock'
+import LockIcon from '../Icons/Lock'
+import Button from '../Button/Button'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -50,30 +60,23 @@ export default ({
 	id: string
 	name: string
 	fields: Field[]
+	color: string
 }>) => {
-	const {
-		nodes,
-		edges,
-		workspace,
-		mode,
-		updateNodeColor,
-		updateNodeName,
-		deleteNode,
-	} = useStore()
-	const updateHandles = useStore((state) => state.updateNodeHandles)
-	const dispatch = useStore((store) => store.dispatch)
+	const { edges, mode, nodes, deleteNode, dispatch, updateNodeColor } =
+		useStore()
 
 	// when updating handles programmatically, this is needed
 	const updateNodeInternals = useUpdateNodeInternals()
-
-	const nodeRef: any = useRef()
-	const reactFlowInstance = useReactFlow()
 
 	const [dimensions, setDimensions] = useState({ width: 20, height: 20 })
 
 	const [errors, setErrors] = useState<{ [key: number]: boolean }>({})
 	const [expanded, setExpanded] = useState(true)
 	const [name, setName] = useState<string>(data.name)
+
+	const [lockID, setLockID] = useState(true)
+	const [displayID, setDisplayID] = useState<string>(id)
+	const [IDError, setIDError] = useState(false)
 
 	const [sourceArray, setSourceArray] = useState<any[]>(
 		data.fields.filter((f) => f.type === 'data').map((f) => f.value) || []
@@ -182,99 +185,254 @@ export default ({
 
 	useEffect(() => {
 		updateNodeInternals(id)
-	}, [sourceArray])
+	}, [sourceArray, expanded])
+
+	useEffect(() => {
+		setFields([...data.fields])
+	}, [data])
 
 	return (
 		<>
-			{/* {dragging && 
-			
-			
-			} */}
-
 			<Node
+				color={data.color}
 				dragging={dragging}
 				selected={selected}
-				style={{ padding: 8 }}
+				// style={{ padding: 8 }}
 			>
 				<FlexColumn>
-					<div
-						style={{
-							display: 'flex',
-							gap: 16,
-							justifyContent: 'space-around',
-							alignItems: 'center',
-							marginRight: 16,
-						}}
-					>
-						<div style={{ flex: 2 }}>
-							{/* TODO: this should change the node's ID like a root node */}
-							<input
-								className="nodrag"
-								value={name}
-								onChange={(e) => {
-									// updateNodeName(id, e.target.value)
-									setName(e.target.value)
-									data.name = e.target.value
-								}}
-							/>
-						</div>
-						<div className="nodrag">
+					<NodeHeader color={data.color}>
+						<div
+							style={{
+								display: 'flex',
+								gap: 16,
+								justifyContent: 'space-around',
+								alignItems: 'center',
+								marginRight: 16,
+							}}
+						>
+							<FlexRow style={{ flex: 2 }}>
+								{/* TODO: this should change the node's ID like a root node */}
+								{/* <input
+									className="nodrag"
+									value={name}
+									onChange={(e) => {
+										// updateNodeName(id, e.target.value)
+										setName(e.target.value)
+										data.name = e.target.value
+									}}
+								/> */}
+								<Paragraph style={{ flex: 1 }}>{id}</Paragraph>
+								<ColorInput
+									width="32px"
+									height="32px"
+									value={data.color}
+									onChange={(color) =>
+										updateNodeColor(id, color)
+									}
+								/>
+							</FlexRow>
+							<div className="nodrag">
+								<IconButton
+									background="black"
+									color="white"
+									radius="3px"
+									Icon={PlusCircleIcon}
+									onClick={() => addField('data')}
+								/>
+							</div>
 							<IconButton
 								background="black"
 								color="white"
 								radius="3px"
-								Icon={PlusCircleIcon}
-								onClick={() => addField('data')}
+								Icon={CloseIcon}
+								width={32}
+								height={32}
+								onClick={() => deleteNode(id)}
 							/>
 						</div>
-					</div>
+					</NodeHeader>
 
-					<div style={{ alignSelf: 'center' }}>
-						<IconButton
-							Icon={expanded ? ChevronUpIcon : ChevronDownIcon}
-							background="black"
-							color="white"
-							hover="gray"
-							onClick={() => setExpanded(!expanded)}
-						/>
-					</div>
-
-					{expanded && (
-						<div
-							style={{
-								display: 'flex',
-								flexDirection: 'column',
-								gap: 4,
-							}}
-							className="nodrag"
-						>
-							{fields.map((field, index) => {
-								switch (field.type) {
-									case 'data':
-										return (
-											<ObjectField
-												// color={data.color}
-												add={addHandle}
-												id={id}
-												key={field.key}
-												k={field.key}
-												v={field.value}
-												index={index}
-												update={updateDataFieldKey}
-												del={deleteField}
-												error={errors[index] || false}
-											/>
-										)
-									default:
-										return <></>
+					<FlexColumn style={{ padding: 16 }}>
+						<div style={{ alignSelf: 'center' }}>
+							<IconButton
+								Icon={
+									expanded ? ChevronUpIcon : ChevronDownIcon
 								}
-							})}
+								background="black"
+								color="white"
+								hover="gray"
+								onClick={() => setExpanded(!expanded)}
+							/>
 						</div>
-					)}
+						{expanded && (
+							<>
+								<FlexRow style={{ alignSelf: 'center' }}>
+									<input
+										className="nodrag"
+										style={{
+											// gap: '32px',
+											border: IDError
+												? '1px solid red'
+												: '',
+										}}
+										disabled={lockID}
+										value={displayID}
+										onChange={(e) =>
+											setDisplayID(e.target.value)
+										}
+									/>
+									{!lockID && (
+										<>
+											<Button
+												danger
+												onClick={() => {
+													const idCheck = getCount(
+														nodes,
+														'id',
+														displayID
+													)
+
+													if (
+														idCheck > 0 &&
+														id !== displayID
+													) {
+														setIDError(true)
+													} else {
+														dispatch({
+															type: types.updateNodeID,
+															data: {
+																oldID: id,
+																newID: displayID,
+															},
+														})
+														dispatch({
+															type: types.setNode,
+															data: id,
+														})
+														setLockID(true)
+														setIDError(false)
+													}
+												}}
+											>
+												SAVE
+											</Button>
+											<Button
+												type="secondary"
+												onClick={() => {
+													setDisplayID(id)
+													setIDError(false)
+													setLockID(true)
+												}}
+											>
+												CANCEL
+											</Button>
+										</>
+									)}
+									{lockID && (
+										<IconButton
+											background="black"
+											color="white"
+											radius="3px"
+											Icon={
+												lockID ? UnlockIcon : LockIcon
+											}
+											onClick={() => setLockID(!lockID)}
+										/>
+									)}
+								</FlexRow>
+								{IDError && (
+									<Paragraph
+										style={{ textAlign: 'center' }}
+										color="red"
+									>
+										*A node with ID: {displayID} already
+										exists
+									</Paragraph>
+								)}
+								<ButtonRow style={{ alignSelf: 'center' }}>
+									<IconButton
+										background="black"
+										color="white"
+										radius="3px"
+										Icon={PlusCircleIcon}
+										onClick={() => addField('data')}
+									/>
+									<IconButton
+										background="black"
+										radius="3px"
+										color="white"
+										Icon={NotepadIcon}
+										onClick={() =>
+											dispatch({
+												type: types.setNode,
+												data: id,
+											})
+										}
+									/>
+									{/* we can only save in non-customize mode */}
+									{mode !== 'customize' && (
+										<IconButton
+											background="black"
+											radius="3px"
+											Icon={BookmarkIcon}
+											color="white"
+											onClick={() =>
+												dispatch({
+													type: types.setSaveNodes,
+													data: nodes.filter(
+														(n) => n.id === id
+													),
+												})
+											}
+										/>
+									)}
+								</ButtonRow>
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'column',
+										gap: 4,
+									}}
+									className="nodrag"
+								>
+									{fields.map((field, index) => {
+										switch (field.type) {
+											case 'data':
+												return (
+													<ObjectField
+														color={data.color}
+														add={addHandle}
+														id={id}
+														key={field.key}
+														k={field.key}
+														v={field.value}
+														index={index}
+														update={
+															updateDataFieldKey
+														}
+														del={deleteField}
+														error={
+															errors[index] ||
+															false
+														}
+													/>
+												)
+											default:
+												return <></>
+										}
+									})}
+								</div>
+							</>
+						)}
+					</FlexColumn>
 
 					<Handle
 						type="source"
-						style={{ top: 20 }}
+						style={{
+							background: data.color,
+							borderColor: 'black',
+							top: 25,
+						}}
 						position={Position.Right}
 						id={id}
 						// style={{ background: '#555' }}

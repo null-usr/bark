@@ -37,6 +37,7 @@ const PaletteItem: React.FC<{
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		const data = JSON.stringify({
 			name,
+			color,
 			type,
 			fields,
 			nodes,
@@ -77,8 +78,35 @@ const PaletteItem: React.FC<{
 				draggable="true"
 				onDragStart={(event) => onDragStart(event)}
 			>
+				<FlexRow style={{ height: 16, backgroundColor: color }}>
+					{/* <div
+						style={{
+							border: '1px solid black',
+							backgroundColor: 'white',
+							borderRadius: '50%',
+							height: 8,
+							width: 8,
+						}}
+					/>
+					<div
+						style={{
+							border: '1px solid black',
+							backgroundColor: 'white',
+							borderRadius: 3,
+							height: 8,
+							width: 'auto',
+							flex: 1,
+						}}
+					/> */}
+				</FlexRow>
 				<FlexRow
-					style={{ justifyContent: 'space-between', width: '100%' }}
+					style={{
+						padding: 8,
+						boxSizing: 'border-box',
+						alignItems: 'center',
+						justifyContent: 'space-between',
+						width: '100%',
+					}}
 				>
 					<Paragraph
 						color="white"

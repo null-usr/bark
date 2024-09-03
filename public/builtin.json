@@ -3,21 +3,21 @@
 		{
 			"name": "SOURCE",
 			"type": "source",
-			"color": "white",
+			"color": "#c0adf0",
 			"fields": []
 		},
 		{
 			"name": "BASE",
 			"type": "base",
-			"color": "green"
+			"color": "#6e78ff"
 		},
 		{
 			"name": "DIALOGUE NODE",
 			"type": "base",
-			"color": "red",
+			"color": "#b9e3f6",
 			"fields": [
 				{
-					"key": "characterName",
+					"key": "name",
 					"type": "string",
 					"value": ""
 				},
@@ -31,12 +31,12 @@
 		{
 			"name": "BRANCH",
 			"type": "group",
-			"color": "blue",
+			"color": "#c4cf11",
 			"nodes": [
 				{
 					"name": "Branch",
 					"type": "base",
-					"color": "#FFFFFF",
+					"color": "#6e78ff",
 					"position": [0, 0],
 					"fields": [
 						{
@@ -64,13 +64,13 @@
 				{
 					"name": "Yes",
 					"type": "base",
-					"color": "#FFFFFF",
+					"color": "#c4cf11",
 					"position": [550, -150]
 				},
 				{
 					"name": "No",
 					"type": "base",
-					"color": "#FFFFFF",
+					"color": "#ff4c4d",
 					"position": [550, 150]
 				}
 			],

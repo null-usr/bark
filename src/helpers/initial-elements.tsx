@@ -3,16 +3,19 @@ import { Node, Position } from 'reactflow'
 const initialElements: Node[] = [
 	{
 		id: 'root',
-		type: 'root',
+		type: 'source',
 		selectable: true,
 		position: { x: 100, y: 100 },
 		sourcePosition: Position.Left,
 		targetPosition: Position.Right,
 		data: {
-			label: 'ROOT',
+			name: 'ROOT',
+			type: 'source',
+			color: '#00FF00',
 			sources: [],
 			targets: [],
-			id: 'root,',
+			fields: [],
+			id: 'root',
 		},
 	},
 ]

@@ -213,8 +213,8 @@ const Canvas: React.FC<{
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 			setContextMenuData({
 				ids: [n.id],
-				x: event.clientX,
-				y: event.clientY,
+				x: n.position.x + 30,
+				y: n.position.y + 30,
 				top:
 					event.clientY + 200 < pane.height
 						? event.clientY
@@ -239,8 +239,8 @@ const Canvas: React.FC<{
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 
 			setContextMenuData({
-				x: event.clientX,
-				y: event.clientY,
+				x: nds[0].position.x + 100,
+				y: nds[0].position.y + 100,
 				// @ts-ignore
 				ids: nds.map((n) => n.id),
 				top: event.clientY + 200 < pane.height && event.clientY,
@@ -386,20 +386,15 @@ const Canvas: React.FC<{
 				>
 					<MiniMapStyled
 						nodeStrokeColor={(n) => {
-							if (n.style?.background)
-								return n.style.background as string
-							if (n.type === 'input') return '#0041d0'
-							if (n.type === 'output') return '#ff0072'
-							if (n.type === 'default') return '#1a192b'
+							if (n.data.color) return n.data.color
 
 							return '#1a192b'
 						}}
 						nodeColor={(n) => {
-							if (n.style?.background)
-								return n.style.background as string
+							// if (n.style?.background)
+							// 	return n.style.background as string
 
-							if (n.type === 'base')
-								return n.data.color ? n.data.color : '#1a192b'
+							if (n.data.color) return n.data.color
 
 							return '#fff'
 						}}

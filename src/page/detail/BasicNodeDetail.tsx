@@ -105,18 +105,11 @@ const Detail: React.FC<{
 					fields,
 				}
 
-				const idCheck = getCount(nodes, 'id', id)
-
-				if (idCheck === 1 && id !== editNodeID) {
-					setIDError(true)
-					console.log('node ID conflict')
-				} else {
-					dispatch({
-						type: types.editNode,
-						data: { nodeID: editNodeID, nodeData },
-					})
-					close()
-				}
+				dispatch({
+					type: types.editNode,
+					data: { nodeID: editNodeID, nodeData },
+				})
+				close()
 			}}
 		>
 			<FlexRow style={{ height: '80vh' }}>
@@ -162,7 +155,7 @@ const Detail: React.FC<{
 					</FlexRow>
 					<FlexRow
 						style={{
-							gap: '32px',
+							// gap: '32px',
 							border: IDError ? '1px solid red' : '',
 						}}
 					>
@@ -176,13 +169,59 @@ const Detail: React.FC<{
 							value={id}
 							onChange={(e) => setID(e.target.value)}
 						/>
-						<IconButton
-							background="black"
-							color="white"
-							radius="3px"
-							Icon={lockID ? UnlockIcon : LockIcon}
-							onClick={() => setLockID(!lockID)}
-						/>
+						{!lockID && (
+							<>
+								<Button
+									danger
+									onClick={() => {
+										const idCheck = getCount(
+											nodes,
+											'id',
+											id
+										)
+
+										if (idCheck > 0 && id !== editNodeID) {
+											setIDError(true)
+										} else {
+											dispatch({
+												type: types.updateNodeID,
+												data: {
+													oldID: editNodeID,
+													newID: id,
+												},
+											})
+											dispatch({
+												type: types.setNode,
+												data: id,
+											})
+											setLockID(true)
+											setIDError(false)
+										}
+									}}
+								>
+									SAVE
+								</Button>
+								<Button
+									type="secondary"
+									onClick={() => {
+										setID(id)
+										setIDError(false)
+										setLockID(true)
+									}}
+								>
+									CANCEL
+								</Button>
+							</>
+						)}
+						{lockID && (
+							<IconButton
+								background="black"
+								color="white"
+								radius="3px"
+								Icon={lockID ? UnlockIcon : LockIcon}
+								onClick={() => setLockID(!lockID)}
+							/>
+						)}
 					</FlexRow>
 					<AddFields
 						addField={addField}

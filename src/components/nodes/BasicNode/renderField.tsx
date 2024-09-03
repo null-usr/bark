@@ -5,6 +5,7 @@ import { StringField } from '@/components/FieldComponents/StringField'
 import { TextField } from '@/components/FieldComponents/TextField'
 import { Field } from '@/helpers/types'
 import { ObjectField } from '@/components/FieldComponents/ObjectField'
+import { CustomField } from '@/components/FieldComponents/CustomField'
 
 export const renderField = (
 	field: Field,
@@ -61,6 +62,19 @@ export const renderField = (
 		case 'number':
 			return (
 				<NumberField
+					index={index}
+					key={field.key}
+					k={field.key}
+					v={field.value}
+					updateValue={updateValue!}
+					updateKey={updateKey}
+					del={deleteField}
+					// error={error || false}
+				/>
+			)
+		case 'custom':
+			return (
+				<CustomField
 					index={index}
 					key={field.key}
 					k={field.key}
