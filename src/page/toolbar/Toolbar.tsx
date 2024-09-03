@@ -3,6 +3,7 @@ import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import {
+	LoadScene,
 	LoadWorkspace,
 	SerializeScene,
 	SerializeWorkspace,
