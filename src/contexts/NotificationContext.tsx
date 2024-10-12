@@ -2,6 +2,7 @@ import ErrorIcon from '@/components/Icons/alerts/Error'
 import SuccessIcon from '@/components/Icons/alerts/Success'
 import WarningIcon from '@/components/Icons/alerts/Warning'
 import Modal from '@/components/modal/Modal'
+import Notification from '@/components/Notification'
 import { FlexColumn } from '@/components/styles'
 import colors from '@/helpers/theme/colors'
 import React, {

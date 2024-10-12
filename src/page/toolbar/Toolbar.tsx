@@ -16,6 +16,7 @@ import Modal from '@/components/modal/Modal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
+import { useNotificationManager } from '@/contexts/NotificationContext'
 import { HeaderContainer, LeftButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
 
@@ -31,6 +32,7 @@ function Toolbar() {
 	const { setViewport, fitView } = useReactFlow()
 	const reactFlowInstance = useReactFlow()
 	const { dispatch, reset, workspace, activeScene } = useStore()
+	const { addNotification } = useNotificationManager()
 
 	const [formMode, setFormMode] = useState('')
 
@@ -48,7 +50,19 @@ function Toolbar() {
 			// if there's no name, we're loading an exported json
 			if (data.workspace) {
 				dispatch({ type: types.loadWorkspace, data })
+			} else {
+				addNotification({
+					title: 'Error',
+					type: 'error',
+					message: 'Workspace badly configured',
+				})
 			}
+		} else {
+			addNotification({
+				title: 'Error',
+				type: 'error',
+				message: 'Failed to load workspace',
+			})
 		}
 	}
 
@@ -67,6 +81,12 @@ function Toolbar() {
 
 			dispatch({ type: types.addScene, data: scene })
 			dispatch({ type: types.changeScene, data: scene.name })
+		} else {
+			addNotification({
+				title: 'Error',
+				type: 'error',
+				message: 'Failed to load scene',
+			})
 		}
 	}
 
