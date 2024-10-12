@@ -33,7 +33,7 @@ const EditWorkspace: React.FC<{
 	return (
 		<Modal
 			title={`Edit Workspace: ${name}`}
-			open
+			isOpen
 			withDimmer
 			close={() => submit(newName)}
 		>

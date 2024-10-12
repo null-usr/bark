@@ -8,6 +8,7 @@ import './App.css'
 import '@/helpers/style.css'
 import { AppContainer } from './styles'
 import useStore from './store/store'
+import { NotificationManager } from './contexts/NotificationContext'
 
 function App() {
 	const { theme, setTheme } = useStore()
@@ -24,7 +25,7 @@ function App() {
 		loadTheme()
 	}, [])
 	return (
-		<>
+		<NotificationManager>
 			{theme && (
 				<ThemeProvider theme={theme}>
 					<ReactFlowProvider>
@@ -34,7 +35,7 @@ function App() {
 					</ReactFlowProvider>
 				</ThemeProvider>
 			)}
-		</>
+		</NotificationManager>
 	)
 }
 

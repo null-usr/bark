@@ -125,7 +125,7 @@ const Detail: React.FC<{
 		<Modal
 			title="Edge Detail"
 			withDimmer
-			open={isOpen}
+			isOpen={isOpen}
 			close={() => {
 				const edgeData = {
 					name,

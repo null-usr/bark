@@ -115,7 +115,7 @@ const Workspace: React.FC<{}> = (props) => {
 			{formMode === 'createScene' && (
 				<Modal
 					title="Create Scene"
-					open
+					isOpen
 					withDimmer
 					close={() => {
 						setFormMode('')
@@ -137,7 +137,7 @@ const Workspace: React.FC<{}> = (props) => {
 			{formMode.includes('renameScene') && (
 				<Modal
 					title="Rename Scene"
-					open
+					isOpen
 					withDimmer
 					close={() => {
 						setFormMode('')
@@ -163,7 +163,7 @@ const Workspace: React.FC<{}> = (props) => {
 			{formMode.includes('deleteScene') && (
 				<Modal
 					title="Delete Scene"
-					open
+					isOpen
 					withDimmer
 					close={() => {
 						setFormMode('')

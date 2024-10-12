@@ -335,7 +335,7 @@ function Toolbar() {
 				<Modal
 					close={() => setFormMode('')}
 					title="About"
-					open
+					isOpen
 					withDimmer
 				>
 					<div style={{ width: 600, height: 600 }}>

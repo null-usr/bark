@@ -53,7 +53,7 @@ const PaletteItem: React.FC<{
 			{formMode === 'delete' && (
 				<Modal
 					title="Delete Schema"
-					open
+					isOpen
 					withDimmer
 					close={() => setFormMode('')}
 				>

@@ -95,7 +95,7 @@ const Detail: React.FC<{
 	return (
 		<Modal
 			title="Node Detail"
-			open
+			isOpen
 			withDimmer
 			close={() => {
 				const nodeData = {
