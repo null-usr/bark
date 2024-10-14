@@ -9,6 +9,7 @@ import { types } from '@/store/reducer'
 import { Node } from '@/helpers/theme'
 import { Field } from '@/helpers/types'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
+import SaveIcon from '@/components/Icons/Save'
 import { StringField } from '../../FieldComponents/StringField'
 import { NodeHeader, ButtonRow, Container } from '../styles'
 import { FlexColumn, FlexRow } from '../../styles'
@@ -16,7 +17,7 @@ import IconButton from '../../Button/IconButton'
 import ColorInput from '../../ColorInput'
 import NotepadIcon from '../../Icons/Notepad'
 import CloseIcon from '../../Icons/Close'
-import BookmarkIcon from '../../Icons/Bookmark'
+// import BookmarkIcon from '../../Icons/Bookmark'
 import AddFields from './AddFields'
 import { renderField } from './renderField'
 
@@ -270,7 +271,7 @@ export default ({
 								<IconButton
 									background="black"
 									radius="3px"
-									Icon={BookmarkIcon}
+									Icon={SaveIcon}
 									color="white"
 									onClick={() =>
 										dispatch({

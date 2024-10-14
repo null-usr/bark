@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { Edge, useReactFlow, useStoreApi } from 'reactflow'
 import useStore from '@/store/store'
-import { SerializeNode } from '@/helpers/serialization/serialization'
+// import { SerializeNode } from '@/helpers/serialization/serialization'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { types } from '@/store/reducer'
@@ -12,9 +12,10 @@ import { Paragraph } from '../Typography/text'
 import { FlexRow } from '../styles'
 
 import IconButton from '../Button/IconButton'
-import BookmarkIcon from '../Icons/Bookmark'
+// import BookmarkIcon from '../Icons/Bookmark'
 import CloseIcon from '../Icons/Close'
 import FourSquaresIcon from '../Icons/FourSquares'
+import SaveIcon from '../Icons/Save'
 
 export const ContextMenu: React.FC<{
 	ids: string[]
@@ -94,7 +95,7 @@ export const ContextMenu: React.FC<{
 						radius="3px"
 						width={32}
 						height={32}
-						Icon={BookmarkIcon}
+						Icon={SaveIcon}
 						onClick={onSave}
 					/>
 				</FlexRow>

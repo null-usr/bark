@@ -24,12 +24,13 @@ import ChevronDownIcon from '../Icons/ChevronDown'
 import ColorInput from '../ColorInput'
 import { ButtonRow, NodeHeader } from './styles'
 import NotepadIcon from '../Icons/Notepad'
-import BookmarkIcon from '../Icons/Bookmark'
+// import BookmarkIcon from '../Icons/Bookmark'
 import CloseIcon from '../Icons/Close'
 import { Paragraph } from '../Typography/text'
 import UnlockIcon from '../Icons/Unlock'
 import LockIcon from '../Icons/Lock'
 import Button from '../Button/Button'
+import SaveIcon from '../Icons/Save'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -375,7 +376,7 @@ export default ({
 										<IconButton
 											background="black"
 											radius="3px"
-											Icon={BookmarkIcon}
+											Icon={SaveIcon}
 											color="white"
 											onClick={() =>
 												dispatch({

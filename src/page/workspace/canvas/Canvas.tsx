@@ -256,6 +256,21 @@ const Canvas: React.FC<{
 		[setContextMenuData]
 	)
 
+	const onPaneCanvasContextMenu = useCallback(
+		(event) => {
+			// Prevent native context menu from showing
+			event.preventDefault()
+
+			// Calculate position of the context menu. We want to make sure it
+			// doesn't get positioned off-screen.
+			// @ts-ignore
+			const pane = contextMenuRef.current!.getBoundingClientRect()
+
+			setContextMenuData(null)
+		},
+		[setContextMenuData]
+	)
+
 	// Close the context menu if it's open whenever the window is clicked.
 	const onPaneClick = useCallback(
 		() => setContextMenuData(null),
@@ -377,6 +392,7 @@ const Canvas: React.FC<{
 					}}
 					onNodeContextMenu={onNodeContextMenu}
 					onSelectionContextMenu={onSelectionContextMenu}
+					onPaneContextMenu={onPaneCanvasContextMenu}
 					onPaneClick={() => {
 						onPaneClick()
 					}}
