@@ -83,7 +83,7 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 	/* background-color: white; */
 
 	min-height: 50px;
-	border-radius: 8px;
+	border-radius: 3px;
 	border: 2px solid
 		${({ active, color = '#fcfcfc', ...props }) =>
 			active ? `${props.theme.primary}` : color};

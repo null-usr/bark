@@ -120,7 +120,7 @@ const Canvas: React.FC<{
 			event: React.MouseEvent<Element, MouseEvent>,
 			params: OnConnectStartParams
 		) => {
-			if (event.button !== 2 && params.handleType === 'source') {
+			if (event.button !== 2) {
 				setConnectionAttempt(params)
 			}
 		},
@@ -144,12 +144,23 @@ const Canvas: React.FC<{
 			})
 			const newNode = new BasicNode('BASE', position.x, position.y)
 
-			const edge: Edge = new DataEdge(
-				connection.current!.nodeId!,
-				newNode.id,
-				connection.current!.handleId,
-				null
-			)
+			let edge: Edge
+
+			if (connection.current.handleType === 'source') {
+				edge = new DataEdge(
+					connection.current!.nodeId!,
+					newNode.id,
+					connection.current!.handleId,
+					null
+				)
+			} else {
+				edge = new DataEdge(
+					newNode.id,
+					connection.current!.nodeId!,
+					null,
+					null
+				)
+			}
 
 			addNode(newNode)
 			// setEdges((els: any) => addEdge(edge, els))
