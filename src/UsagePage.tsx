@@ -61,8 +61,8 @@ const UsagePage: React.FC<{ open: boolean; onClose: () => void }> = ({
 								</FlexColumn>
 								<caption>
 									This is a tool designed to visually edit
-									dialogue for games, but more generally
-									relational JSON editor.
+									dialogue for games, but more generally, it
+									is a relational JSON editor.
 								</caption>
 							</FlexColumn>
 							<FlexColumn style={{ gap: 16 }}>

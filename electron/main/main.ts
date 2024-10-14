@@ -15,10 +15,15 @@ import * as path from 'path'
 import * as url from 'url'
 
 const isMac = process.platform === 'darwin'
+const cmd = process.argv[1]
 
 // since our main window is global when the app closes we need to delete it
 // to avoid memory leaks
 let mainWindow: BrowserWindow | null
+
+function showUsage() {
+	mainWindow!.webContents.send('window:showUsage')
+}
 
 // Create windows =====================================
 function createWindow() {
@@ -66,6 +71,11 @@ function createWindow() {
 	setTimeout(() => {
 		splashWindow.destroy()
 		mainWindow!.show()
+
+		if (cmd === '--squirrel-firstrun') {
+			// Running for the first time.
+			showUsage()
+		}
 	}, 3000)
 
 	// Show splash immediately after window's finished loading
@@ -241,10 +251,6 @@ function exportSceneJSON() {
 				})
 			}
 		})
-}
-
-function showUsage(){
-	mainWindow!.webContents.send('window:showUsage')
 }
 
 // write file to given path
