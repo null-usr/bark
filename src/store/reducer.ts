@@ -58,6 +58,9 @@ export type RFState = {
 	theme: any
 	setTheme: (theme: any) => void
 
+	showUsage: boolean
+	setShowUsage: (showUsage: boolean) => void
+
 	editNodeID: string | null
 	editEdgeID: string | null
 	saveNodes: Node[] | null

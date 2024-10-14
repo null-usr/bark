@@ -31,7 +31,7 @@ function buildFileSelector() {
 function Toolbar() {
 	const { setViewport, fitView } = useReactFlow()
 	const reactFlowInstance = useReactFlow()
-	const { dispatch, reset, workspace, activeScene } = useStore()
+	const { dispatch, reset, workspace, activeScene, setShowUsage } = useStore()
 	const { addNotification } = useNotificationManager()
 
 	const [formMode, setFormMode] = useState('')
@@ -197,6 +197,24 @@ function Toolbar() {
 		const out = JSON.stringify(
 			SerializeScene(workspace.scenes[activeScene])
 		)
+
+		const blob = new Blob([out], { type: 'application/json' })
+		const href = URL.createObjectURL(blob)
+		const link = document.createElement('a')
+		link.href = href
+		link.download = `${activeScene}.woof`
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+	}
+
+	const onSceneSave = () => {
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		const out = saveScene()
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
@@ -410,11 +428,21 @@ function Toolbar() {
 							>
 								Load Scene
 							</Button>
+							<Button type="subtle" block onClick={onSceneSave}>
+								Save Scene
+							</Button>
 							<Button type="subtle" block onClick={onSceneExport}>
 								Export Scene
 							</Button>
 						</ToolbarButton>
 						<ToolbarButton label="Help">
+							<Button
+								type="subtle"
+								block
+								onClick={() => setShowUsage(true)}
+							>
+								Usage
+							</Button>
 							<Button
 								type="subtle"
 								block

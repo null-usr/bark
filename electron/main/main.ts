@@ -243,6 +243,10 @@ function exportSceneJSON() {
 		})
 }
 
+function showUsage(){
+	mainWindow!.webContents.send('window:showUsage')
+}
+
 // write file to given path
 function writeJSON(savePath: string, data: any) {
 	writeFile(savePath, data, (err) => {
@@ -377,8 +381,12 @@ const template = [
 					role: 'help',
 					submenu: [
 						{
-							label: 'About',
+							label: 'Usage',
 							click: createAboutWindow,
+						},
+						{
+							label: 'About',
+							click: showUsage,
 						},
 						{
 							label: 'Learn More',

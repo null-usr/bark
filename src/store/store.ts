@@ -17,6 +17,7 @@ import { reducer, RFState } from './reducer'
 // this is our useStore hook that we can use in our components
 // to get parts of the store and call actions
 const useStore = create<RFState>((set, get) => ({
+	showUsage: false,
 	theme: null,
 	editNodeID: null,
 	editEdgeID: null,
@@ -82,6 +83,10 @@ const useStore = create<RFState>((set, get) => ({
 				w_vars: {},
 			},
 		})
+	},
+
+	setShowUsage: (showUsage: boolean) => {
+		set({ showUsage })
 	},
 
 	setTheme: (theme: any) => {
