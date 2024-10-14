@@ -116,6 +116,7 @@ const PaletteItem: React.FC<{
 					{modable && (
 						<FlexRow style={{ alignItems: 'center' }}>
 							<IconButton
+								color="white"
 								Icon={NotepadIcon}
 								onClick={() => {
 									dispatch({
@@ -128,6 +129,7 @@ const PaletteItem: React.FC<{
 								}}
 							/>
 							<IconButton
+								color="white"
 								Icon={CloseIcon}
 								onClick={() => setFormMode('delete')}
 							/>

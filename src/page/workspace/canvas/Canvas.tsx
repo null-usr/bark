@@ -235,7 +235,7 @@ const Canvas: React.FC<{
 			// @ts-ignore
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 			setContextMenuData({
-				ids: [n.id],
+				contextNodes: [n],
 				x: n.position.x + 30,
 				y: n.position.y + 30,
 				top:
@@ -265,7 +265,7 @@ const Canvas: React.FC<{
 				x: nds[0].position.x + 100,
 				y: nds[0].position.y + 100,
 				// @ts-ignore
-				ids: nds.map((n) => n.id),
+				contextNodes: nds,
 				top: event.clientY + 200 < pane.height && event.clientY,
 				left: event.clientX + 200 < pane.width && event.clientX,
 				right:
@@ -276,7 +276,7 @@ const Canvas: React.FC<{
 					pane.height - event.clientY,
 			})
 		},
-		[setContextMenuData]
+		[setContextMenuData, setSelectedNodes]
 	)
 
 	const onPaneCanvasContextMenu = useCallback(
@@ -295,10 +295,10 @@ const Canvas: React.FC<{
 	)
 
 	// Close the context menu if it's open whenever the window is clicked.
-	const onPaneClick = useCallback(
-		() => setContextMenuData(null),
-		[setContextMenuData]
-	)
+	const onPaneClick = useCallback(() => {
+		setSelectedNodes([])
+		setContextMenuData(null)
+	}, [setContextMenuData, setSelectedNodes])
 
 	function closeModal() {
 		dispatch({ type: types.setSaveNodes, data: null })
@@ -326,9 +326,10 @@ const Canvas: React.FC<{
 				<ContextMenu
 					close={onPaneClick}
 					onSave={() => {
+						console.log(contextMenuData)
 						dispatch({
 							type: types.setSaveNodes,
-							data: selectedNodes,
+							data: contextMenuData.contextNodes,
 						})
 					}}
 					// @ts-ignore
