@@ -12,7 +12,7 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Scene, Workspace } from '@/helpers/types'
 import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
@@ -352,16 +352,11 @@ function Toolbar() {
 				/>
 			)}
 			{formMode === 'about' && (
-				<Modal
-					close={() => setFormMode('')}
-					title="About"
-					isOpen
-					withDimmer
-				>
+				<EditModal close={() => setFormMode('')} title="About" isOpen>
 					<div style={{ width: 600, height: 600 }}>
 						<SplashPage />
 					</div>
-				</Modal>
+				</EditModal>
 			)}
 			{/* Only render the visible toolbar if we're not in the electron app */}
 			{navigator.userAgent !== 'Electron' && (

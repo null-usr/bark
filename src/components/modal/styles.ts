@@ -19,19 +19,19 @@ export const ModalContainer = styled.div<{
 		let out = ''
 
 		if (top) {
-			out += top
+			out += `top: ${top};`
 		} else if (bottom) {
-			out += bottom
+			out += `bottom: ${bottom};`
 		} else {
 			out += 'top: 50%;'
 		}
 
 		if (left) {
-			out += left
+			out += `left: ${left};`
 		} else if (right) {
-			out += right
+			out += `right: ${right};`
 		} else {
-			out += 'left: 50%'
+			out += 'left: 50%;'
 		}
 
 		if (!top && !bottom && !left && !right) {
@@ -42,8 +42,6 @@ export const ModalContainer = styled.div<{
 	}}
 
 	background-color: ${(props) => props.theme.secondaryBg};
-	border: 1px solid white;
-	border-radius: 2px;
 `
 
 export const ModalHeader = styled(FlexRow)`
@@ -61,7 +59,8 @@ export const Content = styled.div<{}>`
 	// display: grid;
 	// justify-content: center;
 	// align-content: center;
-
+	border: 1px solid white;
+	border-radius: 2px;
 	padding: 16px;
 	color: white;
 `

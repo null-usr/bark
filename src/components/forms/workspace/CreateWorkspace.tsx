@@ -3,7 +3,7 @@ import React from 'react'
 import { Formik, Form, Field } from 'formik'
 import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 
 // Create a custom editor or workspace node
 const CreateWorkspace: React.FC<{
@@ -12,7 +12,7 @@ const CreateWorkspace: React.FC<{
 	cancel: () => void
 }> = ({ name, submit, cancel }) => {
 	return (
-		<Modal title="Create Workspace" isOpen withDimmer close={cancel}>
+		<EditModal title="Create Workspace" isOpen close={cancel}>
 			<Formik
 				validateOnChange={false}
 				validateOnBlur={false}
@@ -50,7 +50,7 @@ const CreateWorkspace: React.FC<{
 					</Form>
 				)}
 			</Formik>
-		</Modal>
+		</EditModal>
 	)
 }
 

@@ -1,5 +1,5 @@
 import EditNode from '@/components/forms/node/EditNode'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import { encodeSchema } from '@/helpers/serialization/encodeSchema'
 import { Schema } from '@/helpers/types'
 import { types } from '@/store/reducer'
@@ -20,7 +20,7 @@ const SaveModal: React.FC<{
 
 	const dispatch = useStore((store) => store.dispatch)
 	return (
-		<Modal title="Save Node(s)" withDimmer isOpen close={close}>
+		<EditModal title="Save Node(s)" isOpen close={close}>
 			<EditNode
 				forbidden={forbiddenList}
 				cancel={() => {
@@ -63,7 +63,7 @@ const SaveModal: React.FC<{
 					close()
 				}}
 			/>
-		</Modal>
+		</EditModal>
 	)
 }
 

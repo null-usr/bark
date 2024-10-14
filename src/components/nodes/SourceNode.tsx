@@ -277,9 +277,10 @@ export default ({
 										}}
 										disabled={lockID}
 										value={displayID}
-										onChange={(e) =>
+										onChange={(e) => {
 											setDisplayID(e.target.value)
-										}
+											setIDError(false)
+										}}
 									/>
 									{!lockID && (
 										<>

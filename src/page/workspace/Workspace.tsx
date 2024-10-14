@@ -13,7 +13,7 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import CreateScene from '@/components/forms/scene/CreateScene'
 import EditScene from '@/components/forms/scene/EditScene'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import DeleteScene from '@/components/forms/scene/DeleteScene'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { Schema } from '@/helpers/types'
@@ -113,10 +113,9 @@ const Workspace: React.FC<{}> = (props) => {
 	return (
 		<>
 			{formMode === 'createScene' && (
-				<Modal
+				<EditModal
 					title="Create Scene"
 					isOpen
-					withDimmer
 					close={() => {
 						setFormMode('')
 					}}
@@ -132,13 +131,12 @@ const Workspace: React.FC<{}> = (props) => {
 							setFormMode('')
 						}}
 					/>
-				</Modal>
+				</EditModal>
 			)}
 			{formMode.includes('renameScene') && (
-				<Modal
+				<EditModal
 					title="Rename Scene"
 					isOpen
-					withDimmer
 					close={() => {
 						setFormMode('')
 					}}
@@ -158,13 +156,12 @@ const Workspace: React.FC<{}> = (props) => {
 							setFormMode('')
 						}}
 					/>
-				</Modal>
+				</EditModal>
 			)}
 			{formMode.includes('deleteScene') && (
-				<Modal
+				<EditModal
 					title="Delete Scene"
 					isOpen
-					withDimmer
 					close={() => {
 						setFormMode('')
 					}}
@@ -179,7 +176,7 @@ const Workspace: React.FC<{}> = (props) => {
 						}}
 						cancel={() => setFormMode('')}
 					/>
-				</Modal>
+				</EditModal>
 			)}
 			<WorkspaceContainer>
 				<Palette setFormMode={setFormMode} />

@@ -74,6 +74,8 @@ const getPosition = (location: string) => {
 			right = '24px'
 			break
 		default:
+			top = '24px'
+			right = '24px'
 			break
 	}
 
@@ -129,7 +131,7 @@ export const NotificationManager: React.FC<{
 	const addNotification = (conf: NotifConf) => {
 		const newNotification = {
 			id: Date.now(),
-			message: conf.message,
+			...conf,
 		}
 		setNotifications((prev) => [...prev, newNotification])
 
@@ -138,7 +140,7 @@ export const NotificationManager: React.FC<{
 			() => {
 				removeNotification(newNotification.id)
 			},
-			conf.timeout ? conf.timeout : 3000
+			conf.timeout ? conf.timeout : 5000
 		)
 
 		// Clean up the timer on unmount
@@ -184,6 +186,7 @@ export const NotificationManager: React.FC<{
 			{children}
 			{Object.keys(positionalNotifications).map((k) => {
 				const { top, bottom, left, right } = getPosition(k)
+
 				return (
 					<Modal
 						key={k}
@@ -191,7 +194,7 @@ export const NotificationManager: React.FC<{
 						bottom={bottom}
 						left={left}
 						right={right}
-						isOpen
+						isOpen={positionalNotifications[k].length > 0}
 						hideCloseButton
 					>
 						<FlexColumn>

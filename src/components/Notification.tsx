@@ -6,10 +6,12 @@ import CloseIcon from './Icons/Close'
 import IconButton from './Button/IconButton'
 
 const Container = styled(FlexRow)`
+	padding: 16px;
 	border: 1px solid black;
+	background-color: white;
 	align-items: center;
 	justify-content: space-between;
-	min-width: 400px;
+	min-width: 100px;
 `
 
 const Notification: React.FC<{

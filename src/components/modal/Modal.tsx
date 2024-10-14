@@ -1,13 +1,11 @@
 import React from 'react'
 import Dimmer from './Dimmer'
-import { Content, ModalContainer, ModalHeader } from './styles'
+import { ModalContainer } from './styles'
 
 import IconButton from '../Button/IconButton'
 import CloseIcon from '../Icons/Close'
-import { Paragraph } from '../Typography/text'
 
 const Modal: React.FC<{
-	title?: string
 	top?: string
 	bottom?: string
 	right?: string
@@ -24,7 +22,6 @@ const Modal: React.FC<{
 	right,
 	left,
 	isOpen,
-	title,
 	close,
 	hideCloseButton,
 	children,
@@ -34,21 +31,21 @@ const Modal: React.FC<{
 			{isOpen && withDimmer && <Dimmer onClick={close} />}
 
 			{isOpen && (
-				<ModalContainer>
-					<ModalHeader>
-						<Paragraph style={{ marginLeft: 32, flex: 1 }}>
-							{title}
-						</Paragraph>
-						{!hideCloseButton && (
-							<IconButton
-								width={32}
-								height={32}
-								Icon={CloseIcon}
-								onClick={close}
-							/>
-						)}
-					</ModalHeader>
-					<Content>{children}</Content>
+				<ModalContainer
+					top={top}
+					bottom={bottom}
+					left={left}
+					right={right}
+				>
+					{!hideCloseButton && (
+						<IconButton
+							width={32}
+							height={32}
+							Icon={CloseIcon}
+							onClick={close}
+						/>
+					)}
+					{children}
 				</ModalContainer>
 			)}
 		</>

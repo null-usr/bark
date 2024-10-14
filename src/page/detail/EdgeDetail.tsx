@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import React, { useState } from 'react'
 import { useReactFlow } from 'reactflow'
 import { types } from '@/store/reducer'
@@ -122,9 +122,8 @@ const Detail: React.FC<{
 	if (!editEdge) return null
 
 	return (
-		<Modal
+		<EditModal
 			title="Edge Detail"
-			withDimmer
 			isOpen={isOpen}
 			close={() => {
 				const edgeData = {
@@ -229,7 +228,7 @@ const Detail: React.FC<{
 					})}
 				</FlexColumn>
 			</FlexRow>
-		</Modal>
+		</EditModal>
 	)
 }
 
