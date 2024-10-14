@@ -21,6 +21,7 @@ import Button from '@/components/Button/Button'
 import { ContextMenu } from '@/components/ContextMenu/ContextMenu'
 import { splitEdge } from '@/helpers/edgeHelpers'
 import { BasicNode } from '@/helpers/classes/BasicNode'
+import useIsTabActive from '@/helpers/hooks/useIsTabActive'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import EdgeDetail from '../../detail/EdgeDetail'
 import { CanvasContainer } from './styles'
@@ -60,6 +61,8 @@ const Canvas: React.FC<{
 	} = useStore()
 	const { fitView } = useReactFlow()
 
+	const tabActive = useIsTabActive()
+
 	const [showSGButton, setShowSGButton] = useState(false)
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
@@ -96,6 +99,15 @@ const Canvas: React.FC<{
 	useEffect(() => {
 		connection.current = connectionAttempt
 	}, [connectionAttempt])
+
+	useEffect(() => {
+		if (!tabActive && mode !== 'customize') {
+			dispatch({
+				type: types.saveScene,
+				data: undefined,
+			})
+		}
+	}, [tabActive])
 
 	const onCustomConnect = useCallback(
 		(params: Connection) => {

@@ -212,16 +212,6 @@ export default ({
 							}}
 						>
 							<FlexRow style={{ flex: 2 }}>
-								{/* TODO: this should change the node's ID like a root node */}
-								{/* <input
-									className="nodrag"
-									value={name}
-									onChange={(e) => {
-										// updateNodeName(id, e.target.value)
-										setName(e.target.value)
-										data.name = e.target.value
-									}}
-								/> */}
 								<Paragraph style={{ flex: 1 }}>{id}</Paragraph>
 								<ColorInput
 									width="32px"
