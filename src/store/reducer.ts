@@ -441,7 +441,6 @@ export const reducer = (
 				// eslint-disable-next-line no-nested-ternary
 				nodes: hasScenes
 					? workspace.scenes[activeScene].nodes
-
 					: data.nodes
 					? data.nodes
 					: [],
@@ -455,7 +454,6 @@ export const reducer = (
 					? workspace.scenes[activeScene].viewport
 					: undefined,
 				activeScene: activeScene || null,
-
 			}
 		}
 

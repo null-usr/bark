@@ -218,7 +218,7 @@ function Toolbar() {
 		const href = URL.createObjectURL(blob)
 		const link = document.createElement('a')
 		link.href = href
-		link.download = `${activeScene}.woof`
+		link.download = `${activeScene}.json`
 		document.body.appendChild(link)
 		link.click()
 		document.body.removeChild(link)
