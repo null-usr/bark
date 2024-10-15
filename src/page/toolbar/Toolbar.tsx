@@ -106,6 +106,24 @@ function Toolbar() {
 		}
 	}
 
+	const handleSceneRead = (e: any) => {
+		const content = fileReader.result
+
+		// originally type workspace but it's more like workspace+
+		const data: ReactFlowJsonObject | null = LoadScene(content as string)
+
+		if (data) {
+			const scene = data as Scene
+			if (!scene.name) scene.name = 'Default'
+			scene.name = workspace.scenes[scene.name]
+				? `${scene.name} (2)`
+				: scene.name
+
+			dispatch({ type: types.addScene, data: scene })
+			dispatch({ type: types.changeScene, data: scene.name })
+		}
+	}
+
 	const fileSelector = buildFileSelector()
 	const sceneFileSelector = buildFileSelector()
 
