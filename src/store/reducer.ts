@@ -372,13 +372,6 @@ export const reducer = (
 			const { scenes } = state.workspace
 			const newScene = data
 
-			// save our current scene
-			scenes[state.activeScene] = {
-				...state.workspace.scenes[state.activeScene],
-				nodes: state.nodes,
-				edges: state.edges,
-			}
-
 			// add our new scene
 			scenes[newScene.name] = newScene
 
@@ -434,30 +427,33 @@ export const reducer = (
 
 		case types.loadWorkspace: {
 			let hasScenes = false
+			let { activeScene } = data
 			const { workspace } = data
-			if (workspace && data.activeScene) {
-				if (workspace.scenes[data.activeScene]) {
+			if (workspace && activeScene) {
+				if (workspace.scenes[activeScene]) {
 					hasScenes = true
+				} else if (Object.keys(workspace.scenes).length > 0) {
+					;[activeScene] = Object.keys(workspace.scenes)
 				}
 			}
 			return {
 				workspace,
 				// eslint-disable-next-line no-nested-ternary
 				nodes: hasScenes
-					? workspace.scenes[data.activeScene].nodes
+					? workspace.scenes[activeScene].nodes
 					: data.nodes
 					? data.nodes
 					: [],
 				// eslint-disable-next-line no-nested-ternary
 				edges: hasScenes
-					? workspace.scenes[data.activeScene].edges
+					? workspace.scenes[activeScene].edges
 					: data.edges
 					? data.edges
 					: [],
-				viewport: workspace.scenes[data.activeScene].viewport
-					? workspace.scenes[data.activeScene].viewport
+				viewport: workspace.scenes[activeScene].viewport
+					? workspace.scenes[activeScene].viewport
 					: undefined,
-				activeScene: data.activeScene || null,
+				activeScene: activeScene || null,
 			}
 		}
 

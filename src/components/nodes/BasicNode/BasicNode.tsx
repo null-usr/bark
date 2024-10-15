@@ -176,7 +176,6 @@ export default ({
 	}
 
 	const updateValue = (index: number, v: any) => {
-		console.log(v)
 		const f = [...fields]
 		const item = { ...f[index] }
 		item.value = v
@@ -338,30 +337,17 @@ export default ({
 								className="nodrag"
 							>
 								{fields.map((field, index) => {
-									return field.type === 'text' ? (
-										<StringField
-											index={index}
-											key={field.key}
-											k={field.key}
-											v={field.value}
-											updateValue={updateValue}
-											updateKey={updateKey}
-											del={deleteField}
-											error={errors[index] || false}
-										/>
-									) : (
-										renderField(
-											field,
-											index,
-											data.color,
-											errors[index] || false,
-											id,
-											updateKey,
-											deleteField,
-											updateValue,
-											updateDataFieldKey,
-											addHandle
-										)
+									return renderField(
+										field,
+										index,
+										data.color,
+										errors[index] || false,
+										id,
+										updateKey,
+										deleteField,
+										updateValue,
+										updateDataFieldKey,
+										addHandle
 									)
 								})}
 							</FlexColumn>

@@ -132,7 +132,15 @@ export function SerializeScene(scene: Scene) {
 
 		out.nodes[node.id] = {
 			prev: edgesIn.map((e) => e.id),
-			next: edgesOut.map((e) => e.id),
+			next: edgesOut
+				.filter((e) => {
+					return (
+						!e.sourceHandle ||
+						e.sourceHandle === '' ||
+						e.sourceHandle === e.source
+					)
+				})
+				.map((e) => e.id),
 			data,
 		}
 	})

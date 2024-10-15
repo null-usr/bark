@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
@@ -74,10 +75,25 @@ function Toolbar() {
 
 		if (data) {
 			const scene = data as Scene
-			if (!scene.name) scene.name = 'Default'
-			scene.name = workspace.scenes[scene.name]
-				? `${scene.name} (2)`
-				: scene.name
+			if (!scene.name) {
+				scene.name = 'Default'
+			}
+
+			// risky
+			let depth = 0
+			while (workspace.scenes[scene.name]) {
+				if (depth > 3) {
+					scene.name = uuidv4()
+				} else {
+					scene.name = `${scene.name} (2)`
+					depth += 1
+				}
+			}
+
+			dispatch({
+				type: types.saveScene,
+				data: undefined,
+			})
 
 			dispatch({ type: types.addScene, data: scene })
 			dispatch({ type: types.changeScene, data: scene.name })

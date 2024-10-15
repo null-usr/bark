@@ -15,10 +15,11 @@ const UsagePage: React.FC<{ open: boolean; onClose: () => void }> = ({
 		<Modal isOpen={open} close={onClose} withDimmer>
 			<div
 				style={{
-					width: '50vw',
-					height: '75vh',
+					width: '80vw',
+					height: '80vh',
 					backgroundColor: 'white',
 					padding: 32,
+					overflowY: 'auto',
 					// height: '100%',
 				}}
 			>
@@ -93,7 +94,7 @@ const UsagePage: React.FC<{ open: boolean; onClose: () => void }> = ({
 									<caption>
 										<i>
 											You can export a single scene to
-											json using [ Scene &gt; Export ]
+											JSON using [ Scene &gt; Export ]
 											instead of [ Workspace &gt; Export ]
 										</i>
 									</caption>
@@ -124,7 +125,6 @@ const UsagePage: React.FC<{ open: boolean; onClose: () => void }> = ({
 				{page === 1 && (
 					<FlexColumn
 						style={{
-							height: '100%',
 							alignItems: 'center',
 							gap: 16,
 							justifyContent: 'space-between',
@@ -135,24 +135,63 @@ const UsagePage: React.FC<{ open: boolean; onClose: () => void }> = ({
 								A <b>Workspace</b> is a collection of{' '}
 								<b>Scenes</b> and Workspace utilities ( custom
 								nodes & variables ) to help organize your
-								project.
+								project. For example, you can go to [ Workspace
+								&gt; Settings ] and define a custom variable
+								'Characters' and its options in order to have a
+								finite list of known characters to choose from.
 							</Paragraph>
 							<Paragraph>
-								You can save and load both Workspaces files (
-								*.bark ) and individual Scene ( *.dlg ) files
+								You can then save and load both Workspaces files
+								( *.bark ) and individual Scene ( *.dlg ) files
 								while you develop and then when you're ready to
 								use them in a project you can export them to
-								json, where an exported Workspace batch exports
+								JSON, where an exported Workspace batch exports
 								the individual scenes.
 							</Paragraph>
 							<Paragraph style={{ textAlign: 'center' }}>
-								The exported json files have the following
-								structure:
+								The exported JSON files have two root elements
+								<b>"nodes"</b> and <b>"edges"</b> with the
+								following structure:
 							</Paragraph>
-							<Paragraph style={{ textAlign: 'center' }}>
-								&#123; ... ... &#125;
-							</Paragraph>
+							<FlexRow
+								style={{
+									justifyContent: 'space-between',
+									alignItems: 'center',
+								}}
+							>
+								<Paragraph style={{ textAlign: 'center' }}>
+									&#123;
+								</Paragraph>
+								<img
+									width="35%"
+									src="node_structure.png"
+									alt=""
+								/>
+								<img
+									width="35%"
+									src="edge_structure.png"
+									alt=""
+								/>
+								<Paragraph style={{ textAlign: 'center' }}>
+									&#125;
+								</Paragraph>
+							</FlexRow>
 						</FlexColumn>
+						<Paragraph>
+							Each node keeps a list of edge IDs coming in and a
+							list of edge IDs leaving its natural target & source
+							handles ( "prev" and "next" ) along with "data"
+							which contains the list of fields you define. The
+							value will either be a string, an integer or an
+							array of edge IDs ( in the case of a Data field )
+						</Paragraph>
+						<Paragraph>
+							The default main entry for the nodes is 'root' but
+							it can be any source node or any other node ID that
+							you know, then generally you don't need to know the
+							specific node or edge IDs, simply follow the links
+							until there are none left to follow.
+						</Paragraph>
 						<FlexColumn style={{ alignItems: 'center' }}>
 							<div style={{ width: 100 }}>
 								<Button
