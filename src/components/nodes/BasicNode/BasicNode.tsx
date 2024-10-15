@@ -176,7 +176,6 @@ export default ({
 	}
 
 	const updateValue = (index: number, v: any) => {
-		console.log(v)
 		const f = [...fields]
 		const item = { ...f[index] }
 		item.value = v
