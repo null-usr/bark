@@ -6,13 +6,10 @@ import Button from './components/Button/Button'
 import { Paragraph } from './components/Typography/text'
 import Modal from './components/modal/Modal'
 
-const UsagePage: React.FC<{ open: boolean; onClose: () => void }> = ({
-	open,
-	onClose,
-}) => {
+const UsagePage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 	const [page, setPage] = useState(0)
 	return (
-		<Modal isOpen={open} close={onClose} withDimmer>
+		<Modal isOpen close={onClose} withDimmer>
 			<div
 				style={{
 					width: '80vw',

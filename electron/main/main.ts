@@ -308,6 +308,10 @@ const template = [
 					label: app.name,
 					submenu: [
 						{
+							label: 'Usage',
+							click: showUsage,
+						},
+						{
 							label: 'About',
 							click: createAboutWindow,
 						},
@@ -388,11 +392,11 @@ const template = [
 					submenu: [
 						{
 							label: 'Usage',
-							click: createAboutWindow,
+							click: showUsage,
 						},
 						{
 							label: 'About',
-							click: showUsage,
+							click: createAboutWindow,
 						},
 						{
 							label: 'Learn More',

@@ -30,13 +30,14 @@ function Page() {
 
 	return (
 		<>
-			<UsagePage
-				open={showUsage}
-				onClose={() => {
-					localStorage.setItem('showUsage', 'shown')
-					setShowUsage(false)
-				}}
-			/>
+			{showUsage && (
+				<UsagePage
+					onClose={() => {
+						localStorage.setItem('showUsage', 'shown')
+						setShowUsage(false)
+					}}
+				/>
+			)}
 			<PageContainer>
 				<Toolbar />
 				<Workspace />
