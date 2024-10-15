@@ -9,9 +9,14 @@ import '@/helpers/style.css'
 import { AppContainer } from './styles'
 import useStore from './store/store'
 import { NotificationManager } from './contexts/NotificationContext'
+import MobileView from './MobileView'
+import useIsTablet from './helpers/hooks/useIsTablet'
+import useIsMobile from './helpers/hooks/useIsMobile'
 
 function App() {
 	const { theme, setTheme } = useStore()
+	const isTablet = useIsTablet()
+	const isMobile = useIsMobile()
 
 	useEffect(() => {
 		async function loadTheme() {
@@ -25,17 +30,23 @@ function App() {
 		loadTheme()
 	}, [])
 	return (
-		<NotificationManager>
-			{theme && (
-				<ThemeProvider theme={theme}>
-					<ReactFlowProvider>
-						<AppContainer>
-							<Page />
-						</AppContainer>
-					</ReactFlowProvider>
-				</ThemeProvider>
+		<>
+			{isMobile && !isTablet ? (
+				<MobileView />
+			) : (
+				<NotificationManager>
+					{theme && (
+						<ThemeProvider theme={theme}>
+							<ReactFlowProvider>
+								<AppContainer>
+									<Page />
+								</AppContainer>
+							</ReactFlowProvider>
+						</ThemeProvider>
+					)}
+				</NotificationManager>
 			)}
-		</NotificationManager>
+		</>
 	)
 }
 
