@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { ReactFlowJsonObject, useReactFlow } from 'reactflow'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
@@ -12,10 +13,11 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { Scene, Workspace } from '@/helpers/types'
 import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
 import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
+import { useNotificationManager } from '@/contexts/NotificationContext'
 import { HeaderContainer, LeftButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
 
@@ -30,7 +32,8 @@ function buildFileSelector() {
 function Toolbar() {
 	const { setViewport, fitView } = useReactFlow()
 	const reactFlowInstance = useReactFlow()
-	const { dispatch, reset, workspace, activeScene } = useStore()
+	const { dispatch, reset, workspace, activeScene, setShowUsage } = useStore()
+	const { addNotification } = useNotificationManager()
 
 	const [formMode, setFormMode] = useState('')
 
@@ -48,7 +51,19 @@ function Toolbar() {
 			// if there's no name, we're loading an exported json
 			if (data.workspace) {
 				dispatch({ type: types.loadWorkspace, data })
+			} else {
+				addNotification({
+					title: 'Error',
+					type: 'error',
+					message: 'Workspace badly configured',
+				})
 			}
+		} else {
+			addNotification({
+				title: 'Error',
+				type: 'error',
+				message: 'Failed to load workspace',
+			})
 		}
 	}
 
@@ -60,13 +75,34 @@ function Toolbar() {
 
 		if (data) {
 			const scene = data as Scene
-			if (!scene.name) scene.name = 'Default'
-			scene.name = workspace.scenes[scene.name]
-				? `${scene.name} (2)`
-				: scene.name
+			if (!scene.name) {
+				scene.name = 'Default'
+			}
+
+			// risky
+			let depth = 0
+			while (workspace.scenes[scene.name]) {
+				if (depth > 3) {
+					scene.name = uuidv4()
+				} else {
+					scene.name = `${scene.name} (2)`
+					depth += 1
+				}
+			}
+
+			dispatch({
+				type: types.saveScene,
+				data: undefined,
+			})
 
 			dispatch({ type: types.addScene, data: scene })
 			dispatch({ type: types.changeScene, data: scene.name })
+		} else {
+			addNotification({
+				title: 'Error',
+				type: 'error',
+				message: 'Failed to load scene',
+			})
 		}
 	}
 
@@ -177,6 +213,24 @@ function Toolbar() {
 		const out = JSON.stringify(
 			SerializeScene(workspace.scenes[activeScene])
 		)
+
+		const blob = new Blob([out], { type: 'application/json' })
+		const href = URL.createObjectURL(blob)
+		const link = document.createElement('a')
+		link.href = href
+		link.download = `${activeScene}.woof`
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+	}
+
+	const onSceneSave = () => {
+		dispatch({
+			type: types.saveScene,
+			data: undefined,
+		})
+
+		const out = saveScene()
 
 		const blob = new Blob([out], { type: 'application/json' })
 		const href = URL.createObjectURL(blob)
@@ -332,16 +386,11 @@ function Toolbar() {
 				/>
 			)}
 			{formMode === 'about' && (
-				<Modal
-					close={() => setFormMode('')}
-					title="About"
-					open
-					withDimmer
-				>
+				<EditModal close={() => setFormMode('')} title="About" isOpen>
 					<div style={{ width: 600, height: 600 }}>
 						<SplashPage />
 					</div>
-				</Modal>
+				</EditModal>
 			)}
 			{/* Only render the visible toolbar if we're not in the electron app */}
 			{navigator.userAgent !== 'Electron' && (
@@ -395,11 +444,21 @@ function Toolbar() {
 							>
 								Load Scene
 							</Button>
+							<Button type="subtle" block onClick={onSceneSave}>
+								Save Scene
+							</Button>
 							<Button type="subtle" block onClick={onSceneExport}>
 								Export Scene
 							</Button>
 						</ToolbarButton>
 						<ToolbarButton label="Help">
+							<Button
+								type="subtle"
+								block
+								onClick={() => setShowUsage(true)}
+							>
+								Usage
+							</Button>
 							<Button
 								type="subtle"
 								block

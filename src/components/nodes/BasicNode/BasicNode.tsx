@@ -9,6 +9,7 @@ import { types } from '@/store/reducer'
 import { Node } from '@/helpers/theme'
 import { Field } from '@/helpers/types'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
+import SaveIcon from '@/components/Icons/Save'
 import { StringField } from '../../FieldComponents/StringField'
 import { NodeHeader, ButtonRow, Container } from '../styles'
 import { FlexColumn, FlexRow } from '../../styles'
@@ -16,7 +17,7 @@ import IconButton from '../../Button/IconButton'
 import ColorInput from '../../ColorInput'
 import NotepadIcon from '../../Icons/Notepad'
 import CloseIcon from '../../Icons/Close'
-import BookmarkIcon from '../../Icons/Bookmark'
+// import BookmarkIcon from '../../Icons/Bookmark'
 import AddFields from './AddFields'
 import { renderField } from './renderField'
 
@@ -175,7 +176,6 @@ export default ({
 	}
 
 	const updateValue = (index: number, v: any) => {
-		console.log(v)
 		const f = [...fields]
 		const item = { ...f[index] }
 		item.value = v
@@ -270,7 +270,7 @@ export default ({
 								<IconButton
 									background="black"
 									radius="3px"
-									Icon={BookmarkIcon}
+									Icon={SaveIcon}
 									color="white"
 									onClick={() =>
 										dispatch({
@@ -337,30 +337,17 @@ export default ({
 								className="nodrag"
 							>
 								{fields.map((field, index) => {
-									return field.type === 'text' ? (
-										<StringField
-											index={index}
-											key={field.key}
-											k={field.key}
-											v={field.value}
-											updateValue={updateValue}
-											updateKey={updateKey}
-											del={deleteField}
-											error={errors[index] || false}
-										/>
-									) : (
-										renderField(
-											field,
-											index,
-											data.color,
-											errors[index] || false,
-											id,
-											updateKey,
-											deleteField,
-											updateValue,
-											updateDataFieldKey,
-											addHandle
-										)
+									return renderField(
+										field,
+										index,
+										data.color,
+										errors[index] || false,
+										id,
+										updateKey,
+										deleteField,
+										updateValue,
+										updateDataFieldKey,
+										addHandle
 									)
 								})}
 							</FlexColumn>

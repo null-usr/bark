@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import DeleteNode from '@/components/forms/node/DeleteNode'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import { FlexRow } from '@/components/styles'
 import { Paragraph } from '@/components/Typography/text'
 import IconButton from '@/components/Button/IconButton'
@@ -51,10 +51,9 @@ const PaletteItem: React.FC<{
 	return (
 		<>
 			{formMode === 'delete' && (
-				<Modal
+				<EditModal
 					title="Delete Schema"
-					open
-					withDimmer
+					isOpen
 					close={() => setFormMode('')}
 				>
 					<DeleteNode
@@ -70,7 +69,7 @@ const PaletteItem: React.FC<{
 						}}
 						cancel={() => setFormMode('')}
 					/>
-				</Modal>
+				</EditModal>
 			)}
 			<NodeContainer
 				color={color}
@@ -117,6 +116,7 @@ const PaletteItem: React.FC<{
 					{modable && (
 						<FlexRow style={{ alignItems: 'center' }}>
 							<IconButton
+								color="white"
 								Icon={NotepadIcon}
 								onClick={() => {
 									dispatch({
@@ -129,6 +129,7 @@ const PaletteItem: React.FC<{
 								}}
 							/>
 							<IconButton
+								color="white"
 								Icon={CloseIcon}
 								onClick={() => setFormMode('delete')}
 							/>

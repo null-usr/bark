@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
-import { Edge, useReactFlow, useStoreApi } from 'reactflow'
+import { Edge, Node, useReactFlow, useStoreApi } from 'reactflow'
 import useStore from '@/store/store'
-import { SerializeNode } from '@/helpers/serialization/serialization'
+// import { SerializeNode } from '@/helpers/serialization/serialization'
 import { getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { types } from '@/store/reducer'
@@ -12,12 +12,13 @@ import { Paragraph } from '../Typography/text'
 import { FlexRow } from '../styles'
 
 import IconButton from '../Button/IconButton'
-import BookmarkIcon from '../Icons/Bookmark'
+// import BookmarkIcon from '../Icons/Bookmark'
 import CloseIcon from '../Icons/Close'
 import FourSquaresIcon from '../Icons/FourSquares'
+import SaveIcon from '../Icons/Save'
 
 export const ContextMenu: React.FC<{
-	ids: string[]
+	contextNodes: Node[]
 	x: number
 	y: number
 	top: number
@@ -26,20 +27,33 @@ export const ContextMenu: React.FC<{
 	bottom: number
 	onSave: () => void
 	close: () => void
-}> = ({ ids, x, y, top, left, right, bottom, onSave, close, ...props }) => {
+}> = ({
+	contextNodes,
+	x,
+	y,
+	top,
+	left,
+	right,
+	bottom,
+	onSave,
+	close,
+	...props
+}) => {
 	const { nodes, edges, addNode, onConnect, setNodes, dispatch } = useStore()
+
+	const ids = contextNodes.map((n) => n.id)
 
 	const rfStore = useStoreApi()
 
 	const { addSelectedNodes, resetSelectedElements } = rfStore.getState()
 
 	const duplicateNode = useCallback(() => {
-		const nds = nodes.filter((n) => ids.includes(n.id))
-		if (nds.length === 0) {
-			console.log('error finding nodes: ', ids)
-		}
+		// const nds = nodes.filter((n) => ids.includes(n.id))
+		// if (nds.length === 0) {
+		// 	console.log('error finding nodes: ', ids)
+		// }
 
-		const tmpSchema = encodeSchema('', '', nds, edges)
+		const tmpSchema = encodeSchema('', '', contextNodes, edges)
 
 		// 0, 0 is top left
 		const { newNodes, newEdges } = decodeSchema({ x, y }, tmpSchema)
@@ -50,11 +64,12 @@ export const ContextMenu: React.FC<{
 		resetSelectedElements()
 		addSelectedNodes(newNodes.map((n) => n.id))
 		close()
-	}, [ids, addNode])
+	}, [contextNodes, addNode])
 
 	const deleteNode = useCallback(() => {
 		const deletedEdges: Edge<any>[] = []
 
+		// ids.forEach((id) => deletedEdges.push(...getOutgoingEdges(id, edges)))
 		ids.forEach((id) => deletedEdges.push(...getOutgoingEdges(id, edges)))
 
 		deletedEdges.forEach((e) =>
@@ -63,7 +78,7 @@ export const ContextMenu: React.FC<{
 
 		setNodes(nodes.filter((node) => !ids.includes(node.id)))
 		close()
-	}, [ids, setNodes])
+	}, [contextNodes, setNodes])
 
 	return (
 		// @ts-ignore
@@ -94,7 +109,7 @@ export const ContextMenu: React.FC<{
 						radius="3px"
 						width={32}
 						height={32}
-						Icon={BookmarkIcon}
+						Icon={SaveIcon}
 						onClick={onSave}
 					/>
 				</FlexRow>

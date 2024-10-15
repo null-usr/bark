@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import React, { useEffect, useState } from 'react'
 import { Edge } from 'reactflow'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import { getIncomingEdges, getOutgoingEdges } from '@/helpers/edgeHelpers'
 import { DataEdge } from '@/helpers/classes/DataEdge'
 import { getCount } from '@/helpers/getCount'
@@ -93,10 +93,9 @@ const Detail: React.FC<{
 	if (!editNode) return null
 
 	return (
-		<Modal
+		<EditModal
 			title="Node Detail"
-			open
-			withDimmer
+			isOpen
 			close={() => {
 				const nodeData = {
 					id: lockID ? editNode.id : id,
@@ -320,7 +319,7 @@ const Detail: React.FC<{
 					})}
 				</FlexColumn>
 			</FlexRow>
-		</Modal>
+		</EditModal>
 	)
 }
 

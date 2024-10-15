@@ -21,6 +21,7 @@ import Button from '@/components/Button/Button'
 import { ContextMenu } from '@/components/ContextMenu/ContextMenu'
 import { splitEdge } from '@/helpers/edgeHelpers'
 import { BasicNode } from '@/helpers/classes/BasicNode'
+import useIsTabActive from '@/helpers/hooks/useIsTabActive'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import EdgeDetail from '../../detail/EdgeDetail'
 import { CanvasContainer } from './styles'
@@ -60,6 +61,8 @@ const Canvas: React.FC<{
 	} = useStore()
 	const { fitView } = useReactFlow()
 
+	const tabActive = useIsTabActive()
+
 	const [showSGButton, setShowSGButton] = useState(false)
 	const [selectedNodes, setSelectedNodes] = useState<Node<any>[]>([])
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
@@ -97,6 +100,15 @@ const Canvas: React.FC<{
 		connection.current = connectionAttempt
 	}, [connectionAttempt])
 
+	useEffect(() => {
+		if (!tabActive && mode !== 'customize') {
+			dispatch({
+				type: types.saveScene,
+				data: undefined,
+			})
+		}
+	}, [tabActive])
+
 	const onCustomConnect = useCallback(
 		(params: Connection) => {
 			setConnectionAttempt(null)
@@ -120,7 +132,7 @@ const Canvas: React.FC<{
 			event: React.MouseEvent<Element, MouseEvent>,
 			params: OnConnectStartParams
 		) => {
-			if (event.button !== 2 && params.handleType === 'source') {
+			if (event.button !== 2) {
 				setConnectionAttempt(params)
 			}
 		},
@@ -144,12 +156,23 @@ const Canvas: React.FC<{
 			})
 			const newNode = new BasicNode('BASE', position.x, position.y)
 
-			const edge: Edge = new DataEdge(
-				connection.current!.nodeId!,
-				newNode.id,
-				connection.current!.handleId,
-				null
-			)
+			let edge: Edge
+
+			if (connection.current.handleType === 'source') {
+				edge = new DataEdge(
+					connection.current!.nodeId!,
+					newNode.id,
+					connection.current!.handleId,
+					null
+				)
+			} else {
+				edge = new DataEdge(
+					newNode.id,
+					connection.current!.nodeId!,
+					null,
+					null
+				)
+			}
 
 			addNode(newNode)
 			// setEdges((els: any) => addEdge(edge, els))
@@ -212,7 +235,7 @@ const Canvas: React.FC<{
 			// @ts-ignore
 			const pane = contextMenuRef.current!.getBoundingClientRect()
 			setContextMenuData({
-				ids: [n.id],
+				contextNodes: [n],
 				x: n.position.x + 30,
 				y: n.position.y + 30,
 				top:
@@ -242,7 +265,7 @@ const Canvas: React.FC<{
 				x: nds[0].position.x + 100,
 				y: nds[0].position.y + 100,
 				// @ts-ignore
-				ids: nds.map((n) => n.id),
+				contextNodes: nds,
 				top: event.clientY + 200 < pane.height && event.clientY,
 				left: event.clientX + 200 < pane.width && event.clientX,
 				right:
@@ -253,14 +276,29 @@ const Canvas: React.FC<{
 					pane.height - event.clientY,
 			})
 		},
+		[setContextMenuData, setSelectedNodes]
+	)
+
+	const onPaneCanvasContextMenu = useCallback(
+		(event) => {
+			// Prevent native context menu from showing
+			event.preventDefault()
+
+			// Calculate position of the context menu. We want to make sure it
+			// doesn't get positioned off-screen.
+			// @ts-ignore
+			const pane = contextMenuRef.current!.getBoundingClientRect()
+
+			setContextMenuData(null)
+		},
 		[setContextMenuData]
 	)
 
 	// Close the context menu if it's open whenever the window is clicked.
-	const onPaneClick = useCallback(
-		() => setContextMenuData(null),
-		[setContextMenuData]
-	)
+	const onPaneClick = useCallback(() => {
+		setSelectedNodes([])
+		setContextMenuData(null)
+	}, [setContextMenuData, setSelectedNodes])
 
 	function closeModal() {
 		dispatch({ type: types.setSaveNodes, data: null })
@@ -288,9 +326,10 @@ const Canvas: React.FC<{
 				<ContextMenu
 					close={onPaneClick}
 					onSave={() => {
+						console.log(contextMenuData)
 						dispatch({
 							type: types.setSaveNodes,
-							data: selectedNodes,
+							data: contextMenuData.contextNodes,
 						})
 					}}
 					// @ts-ignore
@@ -377,6 +416,7 @@ const Canvas: React.FC<{
 					}}
 					onNodeContextMenu={onNodeContextMenu}
 					onSelectionContextMenu={onSelectionContextMenu}
+					onPaneContextMenu={onPaneCanvasContextMenu}
 					onPaneClick={() => {
 						onPaneClick()
 					}}

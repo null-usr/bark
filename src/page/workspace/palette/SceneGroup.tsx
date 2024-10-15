@@ -62,7 +62,6 @@ const SceneGroup: React.FC<{
 														)
 												  }
 										}
-										key={s}
 									/>
 									<IconButton
 										Icon={CloseIcon}
@@ -80,7 +79,6 @@ const SceneGroup: React.FC<{
 														)
 												  }
 										}
-										key={s}
 									/>
 								</FlexRow>
 							)}

@@ -2,11 +2,9 @@ import React from 'react'
 import './App.css'
 // overwrite default node stylings, see "Theming" on docs page
 import '@/helpers/style.css'
-import { FlexColumn, FlexRow, Grid } from './components/styles'
+import { FlexColumn, Grid } from './components/styles'
 import { ImageContainer } from './components/ImageContainer'
 import { H1 } from './components/Typography/headers'
-import Button from './components/Button/Button'
-import { Paragraph } from './components/Typography/text'
 
 // import { shell } from 'electron' //dev dependancy
 

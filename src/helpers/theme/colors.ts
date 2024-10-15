@@ -1,7 +1,6 @@
 // #([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}) regex for finding hex
 /* eslint-disable */
 const colors = {
-	drinkotecRed: '#CF0017',
 	primary: '#1797D6',
 	portion: '#E6F7FF',
 	gray: {
@@ -41,6 +40,30 @@ const colors = {
 		80: '#A50012',
 		90: '#7C000D',
 		100: '#520009',
+	},
+	green: {
+		10: '#F6FFED',
+		20: '#D9F7BE',
+		30: '#B7EB8F',
+		40: '#95DE64',
+		50: '#73D13D',
+		60: '#52C41A',
+		70: '#389E0D',
+		80: '#237804',
+		90: '#135200',
+		100: '#092B00',
+	},
+	gold: {
+		10: '#FFFBE6',
+		20: '#FFF1B8',
+		30: '#FFE58F',
+		40: '#FFD666',
+		50: '#FFC53D',
+		60: '#FAAD14',
+		70: '#D48806',
+		80: '#AD6800',
+		90: '#874D00',
+		100: '#613400',
 	},
 	magenta: {
 		10: '#FFF0F6',

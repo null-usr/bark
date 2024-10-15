@@ -24,12 +24,15 @@ import ChevronDownIcon from '../Icons/ChevronDown'
 import ColorInput from '../ColorInput'
 import { ButtonRow, NodeHeader } from './styles'
 import NotepadIcon from '../Icons/Notepad'
-import BookmarkIcon from '../Icons/Bookmark'
+// import BookmarkIcon from '../Icons/Bookmark'
+
 import CloseIcon from '../Icons/Close'
 import { Paragraph } from '../Typography/text'
 import UnlockIcon from '../Icons/Unlock'
 import LockIcon from '../Icons/Lock'
 import Button from '../Button/Button'
+
+import SaveIcon from '../Icons/Save'
 
 export class SourceNode {
 	readonly id: string = uuidv4()
@@ -211,16 +214,6 @@ export default ({
 							}}
 						>
 							<FlexRow style={{ flex: 2 }}>
-								{/* TODO: this should change the node's ID like a root node */}
-								{/* <input
-									className="nodrag"
-									value={name}
-									onChange={(e) => {
-										// updateNodeName(id, e.target.value)
-										setName(e.target.value)
-										data.name = e.target.value
-									}}
-								/> */}
 								<Paragraph style={{ flex: 1 }}>{id}</Paragraph>
 								<ColorInput
 									width="32px"
@@ -277,9 +270,10 @@ export default ({
 										}}
 										disabled={lockID}
 										value={displayID}
-										onChange={(e) =>
+										onChange={(e) => {
 											setDisplayID(e.target.value)
-										}
+											setIDError(false)
+										}}
 									/>
 									{!lockID && (
 										<>
@@ -374,7 +368,7 @@ export default ({
 										<IconButton
 											background="black"
 											radius="3px"
-											Icon={BookmarkIcon}
+											Icon={SaveIcon}
 											color="white"
 											onClick={() =>
 												dispatch({

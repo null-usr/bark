@@ -26,7 +26,7 @@ export const TextField: React.FC<{
 		<FlexColumn
 			style={{
 				minHeight: 64,
-				width: '80%',
+				width: '100%',
 			}}
 		>
 			<FlexRow>
@@ -38,21 +38,26 @@ export const TextField: React.FC<{
 					// onSubmit={() => updateKey(index, key)}
 				/>
 				{k !== key && (
-					<Button onClick={() => updateKey(index, key)}>
-						Update Key
-					</Button>
+					<>
+						<Button onClick={() => updateKey(index, key)}>
+							Update Key
+						</Button>
+						<Button type="secondary" onClick={() => setKey(k)}>
+							Cancel
+						</Button>
+					</>
 				)}
+				<Button danger onClick={() => del(k)}>
+					Delete
+				</Button>
 			</FlexRow>
 			<textarea
 				value={v}
 				onChange={(event) => {
 					updateValue(index, event.target.value)
 				}}
-				style={{ maxWidth: '100%' }}
+				style={{ resize: 'vertical' }}
 			/>
-			<Button danger onClick={() => del(k)}>
-				Delete
-			</Button>
 		</FlexColumn>
 	)
 }

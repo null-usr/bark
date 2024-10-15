@@ -9,7 +9,7 @@ import Divider from '@/components/Divider'
 import { Paragraph } from '@/components/Typography/text'
 import styled from 'styled-components'
 import { H2 } from '@/components/Typography/headers'
-import Modal from '@/components/modal/Modal'
+import EditModal from '@/components/modal/EditModal'
 import WorkspaceVariable from './WorkspaceVariable'
 
 const Container = styled(FlexColumn)`
@@ -31,10 +31,9 @@ const EditWorkspace: React.FC<{
 	const [isCreating, setIsCreating] = useState(false)
 
 	return (
-		<Modal
+		<EditModal
 			title={`Edit Workspace: ${name}`}
-			open
-			withDimmer
+			isOpen
 			close={() => submit(newName)}
 		>
 			<Container>
@@ -165,7 +164,7 @@ const EditWorkspace: React.FC<{
 					</div>
 				)}
 			</Container>
-		</Modal>
+		</EditModal>
 	)
 }
 
