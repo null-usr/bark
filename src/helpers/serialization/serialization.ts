@@ -102,14 +102,14 @@ export function LoadWorkspace(
 	workspace: string
 ): { workspace?: Workspace } | null {
 	try {
-		let data = JSON.stringify(workspace)
-		data = JSON.parse(workspace, (k, v) => {
+		// const rawData = JSON.stringify(workspace)
+		const data = JSON.parse(workspace, (k, v) => {
 			const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
 			return matches ? Symbol.for(matches[1]) : v
 		})
 
-		if (!workspaceChecker(data)) {
+		if (!data.workspace || !workspaceChecker(data.workspace)) {
 			return null
 		}
 

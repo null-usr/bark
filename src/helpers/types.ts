@@ -112,8 +112,7 @@ export interface Schema {
 export function isSchema(obj: any): obj is Schema {
 	// Check required fields
 	if (
-		typeof obj.name !== 'string' ||
-		obj.name !== null ||
+		(typeof obj.name !== 'string' && obj.name !== null) ||
 		typeof obj.type !== 'string' ||
 		obj.className !== 'string'
 	) {
@@ -157,8 +156,7 @@ export function isScene(obj: any): obj is Scene {
 	// Check required fields
 	// @ts-itnore
 	if (
-		typeof obj.name !== 'string' ||
-		obj.name !== null ||
+		(typeof obj.name !== 'string' && obj.name !== null) ||
 		!isArrayOfType(obj.nodes, isNode) ||
 		!isArrayOfType(obj.edges, isEdge) ||
 		obj.viewport === undefined
@@ -186,8 +184,7 @@ export function isWorkspace(obj: any): obj is Workspace {
 	// Check required fields
 	// @ts-itnore
 	if (
-		typeof obj.name !== 'string' ||
-		obj.name !== null ||
+		(typeof obj.name !== 'string' && obj.name !== null) ||
 		obj.scenes === undefined ||
 		obj.schemas === undefined
 	) {
