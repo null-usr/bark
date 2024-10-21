@@ -2,7 +2,13 @@
 // serialize lite versions to be loaded by the game engines
 
 import { Edge, Node, ReactFlowJsonObject } from 'reactflow'
-import { Field, Scene, Workspace } from '../types'
+import {
+	Field,
+	Scene,
+	sceneChecker,
+	Workspace,
+	workspaceChecker,
+} from '../types'
 import { getIncomingEdges, getOutgoingEdges } from '../edgeHelpers'
 
 export interface ISceneData extends ReactFlowJsonObject {
@@ -82,6 +88,10 @@ export function LoadScene(scene: string): ReactFlowJsonObject | null {
 		out.nodes = data.nodes
 		out.edges = data.edges
 
+		if (!sceneChecker(out)) {
+			return null
+		}
+
 		return out
 	} catch (e) {
 		return null
@@ -92,12 +102,16 @@ export function LoadWorkspace(
 	workspace: string
 ): { workspace?: Workspace } | null {
 	try {
-		let data = JSON.stringify(workspace)
-		data = JSON.parse(workspace, (k, v) => {
+		// const rawData = JSON.stringify(workspace)
+		const data = JSON.parse(workspace, (k, v) => {
 			const matches = v && v.match && v.match(/^\$\$Symbol:(.*)$/)
 
 			return matches ? Symbol.for(matches[1]) : v
 		})
+
+		if (!data.workspace || !workspaceChecker(data.workspace)) {
+			return null
+		}
 
 		// @ts-ignore
 		return data
