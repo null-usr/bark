@@ -80,13 +80,19 @@ function isWorkspaceVar(obj: any): obj is Field {
 	}
 	if (
 		obj.type === 'string' &&
-		!isArrayOfType(obj.options, (a0) => typeof a0 === 'string')
+		!isArrayOfType(
+			obj.options,
+			(a0): a0 is unknown => typeof a0 === 'string'
+		)
 	) {
 		return false
 	}
 	if (
 		obj.type === 'number' &&
-		!isArrayOfType(obj.options, (a0) => typeof a0 === 'number')
+		!isArrayOfType(
+			obj.options,
+			(a0): a0 is unknown => typeof a0 === 'number'
+		)
 	) {
 		return false
 	}
