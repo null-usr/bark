@@ -22,13 +22,15 @@ const SVG: React.FC<{ styleString?: string }> = ({ styleString }) => (
 
 const ChevronDownIcon: React.FC<{
 	width?: number
+	className?: string
 	height?: number
 	color?: string
 	hover?: string
 	active?: string
-}> = ({ width = 24, height = 24, color, hover, active }) => {
+}> = ({ width = 24, height = 24, color, hover, active, className }) => {
 	return (
 		<Icon
+			className={className}
 			width={width}
 			height={height}
 			Component={SVG}

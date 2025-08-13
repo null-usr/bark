@@ -2,7 +2,6 @@ import React from 'react'
 import Dimmer from './Dimmer'
 import { CloseButton, ModalContainer } from './styles'
 
-import IconButton from '../Button/IconButton'
 import CloseIcon from '../Icons/Close'
 
 const Modal: React.FC<{
@@ -39,12 +38,9 @@ const Modal: React.FC<{
 				>
 					{!hideCloseButton && (
 						<CloseButton>
-							<IconButton
-								width={32}
-								height={32}
-								Icon={CloseIcon}
-								onClick={close}
-							/>
+							<button className="btn-primary" onClick={close}>
+								<CloseIcon />
+							</button>
 						</CloseButton>
 					)}
 					{children}

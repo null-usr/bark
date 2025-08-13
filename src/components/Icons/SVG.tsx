@@ -70,6 +70,7 @@ export interface Props {
 	hover?: string
 	active?: string
 	Component: React.FC<{ styleString?: string }>
+	className?: string
 	backgroundColor?: string
 	shape?: 'circle' | 'square' | 'rounded'
 	style?: string
@@ -83,11 +84,13 @@ export const Icon: React.FC<Props> = ({
 	active,
 	Component,
 	style,
+	className,
 	shape = 'square',
 	backgroundColor,
 }) => {
 	return (
 		<IconContainer
+			className={className}
 			shape={shape}
 			height={height}
 			width={width}

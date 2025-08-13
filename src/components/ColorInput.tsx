@@ -69,6 +69,7 @@ const ColorInput: React.FC<{
 			<StyledInput
 				name={name}
 				width={width}
+				style={{ flexShrink: 0 }}
 				type="color"
 				value={value}
 				ref={colorInputRef}

@@ -1,7 +1,6 @@
 import React from 'react'
 import { Content, ModalHeader } from './styles'
 
-import IconButton from '../Button/IconButton'
 import CloseIcon from '../Icons/Close'
 import { Paragraph } from '../Typography/text'
 import Modal from './Modal'
@@ -18,12 +17,9 @@ const EditModal: React.FC<{
 				<Paragraph style={{ marginLeft: 32, flex: 1 }}>
 					{title}
 				</Paragraph>
-				<IconButton
-					width={32}
-					height={32}
-					Icon={CloseIcon}
-					onClick={close}
-				/>
+				<button className="btn-primary  " onClick={close}>
+					<CloseIcon />
+				</button>
 			</ModalHeader>
 			<Content>{children}</Content>
 		</Modal>

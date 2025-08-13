@@ -8,15 +8,13 @@ import { getCount } from '@/helpers/getCount'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
 import ColorInput from '@/components/ColorInput'
 import { BasicNode } from '@/helpers/classes/BasicNode'
-import IconButton from '@/components/Button/IconButton'
 import LockIcon from '@/components/Icons/Lock'
 import UnlockIcon from '@/components/Icons/Unlock'
-import { renderField } from '@/components/nodes/BasicNode/renderField'
+import { renderField } from '@/components/nodes/renderField'
 import AddFields from '@/components/nodes/BasicNode/AddFields'
 import { Container, DataContainer, ItemContainer } from './styles'
 import DetailDataField from './DetailDataField'
@@ -117,9 +115,9 @@ const Detail: React.FC<{
 					<Divider />
 					{edgesIn.map((e) => {
 						return (
-							<Button
+							<button
+								className="btn-secondary"
 								key={e.id}
-								type="secondary"
 								onClick={() =>
 									dispatch({
 										type: types.setNode,
@@ -128,7 +126,7 @@ const Detail: React.FC<{
 								}
 							>
 								{e.source}
-							</Button>
+							</button>
 						)
 					})}
 				</FlexColumn>
@@ -170,8 +168,8 @@ const Detail: React.FC<{
 						/>
 						{!lockID && (
 							<>
-								<Button
-									danger
+								<button
+									className="btn-alert"
 									onClick={() => {
 										const idCheck = getCount(
 											nodes,
@@ -199,9 +197,9 @@ const Detail: React.FC<{
 									}}
 								>
 									SAVE
-								</Button>
-								<Button
-									type="secondary"
+								</button>
+								<button
+									className="btn-secondary"
 									onClick={() => {
 										setID(id)
 										setIDError(false)
@@ -209,17 +207,16 @@ const Detail: React.FC<{
 									}}
 								>
 									CANCEL
-								</Button>
+								</button>
 							</>
 						)}
 						{lockID && (
-							<IconButton
-								background="black"
-								color="white"
-								radius="3px"
-								Icon={lockID ? UnlockIcon : LockIcon}
+							<button
+								className="btn-primary"
 								onClick={() => setLockID(!lockID)}
-							/>
+							>
+								{lockID ? <>{UnlockIcon}</> : <>{LockIcon}</>}
+							</button>
 						)}
 					</FlexRow>
 					<AddFields
@@ -264,9 +261,9 @@ const Detail: React.FC<{
 					Next:
 					{naturalOutgoingEdges.map((e) => {
 						return (
-							<Button
+							<button
+								className="btn-secondary"
 								key={e.id}
-								type="secondary"
 								onClick={() =>
 									dispatch({
 										type: types.setNode,
@@ -275,10 +272,11 @@ const Detail: React.FC<{
 								}
 							>
 								{e.target}
-							</Button>
+							</button>
 						)
 					})}
-					<Button
+					<button
+						className="btn-primary"
 						onClick={() => {
 							const newNode = new BasicNode(
 								'basic',
@@ -298,14 +296,14 @@ const Detail: React.FC<{
 						}}
 					>
 						Add Outgoing
-					</Button>
+					</button>
 					data:
 					<br />
 					{dataNodeEdges.map((e) => {
 						return (
-							<Button
+							<button
+								className="btn-secondary"
 								key={e.id}
-								type="secondary"
 								onClick={() =>
 									dispatch({
 										type: types.setNode,
@@ -314,7 +312,7 @@ const Detail: React.FC<{
 								}
 							>
 								{e.target}
-							</Button>
+							</button>
 						)
 					})}
 				</FlexColumn>

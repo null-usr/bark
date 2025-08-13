@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import { H1, H3 } from '@/components/Typography/headers'
 import ColorInput from '@/components/ColorInput'
@@ -87,10 +86,10 @@ const EditNode: React.FC<{
 							</div>
 						)}
 						<FlexRow>
-							<Button submitType="submit">Save</Button>
-							<Button type="subtle" onClick={cancel}>
+							<button className="btn-primary" type="submit">Save</button>
+							<button className="btn-alert" onClick={cancel}>
 								cancel
-							</Button>
+							</button>
 						</FlexRow>
 					</FlexColumn>
 				</Form>

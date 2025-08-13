@@ -15,11 +15,11 @@ import { Scene, Workspace } from '@/helpers/types'
 import CreateWorkspace from '@/components/forms/workspace/CreateWorkspace'
 import EditModal from '@/components/modal/EditModal'
 import EditWorkspace from '@/components/forms/workspace/EditWorkspace'
-import Button from '@/components/Button/Button'
 import SplashPage from '@/SplashPage'
 import { useNotificationManager } from '@/contexts/NotificationContext'
 import { HeaderContainer, LeftButtonGroup } from './styles'
 import { ToolbarButton } from './ToolbarButton'
+import { Paragraph } from '@/components/Typography/text'
 
 // create an input which we then call click upon
 function buildFileSelector() {
@@ -396,81 +396,97 @@ function Toolbar() {
 			{navigator.userAgent !== 'Electron' && (
 				<HeaderContainer>
 					<LeftButtonGroup style={{ gap: 0 }}>
+						<Paragraph
+							className="w-64 p-4"
+							style={{ marginRight: 16 }}
+							color="whtie"
+						>
+							Workspace:{' '}
+							{workspace.name ? workspace.name : '*NONE'}
+						</Paragraph>
 						<ToolbarButton label="Workspace">
-							<Button
-								type="subtle"
-								block
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={() => setFormMode('newWorkspace')}
 							>
 								New Workspace
-							</Button>
-							<Button
-								type="subtle"
-								block
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={handleFileSelect}
 							>
 								Open
-							</Button>
-							<Button
-								type="subtle"
-								block
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={() => setFormMode('edit')}
 							>
 								Edit Workspace
-							</Button>
-							<Button
-								type="subtle"
-								block
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={onSaveWorkspace}
 							>
 								Save Workspace
-							</Button>
-							<Button
-								type="subtle"
-								block
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={onWorkspaceExport}
 							>
 								Export Project
-							</Button>
+							</button>
 						</ToolbarButton>
 						<ToolbarButton label="Scene">
-							{/* <Button type="subtle" block onClick={onNew}>
+							{/* <button className="btn-primary w-full border-0"   onClick={onNew}>
 								New Scene
-							</Button> */}
-							<Button
-								type="subtle"
-								block
+							</button> */}
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={handleSceneFileSelect}
 							>
 								Load Scene
-							</Button>
-							<Button type="subtle" block onClick={onSceneSave}>
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
+								onClick={onSceneSave}
+							>
 								Save Scene
-							</Button>
-							<Button type="subtle" block onClick={onSceneExport}>
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
+								onClick={onSceneExport}
+							>
 								Export Scene
-							</Button>
+							</button>
 						</ToolbarButton>
 						<ToolbarButton label="Help">
-							<Button
-								type="subtle"
-								block
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={() => setShowUsage(true)}
 							>
 								Usage
-							</Button>
-							<Button
-								type="subtle"
-								block
+							</button>
+							<button
+								className="btn-primary w-full border-0"
+								style={{ borderRadius: 0 }}
 								onClick={() => setFormMode('about')}
 							>
 								About
-							</Button>
+							</button>
 						</ToolbarButton>
 					</LeftButtonGroup>
 					{/* don't really have anything for this atm */}
 					{/* <RightButtonGroup>
-					<button>Quit</button>
+					<button className="btn-primary w-full border-0">Quit</button>
 				</RightButtonGroup> */}
 				</HeaderContainer>
 			)}

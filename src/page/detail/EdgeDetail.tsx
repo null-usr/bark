@@ -10,7 +10,6 @@ import { StringField } from '@/components/FieldComponents/StringField'
 import { ButtonRow } from '@/helpers/styles'
 import { Field } from '@/helpers/types'
 import useStore from '@/store/store'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
 import { CustomField } from '@/components/FieldComponents/CustomField'
@@ -145,9 +144,9 @@ const Detail: React.FC<{
 					<Divider />
 					{incomingNodes.map((n) => {
 						return (
-							<Button
+							<button
+								className="btn-secondary"
 								key={n.id}
-								type="secondary"
 								onClick={() => {
 									dispatch({
 										type: types.setNode,
@@ -160,7 +159,7 @@ const Detail: React.FC<{
 								}}
 							>
 								{n.id}
-							</Button>
+							</button>
 						)
 					})}
 				</FlexColumn>
@@ -174,24 +173,24 @@ const Detail: React.FC<{
 						/>
 					</div>
 					<ButtonRow>
-						<Button
-							type="secondary"
+						<button
+							className="btn-secondary"
 							onClick={() => addField('string')}
 						>
 							Text
-						</Button>
-						<Button
-							type="secondary"
+						</button>
+						<button
+							className="btn-secondary"
 							onClick={() => addField('bool')}
 						>
 							Boolean
-						</Button>
-						<Button
-							type="secondary"
+						</button>
+						<button
+							className="btn-secondary"
 							onClick={() => addField('number')}
 						>
 							Number
-						</Button>
+						</button>
 					</ButtonRow>
 					<DataContainer>
 						{fields.map((field, index) => {
@@ -208,9 +207,9 @@ const Detail: React.FC<{
 					<Divider />
 					{outgoingNodes.map((n) => {
 						return (
-							<Button
+							<button
+								className="btn-secondary"
 								key={n.id}
-								type="secondary"
 								onClick={() => {
 									dispatch({
 										type: types.setNode,
@@ -223,7 +222,7 @@ const Detail: React.FC<{
 								}}
 							>
 								{n.id}
-							</Button>
+							</button>
 						)
 					})}
 				</FlexColumn>

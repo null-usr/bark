@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import Button from '@/components/Button/Button'
 import { FieldContainer } from './styles'
 
 export const NumberField: React.FC<{
@@ -36,13 +35,13 @@ export const NumberField: React.FC<{
 				}}
 			/>
 			{k !== key && (
-				<Button onClick={() => updateKey(index, key)}>
+				<button className="btn-primary" onClick={() => updateKey(index, key)}>
 					Update Key
-				</Button>
+				</button>
 			)}
-			<Button danger onClick={del ? () => del(k) : undefined}>
+			<button className="btn-alert" onClick={del ? () => del(k) : undefined}>
 				Delete
-			</Button>
+			</button>
 		</FieldContainer>
 	)
 }

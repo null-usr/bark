@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { Formik, Form, Field } from 'formik'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import Divider from '@/components/Divider'
 import { Paragraph } from '@/components/Typography/text'
@@ -139,15 +138,14 @@ const EditWorkspace: React.FC<{
 										</label>
 									</FlexRow>
 									<FlexRow>
-										<Button submitType="submit">
+										<button className="btn-primary" type="submit">
 											Create
-										</Button>
-										<Button
-											danger
+										</button>
+										<button className="btn-alert"
 											onClick={() => setIsCreating(false)}
 										>
 											Cancel
-										</Button>
+										</button>
 									</FlexRow>
 								</FlexColumn>
 							</Form>
@@ -155,12 +153,11 @@ const EditWorkspace: React.FC<{
 					</Formik>
 				) : (
 					<div style={{ alignSelf: 'center' }}>
-						<Button
-							type="secondary"
+						<button className="btn-secondary"
 							onClick={() => setIsCreating(true)}
 						>
 							Create Workspace Variable
-						</Button>
+						</button>
 					</div>
 				)}
 			</Container>

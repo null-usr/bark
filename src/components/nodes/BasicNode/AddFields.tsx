@@ -1,5 +1,4 @@
 import React from 'react'
-import Button from '@/components/Button/Button'
 import { ButtonRow } from '../styles'
 
 const AddFields: React.FC<{
@@ -8,28 +7,34 @@ const AddFields: React.FC<{
 }> = ({ addField, hasCustomVars }) => {
 	return (
 		<ButtonRow>
-			<Button type="secondary" onClick={() => addField('string')}>
+			<button
+				className="btn-secondary"
+				onClick={() => addField('string')}
+			>
 				String
-			</Button>
-			<Button type="secondary" onClick={() => addField('text')}>
+			</button>
+			<button className="btn-secondary" onClick={() => addField('text')}>
 				Text
-			</Button>
-			<Button type="secondary" onClick={() => addField('bool')}>
+			</button>
+			<button className="btn-secondary" onClick={() => addField('bool')}>
 				Boolean
-			</Button>
-			<Button type="secondary" onClick={() => addField('number')}>
+			</button>
+			<button
+				className="btn-secondary"
+				onClick={() => addField('number')}
+			>
 				Number
-			</Button>
-			<Button type="secondary" onClick={() => addField('data')}>
+			</button>
+			<button className="btn-secondary" onClick={() => addField('data')}>
 				data
-			</Button>
-			<Button
-				type="secondary"
+			</button>
+			<button
+				className="btn-secondary"
 				disabled={!hasCustomVars}
 				onClick={() => addField('custom')}
 			>
 				custom
-			</Button>
+			</button>
 		</ButtonRow>
 	)
 }

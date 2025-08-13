@@ -27,12 +27,12 @@ const DetailDataField: React.FC<{
 				onSubmit={() => updateFieldKey(index, newKey)}
 			/>
 			{newKey !== fieldKey && (
-				<Button onClick={() => updateFieldKey(index, newKey)}>
+				<button className="btn-primary" onClick={() => updateFieldKey(index, newKey)}>
 					Update Key
-				</Button>
+				</button>
 			)}
 			:
-			<Button
+			<button className="btn-primary"
 				onClick={() => {
 					const newNode = new BasicNode(
 						'basic',
@@ -57,8 +57,8 @@ const DetailDataField: React.FC<{
 				}}
 			>
 				Create
-			</Button>
-			<Button
+			</button>
+			<button className="btn-primary"
 				disabled={
 					edgesOut.filter((e) => e.sourceHandle === fieldKey)
 						.length === 0
@@ -75,7 +75,7 @@ const DetailDataField: React.FC<{
 				}}
 			>
 				Go
-			</Button>
+			</button>
 		</FlexRow>
 	)
 }

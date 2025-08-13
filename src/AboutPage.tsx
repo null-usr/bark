@@ -1,7 +1,7 @@
 import React from 'react'
 import './App.css'
 // overwrite default node stylings, see "Theming" on docs page
-import '@/helpers/style.css'
+// import '@/helpers/style.css'
 import { FlexColumn, Grid } from './components/styles'
 import { ImageContainer } from './components/ImageContainer'
 import { H1 } from './components/Typography/headers'
@@ -44,7 +44,7 @@ function App() {
 						<a href="https://reactflow.dev/">react flow</a>.
 					</Paragraph> */}
 					{/* <FlexRow style={{ justifyContent: 'center' }}>
-						<Button
+						<button className="btn-primary"
 							onClick={() =>
 								shell.openExternal(
 									'https://github.com/null-usr/bark/releases'
@@ -53,8 +53,8 @@ function App() {
 							type="secondary"
 						>
 							Offline Version
-						</Button>
-						<Button type="secondary">Bla bla</Button>
+						</button>
+						<button className="btn-primary" type="secondary">Bla bla</button>
 					</FlexRow> */}
 				</FlexColumn>
 			</Grid>

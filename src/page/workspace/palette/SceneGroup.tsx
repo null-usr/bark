@@ -2,7 +2,6 @@ import React from 'react'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { FlexColumn, FlexRow } from '@/components/styles'
-import IconButton from '@/components/Button/IconButton'
 import { Paragraph } from '@/components/Typography/text'
 import NotepadIcon from '@/components/Icons/Notepad'
 import CloseIcon from '@/components/Icons/Close'
@@ -25,6 +24,11 @@ const SceneGroup: React.FC<{
 				{data.map((s) => {
 					return (
 						<SceneContainer
+							className={`${
+								activeScene
+									? 'text-dark bg-white hover:bg-gray-300'
+									: 'text-white bg-dark'
+							}`}
 							key={s}
 							onClick={
 								s === activeScene
@@ -38,20 +42,17 @@ const SceneGroup: React.FC<{
 							}
 							active={activeScene === s}
 						>
-							<Paragraph
+							<p
+								className="font-semibold"
 								color="white"
 								style={{ flex: 1, textAlign: 'center' }}
 							>
 								{s}
-							</Paragraph>
+							</p>
 							{activeScene !== s && (
 								<FlexRow style={{ alignItems: 'center' }}>
-									<IconButton
-										background="black"
-										color="white"
-										radius="3px"
-										width={32}
-										Icon={NotepadIcon}
+									<button
+										className="btn-primary  "
 										onClick={
 											activeScene === s
 												? undefined
@@ -62,13 +63,11 @@ const SceneGroup: React.FC<{
 														)
 												  }
 										}
-									/>
-									<IconButton
-										Icon={CloseIcon}
-										background="black"
-										color="white"
-										radius="3px"
-										width={32}
+									>
+										<NotepadIcon />
+									</button>
+									<button
+										className="btn-primary  "
 										onClick={
 											activeScene === s
 												? undefined
@@ -79,7 +78,9 @@ const SceneGroup: React.FC<{
 														)
 												  }
 										}
-									/>
+									>
+										<CloseIcon />
+									</button>
 								</FlexRow>
 							)}
 						</SceneContainer>

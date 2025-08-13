@@ -2,7 +2,6 @@ import React from 'react'
 import { Schema } from '@/helpers/types'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import { H4 } from '@/components/Typography/headers'
-import Button from '@/components/Button/Button'
 import PaletteItem from './PaletteItem'
 
 const NodeGroup: React.FC<{
@@ -16,41 +15,20 @@ const NodeGroup: React.FC<{
 		<FlexColumn
 			style={{
 				minHeight: 0,
-				gap: 0,
+				gap: 16,
 			}}
 		>
-			<FlexRow style={{ gap: 0 }}>
-				<H4
-					style={{
-						margin: 0,
-						padding: '8px 8px 0px 8px',
-						borderLeft: '1px solid white',
-						borderTop: '1px solid white',
-						borderRight: '1px solid white',
-					}}
-					color="white"
-				>
-					{title}
-				</H4>
-				<div style={{ flex: 1, borderBottom: '1px solid white' }} />
-			</FlexRow>
-			<div
-				style={{
-					minHeight: 0,
-					padding: '16px 8px',
-					overflowY: 'auto',
-					overflowX: 'hidden',
-					borderLeft: '1px solid white',
-					borderBottom: '1px solid white',
-					borderRight: '1px solid white',
-				}}
-			>
+			<H4 color="white">{title}</H4>
+			<div>
 				<FlexColumn>
 					{!data ||
 						(data.length === 0 && (
-							<Button type="secondary" onClick={onCreate}>
-								Create Node
-							</Button>
+							<button
+								className="btn-secondary"
+								onClick={onCreate}
+							>
+								+ Create Node
+							</button>
 						))}
 					{data &&
 						data.length > 0 &&

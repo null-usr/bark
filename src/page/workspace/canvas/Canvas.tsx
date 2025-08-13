@@ -11,24 +11,22 @@ import {
 	NodeChange,
 	EdgeChange,
 } from 'reactflow'
-import { DataEdge } from '@/helpers/classes/DataEdge'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
-import { decodeSchema } from '@/helpers/serialization/decodeSchema'
 import { ControlsStyled, MiniMapStyled, ReactFlowStyled } from '@/helpers/theme'
 import { NodeTypes, EdgeTypes, Schema } from '@/helpers/types'
-import Button from '@/components/Button/Button'
 import { ContextMenu } from '@/components/ContextMenu/ContextMenu'
 import { splitEdge } from '@/helpers/edgeHelpers'
-import { BasicNode } from '@/helpers/classes/BasicNode'
 import useIsTabActive from '@/helpers/hooks/useIsTabActive'
 import BasicNodeDetail from '../../detail/BasicNodeDetail'
 import EdgeDetail from '../../detail/EdgeDetail'
 import { CanvasContainer } from './styles'
 import { BottomBar } from '../styles'
 import SaveModal from './SaveModal'
+import { useCanvasHandlers } from '../../../helpers/canvasHandlers/canvasHandlers'
+import { useContextMenuHandlers } from '../../../helpers/canvasHandlers/contextMenuHandlers'
 
-const Canvas: React.FC<{
+type Props = {
 	schema?: Schema | null
 	nodes: Node<any>[]
 	edges: Edge<any>[]
@@ -39,7 +37,9 @@ const Canvas: React.FC<{
 	setEdges: (edges: Edge<any>[]) => void
 	setNodes: (nodes: Node<any>[]) => void
 	mode?: string
-}> = ({
+}
+
+const Canvas: React.FC<Props> = ({
 	schema,
 	nodes,
 	edges,
@@ -68,7 +68,6 @@ const Canvas: React.FC<{
 	const [hoveredEdge, setHoveredEdge] = useState<Edge | null>(null)
 
 	const [contextMenuData, setContextMenuData] = useState<any>(null)
-	const contextMenuRef = useRef(null)
 
 	const reactFlowInstance = useReactFlow()
 	const reactFlowWrapper = useRef<any>(null)
@@ -83,10 +82,6 @@ const Canvas: React.FC<{
 
 	const dispatch = useStore((store) => store.dispatch)
 
-	useEffect(() => {
-		fitView()
-	}, [activeScene])
-
 	// ================= CONNECTION BEHAVIOR ================================
 
 	// useState gives us an old refernce inside of the useCallback
@@ -95,6 +90,41 @@ const Canvas: React.FC<{
 	const [connectionAttempt, setConnectionAttempt] =
 		useState<OnConnectStartParams | null>(null)
 	const connection = useRef(connectionAttempt)
+
+	// Close the context menu if it's open whenever the window is clicked.
+	const onPaneClick = useCallback(() => {
+		setSelectedNodes([])
+		setContextMenuData(null)
+	}, [setContextMenuData, setSelectedNodes])
+
+	function closeModal() {
+		dispatch({ type: types.setSaveNodes, data: null })
+		onPaneClick()
+	}
+
+	const {
+		onCustomConnect,
+		onConnectStart,
+		onConnectEnd,
+		onDragOver,
+		onDrop,
+	} = useCanvasHandlers({
+		onConnect,
+		addNode,
+		reactFlowInstance,
+		connectionAttemptRef: connection,
+		setConnectionAttempt,
+		reactFlowWrapperRef: reactFlowWrapper,
+		nodes,
+		edges,
+	})
+
+	const {
+		contextMenuRef,
+		onNodeContextMenu,
+		onSelectionContextMenu,
+		onPaneCanvasContextMenu,
+	} = useContextMenuHandlers({ setContextMenuData, setSelectedNodes })
 
 	useEffect(() => {
 		connection.current = connectionAttempt
@@ -109,201 +139,9 @@ const Canvas: React.FC<{
 		}
 	}, [tabActive])
 
-	const onCustomConnect = useCallback(
-		(params: Connection) => {
-			setConnectionAttempt(null)
-			if (params.sourceHandle) {
-				const edge: Edge = new DataEdge(
-					params.source!,
-					params.target!,
-					connection.current!.handleId,
-					null
-				)
-				onConnect(edge)
-			} else {
-				onConnect({ ...params, type: 'step' })
-			}
-		},
-		[reactFlowInstance, connectionAttempt, edges]
-	)
-
-	const onConnectStart = useCallback(
-		(
-			event: React.MouseEvent<Element, MouseEvent>,
-			params: OnConnectStartParams
-		) => {
-			if (event.button !== 2) {
-				setConnectionAttempt(params)
-			}
-		},
-		[connectionAttempt]
-	)
-
-	// we've dragged a handle into an empty spot
-	const onConnectEnd = useCallback(
-		(event: React.MouseEvent<Element, MouseEvent>) => {
-			if (!connection.current) {
-				return
-			}
-
-			event.preventDefault()
-
-			const reactFlowBounds =
-				reactFlowWrapper.current.getBoundingClientRect()
-			const position = reactFlowInstance.screenToFlowPosition({
-				x: event.clientX - reactFlowBounds.left,
-				y: event.clientY - reactFlowBounds.top,
-			})
-			const newNode = new BasicNode('BASE', position.x, position.y)
-
-			let edge: Edge
-
-			if (connection.current.handleType === 'source') {
-				edge = new DataEdge(
-					connection.current!.nodeId!,
-					newNode.id,
-					connection.current!.handleId,
-					null
-				)
-			} else {
-				edge = new DataEdge(
-					newNode.id,
-					connection.current!.nodeId!,
-					null,
-					null
-				)
-			}
-
-			addNode(newNode)
-			// setEdges((els: any) => addEdge(edge, els))
-			onConnect(edge)
-			setConnectionAttempt(null)
-		},
-		[reactFlowInstance, connectionAttempt, nodes, edges]
-	)
-
-	// ====================== DRAG & DROP BEHAVIOUR ===========================
-	const onDragOver = useCallback(
-		(event: {
-			preventDefault: () => void
-			dataTransfer: { dropEffect: string }
-		}) => {
-			event.preventDefault()
-			event.dataTransfer.dropEffect = 'move'
-		},
-		[]
-	)
-
-	const onDrop = useCallback(
-		(event: {
-			preventDefault: () => void
-			dataTransfer: { getData: (arg0: string) => any }
-			clientX: number
-			clientY: number
-		}) => {
-			event.preventDefault()
-
-			const reactFlowBounds =
-				reactFlowWrapper.current.getBoundingClientRect()
-
-			const data = event.dataTransfer.getData('application/reactflow')
-
-			const paletteItem = JSON.parse(data)
-
-			const position = reactFlowInstance.screenToFlowPosition({
-				x: event.clientX - reactFlowBounds.left,
-				y: event.clientY - reactFlowBounds.top,
-			})
-
-			const { newNodes, newEdges } = decodeSchema(position, paletteItem)
-
-			newNodes.forEach((n) => addNode(n))
-			newEdges.forEach((e) => onConnect(e))
-
-			// addNode(newNode)
-		},
-		[reactFlowInstance, nodes]
-	)
-
-	const onNodeContextMenu = useCallback(
-		(event, n) => {
-			// Prevent native context menu from showing
-			event.preventDefault()
-
-			// Calculate position of the context menu. We want to make sure it
-			// doesn't get positioned off-screen.
-			// @ts-ignore
-			const pane = contextMenuRef.current!.getBoundingClientRect()
-			setContextMenuData({
-				contextNodes: [n],
-				x: n.position.x + 30,
-				y: n.position.y + 30,
-				top:
-					event.clientY + 200 < pane.height
-						? event.clientY
-						: event.clientY - 200,
-				left:
-					event.clientX + 200 < pane.width
-						? event.clientX
-						: event.clientX - 200,
-			})
-		},
-		[setContextMenuData]
-	)
-
-	const onSelectionContextMenu = useCallback(
-		(event, nds) => {
-			// Prevent native context menu from showing
-			event.preventDefault()
-
-			// Calculate position of the context menu. We want to make sure it
-			// doesn't get positioned off-screen.
-			// @ts-ignore
-			const pane = contextMenuRef.current!.getBoundingClientRect()
-
-			setContextMenuData({
-				x: nds[0].position.x + 100,
-				y: nds[0].position.y + 100,
-				// @ts-ignore
-				contextNodes: nds,
-				top: event.clientY + 200 < pane.height && event.clientY,
-				left: event.clientX + 200 < pane.width && event.clientX,
-				right:
-					event.clientX + 200 >= pane.width &&
-					pane.width - event.clientX,
-				bottom:
-					event.clientY + 200 >= pane.height &&
-					pane.height - event.clientY,
-			})
-		},
-		[setContextMenuData, setSelectedNodes]
-	)
-
-	const onPaneCanvasContextMenu = useCallback(
-		(event) => {
-			// Prevent native context menu from showing
-			event.preventDefault()
-
-			// Calculate position of the context menu. We want to make sure it
-			// doesn't get positioned off-screen.
-			// @ts-ignore
-			const pane = contextMenuRef.current!.getBoundingClientRect()
-
-			setContextMenuData(null)
-		},
-		[setContextMenuData]
-	)
-
-	// Close the context menu if it's open whenever the window is clicked.
-	const onPaneClick = useCallback(() => {
-		setSelectedNodes([])
-		setContextMenuData(null)
-	}, [setContextMenuData, setSelectedNodes])
-
-	function closeModal() {
-		dispatch({ type: types.setSaveNodes, data: null })
-		onPaneClick()
-	}
+	useEffect(() => {
+		fitView()
+	}, [activeScene])
 
 	return (
 		<CanvasContainer>
@@ -346,8 +184,6 @@ const Canvas: React.FC<{
 				{/* @ts-ignore */}
 				<ReactFlowStyled
 					ref={contextMenuRef}
-					// panOnDrag={false}
-					// selectionOnDrag
 					nodes={nodes}
 					edges={edges}
 					edgeTypes={EdgeTypes}
@@ -373,7 +209,6 @@ const Canvas: React.FC<{
 						) {
 							return
 						}
-
 						const newEdges = splitEdge(hoveredEdge, nd)
 						onConnect(newEdges[0])
 						onConnect(newEdges[1])
@@ -389,14 +224,9 @@ const Canvas: React.FC<{
 						setHoveredEdge(null)
 						onEdgesChange(eds)
 					}}
-					// drag currently doesn't do the callback when a group is dragged
-					// onNodeDragStart={(e, n, nds) => {}}
-					// onNodeDragStop={(e, n, nds) => {}}
-					// onConnect={onConnect}
 					onConnect={onCustomConnect}
 					onConnectStart={onConnectStart}
 					onConnectEnd={onConnectEnd}
-					// onInit={onInit}
 					onDragOver={onDragOver}
 					onDrop={onDrop}
 					deleteKeyCode="Delete"
@@ -404,7 +234,7 @@ const Canvas: React.FC<{
 					snapToGrid
 					snapGrid={[15, 15]}
 					style={{ height: '100%', width: '100%', zIndex: 0 }}
-					edgeUpdaterRadius={10} // maybe increase when dragging
+					edgeUpdaterRadius={10}
 					elevateEdgesOnSelect
 					fitView
 					// onEdgeContextMenu={}
@@ -427,15 +257,10 @@ const Canvas: React.FC<{
 					<MiniMapStyled
 						nodeStrokeColor={(n) => {
 							if (n.data.color) return n.data.color
-
 							return '#1a192b'
 						}}
 						nodeColor={(n) => {
-							// if (n.style?.background)
-							// 	return n.style.background as string
-
 							if (n.data.color) return n.data.color
-
 							return '#fff'
 						}}
 						nodeBorderRadius={2}
@@ -446,15 +271,15 @@ const Canvas: React.FC<{
 					<Background
 						color="#c0adf030"
 						gap={16}
-						size={3}
-						variant={BackgroundVariant.Cross}
+						size={2}
+						variant={BackgroundVariant.Dots}
 					/>
 				</ReactFlowStyled>
 			</div>
 			<BottomBar>
 				{(showSGButton || mode === 'customize') && (
-					<Button
-						type="secondary"
+					<button
+						className="btn-secondary"
 						onClick={() => {
 							dispatch({
 								type: types.setSaveNodes,
@@ -466,11 +291,11 @@ const Canvas: React.FC<{
 						}}
 					>
 						Save Group
-					</Button>
+					</button>
 				)}
 				{mode === 'customize' && (
-					<Button
-						danger
+					<button
+						className="btn-alert"
 						onClick={() => {
 							setNodes([])
 							setEdges([])
@@ -481,7 +306,7 @@ const Canvas: React.FC<{
 						}}
 					>
 						Exit
-					</Button>
+					</button>
 				)}
 			</BottomBar>
 			{editNodeID && (

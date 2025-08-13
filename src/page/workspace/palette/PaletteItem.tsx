@@ -5,7 +5,6 @@ import DeleteNode from '@/components/forms/node/DeleteNode'
 import EditModal from '@/components/modal/EditModal'
 import { FlexRow } from '@/components/styles'
 import { Paragraph } from '@/components/Typography/text'
-import IconButton from '@/components/Button/IconButton'
 import NotepadIcon from '@/components/Icons/Notepad'
 import CloseIcon from '@/components/Icons/Close'
 import { NodeContainer } from './styles'
@@ -72,6 +71,7 @@ const PaletteItem: React.FC<{
 				</EditModal>
 			)}
 			<NodeContainer
+				className="bg-dark"
 				color={color}
 				active={false}
 				draggable="true"
@@ -103,21 +103,15 @@ const PaletteItem: React.FC<{
 						padding: 8,
 						boxSizing: 'border-box',
 						alignItems: 'center',
-						justifyContent: 'space-between',
+						justifyContent: 'center',
 						width: '100%',
 					}}
 				>
-					<Paragraph
-						color="white"
-						style={{ flex: 1, textAlign: 'center' }}
-					>
-						{displayName}
-					</Paragraph>
+					<p className="font-semibold text-center">{displayName}</p>
 					{modable && (
 						<FlexRow style={{ alignItems: 'center' }}>
-							<IconButton
-								color="white"
-								Icon={NotepadIcon}
+							<button
+								className="btn-primary"
 								onClick={() => {
 									dispatch({
 										type: types.customizeSchema,
@@ -127,12 +121,15 @@ const PaletteItem: React.FC<{
 										},
 									})
 								}}
-							/>
-							<IconButton
-								color="white"
-								Icon={CloseIcon}
+							>
+								<NotepadIcon />
+							</button>
+							<button
+								className="btn-primary"
 								onClick={() => setFormMode('delete')}
-							/>
+							>
+								<CloseIcon />
+							</button>
 						</FlexRow>
 					)}
 				</FlexRow>

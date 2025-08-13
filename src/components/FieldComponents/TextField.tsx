@@ -3,7 +3,6 @@
 */
 
 import React, { useEffect, useState } from 'react'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '../styles'
 
 export const TextField: React.FC<{
@@ -39,17 +38,17 @@ export const TextField: React.FC<{
 				/>
 				{k !== key && (
 					<>
-						<Button onClick={() => updateKey(index, key)}>
+						<button className="btn-primary" onClick={() => updateKey(index, key)}>
 							Update Key
-						</Button>
-						<Button type="secondary" onClick={() => setKey(k)}>
+						</button>
+						<button className="btn-secondary" onClick={() => setKey(k)}>
 							Cancel
-						</Button>
+						</button>
 					</>
 				)}
-				<Button danger onClick={() => del(k)}>
+				<button className="btn-alert" onClick={() => del(k)}>
 					Delete
-				</Button>
+				</button>
 			</FlexRow>
 			<textarea
 				value={v}

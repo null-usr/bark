@@ -37,7 +37,6 @@ export const ControlsStyled = styled(Controls)`
 export const Node = styled.div<{ selected?: boolean; dragging?: boolean }>`
 	${({ dragging }) => dragging && 'pointer-events: none;'}
 	border-radius: 2px;
-	background: ${(props) => props.theme.nodeBg};
 	color: ${(props) => props.theme.nodeColor};
 
 	width: 100%;

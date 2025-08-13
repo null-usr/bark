@@ -1,7 +1,5 @@
 /* eslint-disable max-len */
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import Button from '@/components/Button/Button'
-import IconButton from '@/components/Button/IconButton'
 import Divider from '@/components/Divider'
 import ChevronDownIcon from '@/components/Icons/ChevronDown'
 import ChevronUpIcon from '@/components/Icons/ChevronUp'
@@ -36,23 +34,23 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 						Are you sure you want to delete {name}?
 					</H3>
 					<FlexRow style={{ justifyContent: 'center', gap: 32 }}>
-						<Button
+						<button
+							className="btn-alert"
 							onClick={() =>
 								dispatch({
 									type: types.deleteWorkspaceVariable,
 									data: name,
 								})
 							}
-							danger
 						>
 							Yes
-						</Button>
-						<Button
+						</button>
+						<button
+							className="btn-secondary"
 							onClick={() => setDeleting(false)}
-							type="secondary"
 						>
 							No
-						</Button>
+						</button>
 					</FlexRow>
 				</>
 			) : (
@@ -67,18 +65,23 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 							</Paragraph>
 						</FlexRow>
 						<FlexRow style={{ gap: 16 }}>
-							<IconButton
-								Icon={
-									expanded ? ChevronUpIcon : ChevronDownIcon
-								}
-								background="black"
+							<button
 								color="white"
-								hover="gray"
+								className="btn-primary"
 								onClick={() => setExpanded(!expanded)}
-							/>
-							<Button danger onClick={() => setDeleting(true)}>
+							>
+								{expanded ? (
+									<>{ChevronUpIcon}</>
+								) : (
+									<>{ChevronDownIcon}</>
+								)}
+							</button>
+							<button
+								className="btn-alert"
+								onClick={() => setDeleting(true)}
+							>
 								Delete
-							</Button>
+							</button>
 						</FlexRow>
 					</FlexRow>
 					{expanded && (
@@ -90,9 +93,8 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 								>
 									<Paragraph color="white">{o}</Paragraph>
 
-									<Button
-										type="secondary"
-										danger
+									<button
+										className="btn-alert"
 										onClick={() =>
 											dispatch({
 												type: types.editWorkspaceVariable,
@@ -112,7 +114,7 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 										}
 									>
 										delete option
-									</Button>
+									</button>
 								</FlexRow>
 							))}
 							<Divider style={{ marginTop: 8 }} />
@@ -189,12 +191,12 @@ const WorkspaceVariable: React.FC<{ name: string }> = ({ name }) => {
 													{errors.option}
 												</div>
 											) : null}
-											<Button
-												type="secondary"
-												submitType="submit"
+											<button
+												className="btn-secondary"
+												type="submit"
 											>
 												Add Option
-											</Button>
+											</button>
 										</FlexRow>
 									</Form>
 								)}

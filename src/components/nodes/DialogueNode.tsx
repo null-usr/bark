@@ -109,11 +109,11 @@ export default ({
 			/>
 			<h2>{data.characterName}</h2>
 			<p>{data.dialogue}</p>
-			<Button
+			<button className="btn-primary"
 				onClick={() => dispatch({ type: types.setNode, data: data.id })}
 			>
 				Edit
-			</Button>
+			</button>
 			<Handle
 				type="source"
 				position={sourcePosition}

@@ -51,7 +51,7 @@ export default ({
 	id: string
 	label: string
 }>) => {
-	const nodeRef: any = useRef()
+	const nodeRef: any = useRef(null)
 	const reactFlowInstance = useReactFlow()
 	const updateHandles = useStore((state) => state.updateNodeHandles)
 
@@ -170,7 +170,7 @@ export default ({
 	)
 
 	return (
-		<Node selected={selected} style={{ padding: 8 }}>
+		<Node selected={selected} style={{ padding: 8, position: 'relative' }}>
 			<div
 				style={{
 					minHeight:
@@ -204,28 +204,28 @@ export default ({
 								flexDirection: 'column',
 							}}
 						>
-							{/* <ButtonGroup
+							{/* <button className="btn-primary"Group
 							orientation="vertical"
 							aria-label="vertical outlined button group"
 							size="small"
 						> */}
 							<button
-								className="nodrag"
+								className="btn-primary nodrag"
 								key="targetMore"
 								onClick={() => add('T')}
 							>
 								+
 							</button>
 							<button
-								className="nodrag"
+								className="btn-primary nodrag"
 								key="targetLess"
 								onClick={() => remove('T', -1)}
 							>
 								-
 							</button>
-							{/* <Button key="targetMore" onClick={() => add('T')}>
+							{/* <button className="btn-primary" key="targetMore" onClick={() => add('T')}>
 								+
-							</Button> */}
+							</button> */}
 						</div>
 						{/* </ButtonGroup> */}
 					</div>
@@ -241,28 +241,28 @@ export default ({
 								flexDirection: 'column',
 							}}
 						>
-							{/* <ButtonGroup
+							{/* <button className="btn-primary"Group
 							orientation="vertical"
 							aria-label="vertical outlined button group"
 							size="small"
 						> */}
 							<button
-								className="nodrag"
+								className="btn-primary nodrag"
 								key="sourceMore"
 								onClick={() => add('S')}
 							>
 								+
 							</button>
 							<button
-								className="nodrag"
+								className="btn-primary nodrag"
 								key="sourceLess"
 								onClick={() => remove('S', -1)}
 							>
 								-
 							</button>
-							{/* <Button key="targetMore" onClick={() => add('T')}>
+							{/* <button className="btn-primary" key="targetMore" onClick={() => add('T')}>
 								+
-							</Button> */}
+							</button> */}
 						</div>
 						{/* </ButtonGroup> */}
 					</div>

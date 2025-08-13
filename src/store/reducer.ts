@@ -20,6 +20,7 @@ export const types = {
 	deleteNode: 'DELETE_NODE',
 	setNodes: 'SET_NODES',
 	setSaveNodes: 'SET_SAVE_NODES',
+	updateNodeFields: 'UPDATE_NODE_FIELDS',
 
 	customizeSchema: 'CUSTOMIZE',
 
@@ -166,6 +167,17 @@ export const reducer = (
 
 		case types.setSaveNodes:
 			return { saveNodes: data }
+
+		case types.updateNodeFields:
+			const { id, fields } = data
+			const n = state.nodes.map((n) => {
+				if (n.id === id) {
+					n.data.fields = fields
+				}
+			})
+			return {
+				nodes: n,
+			}
 
 		case types.addEdge: {
 			return { edges: state.edges.concat(data) }

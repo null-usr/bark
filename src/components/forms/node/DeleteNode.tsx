@@ -17,10 +17,10 @@ const DeleteNode: React.FC<{
 				Are you sure you want to delete {name}?
 			</Paragraph>
 			<FlexRow style={{ justifyContent: 'center' }}>
-				<Button danger onClick={submit}>
+				<button className="btn-primary" danger onClick={submit}>
 					Delete
-				</Button>
-				<Button onClick={cancel}>cancel</Button>
+				</button>
+				<button className="btn-primary" onClick={cancel}>cancel</button>
 			</FlexRow>
 		</FlexColumn>
 	)

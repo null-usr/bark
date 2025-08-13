@@ -4,7 +4,7 @@ import BasicNodeType from '@/components/nodes/BasicNode/BasicNode'
 import ColorChooserNode from '@/components/nodes/ColorChooserNode'
 import RootNodeType from '@/components/nodes/RootNode'
 import SourceNodeType from '@/components/nodes/SourceNode'
-import DefaultNodeType from '@/components/nodes/DefaultNode'
+import BaseNodeType from '@/components/nodes/BaseNode'
 import DataEdgeType from '@/components/edges/DataEdge'
 
 type TypeChecker<T> = (obj: any) => obj is T
@@ -39,7 +39,7 @@ export const NodeTypes = {
 	base: BasicNodeType,
 	root: RootNodeType,
 	source: SourceNodeType,
-	default: DefaultNodeType,
+	default: BaseNodeType,
 	dialogue: DialogueNodeType,
 	colorChooser: ColorChooserNode,
 }

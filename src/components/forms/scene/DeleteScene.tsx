@@ -14,12 +14,12 @@ const DeleteScene: React.FC<{
 		<FlexColumn>
 			<p>Are you sure you want to delete {name}?</p>
 			<FlexRow>
-				<Button danger onClick={submit}>
+				<button className="btn-primary" danger onClick={submit}>
 					Delete
-				</Button>
-				<Button type="subtle" onClick={cancel}>
+				</button>
+				<button className="btn-primary" type="subtle" onClick={cancel}>
 					cancel
-				</Button>
+				</button>
 			</FlexRow>
 		</FlexColumn>
 	)

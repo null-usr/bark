@@ -5,7 +5,7 @@ import 'reactflow/dist/style.css'
 import Page from './page/Page'
 import './App.css'
 // overwrite default node stylings, see "Theming" on docs page
-import '@/helpers/style.css'
+// import '@/helpers/style.css'
 import { AppContainer } from './styles'
 import useStore from './store/store'
 import { NotificationManager } from './contexts/NotificationContext'

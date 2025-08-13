@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { FlexColumn, FlexRow, Grid } from './components/styles'
 import { ImageContainer } from './components/ImageContainer'
 import { H1 } from './components/Typography/headers'
-import Button from './components/Button/Button'
 import { Paragraph } from './components/Typography/text'
 import Modal from './components/modal/Modal'
 
@@ -108,12 +107,12 @@ const UsagePage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 							</FlexColumn>
 							<FlexColumn style={{ justifyContent: 'center' }}>
 								<div>
-									<Button
-										type="secondary"
+									<button
+										className="btn-secondary"
 										onClick={() => setPage(1)}
 									>
 										Details on Usage in a Project
-									</Button>
+									</button>
 								</div>
 							</FlexColumn>
 						</FlexColumn>
@@ -191,18 +190,20 @@ const UsagePage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 						</Paragraph>
 						<FlexColumn style={{ alignItems: 'center' }}>
 							<div style={{ width: 100 }}>
-								<Button
-									block
-									type="secondary"
+								<button
+									className="btn-secondary w-full"
 									onClick={() => setPage(0)}
 								>
 									Back
-								</Button>
+								</button>
 							</div>
 							<div style={{ width: 100 }}>
-								<Button block onClick={() => setPage(2)}>
+								<button
+									className="btn-primary w-full"
+									onClick={() => setPage(2)}
+								>
 									Next
-								</Button>
+								</button>
 							</div>
 						</FlexColumn>
 					</FlexColumn>
@@ -227,18 +228,20 @@ const UsagePage: React.FC<{ onClose: () => void }> = ({ onClose }) => {
 							</Paragraph>
 							<FlexColumn style={{ alignItems: 'center' }}>
 								<div style={{ width: 100 }}>
-									<Button
-										block
-										type="secondary"
+									<button
+										className="btn-secondary w-full"
 										onClick={() => setPage(1)}
 									>
 										Back
-									</Button>
+									</button>
 								</div>
 								<div style={{ width: 100 }}>
-									<Button block onClick={onClose}>
+									<button
+										className="btn-primary w-full"
+										onClick={onClose}
+									>
 										Close
-									</Button>
+									</button>
 								</div>
 							</FlexColumn>
 						</FlexColumn>

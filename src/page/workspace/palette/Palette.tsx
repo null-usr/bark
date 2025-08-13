@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Paragraph } from '@/components/Typography/text'
 import { FlexColumn } from '@/components/styles'
-import Button from '@/components/Button/Button'
 import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import NodeGroup from './NodeGroup'
@@ -31,10 +30,7 @@ const Palette: React.FC<{
 		})
 	}
 	return (
-		<PaletteContainer>
-			<Paragraph style={{ padding: '8px 0px' }} color="whtie">
-				Workspace: {workspace.name ? workspace.name : 'NONE'}
-			</Paragraph>
+		<PaletteContainer className="w-64 bg-gray-800 text-gray-200 flex flex-col">
 			<div style={{ marginBottom: 16 }}>
 				<TabLink
 					active={paletteMode === 'nodes'}
@@ -58,8 +54,8 @@ const Palette: React.FC<{
 								You can drag these nodes to the pane on the
 								right.
 							</div>
-							<Button
-								type="secondary"
+							<button
+								className="btn-secondary mb-4"
 								onClick={() => {
 									dispatch({
 										type: types.customizeSchema,
@@ -71,8 +67,8 @@ const Palette: React.FC<{
 								}}
 								// block
 							>
-								Create Node
-							</Button>
+								+ New Node
+							</button>
 							<NodeGroup
 								onCreate={() => {
 									dispatch({
@@ -105,12 +101,12 @@ const Palette: React.FC<{
 					)}
 					{paletteMode === 'scenes' && (
 						<>
-							<Button
-								type="secondary"
+							<button
+								className="btn-secondary mb-4"
 								onClick={() => setFormMode('createScene')}
 							>
-								New Scene
-							</Button>
+								+ New Scene
+							</button>
 							<SceneGroup
 								data={workspaceScenes}
 								activeScene={activeScene}

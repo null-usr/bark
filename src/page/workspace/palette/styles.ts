@@ -41,7 +41,7 @@ export const TabLink = styled.button<{
 	border: none;
 	outline: none;
 	cursor: pointer;
-	padding: 14px 16px;
+	padding: 7px;
 	font-size: 17px;
 	width: 50%;
 
@@ -63,8 +63,6 @@ export const SceneContainer = styled.div<{ active?: boolean }>`
 
 	cursor: pointer;
 
-	background-color: ${(props) => props.theme.nodeBg};
-
 	height: 50px;
 	border-radius: 3px;
 	border: 1px solid
@@ -79,7 +77,6 @@ export const NodeContainer = styled.div<{ color?: string; active?: boolean }>`
 
 	cursor: pointer;
 
-	background-color: ${({ ...props }) => props.theme.nodeBg};
 	/* background-color: white; */
 
 	min-height: 50px;

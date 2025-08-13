@@ -18,6 +18,7 @@ export const HeaderContainer = styled.div<{
 export const LeftButtonGroup = styled.div<{}>`
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 	gap: 10px;
 
 	* {

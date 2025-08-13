@@ -11,7 +11,6 @@ import useStore from '@/store/store'
 import { types } from '@/store/reducer'
 import { splitEdge } from '@/helpers/edgeHelpers'
 import { decodeSchema } from '@/helpers/serialization/decodeSchema'
-import IconButton from '../Button/IconButton'
 import CloseIcon from '../Icons/Close'
 import NotepadIcon from '../Icons/Notepad'
 import { FlexColumn } from '../styles'
@@ -143,53 +142,41 @@ export const DataEdge: FC<EdgeProps> = ({
 				>
 					{collapsed ? (
 						<>
-							<IconButton
-								background="black"
-								color="white"
-								Icon={ChevronDownIcon}
-								width={32}
+							<button
+								className="btn-primary  "
 								onClick={() => {
 									setCollapsed(false)
 								}}
-							/>
+							>
+								<ChevronDownIcon />
+							</button>
 						</>
 					) : (
 						<>
 							<FlexColumn>
-								<IconButton
-									Icon={ChevronUpIcon}
-									background="black"
-									color="white"
-									width={32}
-									onClick={() => {
-										setCollapsed(true)
-									}}
-								/>
-								<IconButton
-									background="black"
-									radius="3px"
-									color="white"
-									Icon={NotepadIcon}
+								<button
+									className="btn-primary  "
 									onClick={(event) =>
 										dispatch({
 											type: types.setEdge,
 											data: id,
 										})
 									}
-								/>
+								>
+									<NotepadIcon />
+								</button>
 								{/* {sourceHandleId} */}
-								<IconButton
-									background="black"
-									radius="3px"
-									color="white"
-									Icon={CloseIcon}
+								<button
+									className="btn-primary  "
 									onClick={(event) =>
 										dispatch({
 											type: types.deleteEdge,
 											data: id,
 										})
 									}
-								/>
+								>
+									<CloseIcon />
+								</button>
 							</FlexColumn>
 						</>
 					)}

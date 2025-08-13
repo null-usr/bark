@@ -1,7 +1,7 @@
 import React from 'react'
 import './App.css'
 // overwrite default node stylings, see "Theming" on docs page
-import '@/helpers/style.css'
+// import '@/helpers/style.css'
 import { FlexColumn, Grid } from './components/styles'
 import { ImageContainer } from './components/ImageContainer'
 import { H1 } from './components/Typography/headers'

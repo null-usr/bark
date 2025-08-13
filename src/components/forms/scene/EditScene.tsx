@@ -43,10 +43,10 @@ const EditScene: React.FC<{
 						{errors.name ? <div>{errors.name}</div> : null}
 
 						<FlexRow>
-							<Button submitType="submit">Save</Button>
-							<Button type="subtle" onClick={cancel}>
+							<button className="btn-primary" submitType="submit">Save</button>
+							<button className="btn-primary" type="subtle" onClick={cancel}>
 								cancel
-							</Button>
+							</button>
 						</FlexRow>
 					</FlexColumn>
 				</Form>

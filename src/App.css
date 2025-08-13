@@ -1,7 +1,19 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-mint-500: oklch(0.72 0.11 178);
+	--color-dark: #161514;
+	--color-button: #0c0c0c;
+
+}
+
 html,
 body {
 	padding: 0;
 	margin: 0;
+
+	font-family: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+		'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 .App {
@@ -14,4 +26,163 @@ body {
 	height: 100vh;
 	max-height: 100vh;
 	overflow: hidden;
+}
+
+.btn-primary {
+	cursor: pointer;
+	@apply bg-button text-white font-semibold py-2 px-4 rounded hover:bg-gray-900;
+}
+
+.btn-secondary {
+	cursor: pointer;
+	@apply bg-gray-500 text-white font-semibold py-2 px-4 rounded hover:bg-gray-600;
+}
+
+.btn-alert {
+	cursor: pointer;
+	@apply bg-red-600 text-white font-semibold py-2 px-4 rounded hover:bg-red-700;
+}
+
+button:disabled {
+	cursor: not-allowed;
+	@apply bg-gray-200 text-black font-semibold py-2 px-4 rounded hover:bg-gray-200;
+}
+
+/* General text input styling */
+input {
+	@apply w-full px-3 py-2 rounded border border-gray-300 bg-white text-gray-800 
+         shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 
+         transition-all duration-200 ease-in-out;
+}
+
+input[type='checkbox'] {
+	flex-shrink: 0;
+	@apply appearance-none h-5 w-5 border-2 border-gray-500 rounded-sm 
+         bg-gray-800 checked:bg-blue-500 checked:border-blue-500 
+         focus:outline-none focus:ring-2 focus:ring-blue-300
+         transition-colors duration-150 ease-in-out;
+}
+
+/* For a darker editor theme */
+.input-field-dark {
+	@apply w-full px-3 py-2 rounded border border-gray-600 bg-gray-800 text-gray-100 
+         shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 
+         placeholder-gray-400 transition-all duration-200 ease-in-out;
+}
+
+/* For textareas specifically (like dialogue boxes) */
+textarea {
+	@apply w-full min-h-[120px] px-3 py-2 rounded border border-gray-300 bg-white text-gray-800 
+         shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 
+         resize-y transition-colors duration-200 ease-in-out;
+}
+
+.edgebutton {
+	width: 20px;
+	height: 20px;
+	background: #eee;
+	border: 1px solid #fff;
+	cursor: pointer;
+	border-radius: 50%;
+	font-size: 12px;
+	line-height: 1;
+}
+
+.edgebutton:hover {
+	box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.08);
+}
+
+.edgebutton-foreignobject body {
+	background: transparent;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 40px;
+}
+
+.react-flow__node-basic {
+	font-size: 12px;
+	background: #eee;
+	border: 1px solid #555;
+	border-radius: 2px;
+	text-align: center;
+	padding: 10px;
+}
+
+.react-flow__node-root {
+	font-size: 12px;
+	/* background: #eee; */
+	/* border: 1px solid #555; */
+	border-radius: 2px;
+	text-align: center;
+	/* padding: 10px; */
+}
+.react-flow__node-dialogue {
+	font-size: 12px;
+	/* background: #eee; */
+	border: 1px solid #555;
+	border-radius: 2px;
+	text-align: center;
+	padding: 10px;
+}
+
+.react-flow__edge-path-selector:hover {
+	cursor: pointer;
+}
+.react-flow__edge-path-selector:hover + .react-flow__edge-path,
+.react-flow__edge-path:hover {
+	stroke: #555;
+	cursor: pointer;
+}
+.react-flow__edge-path-selector {
+	fill: none;
+	stroke: transparent;
+	stroke-width: 28;
+}
+
+.react-flow__node-default,
+.react-flow__node-input,
+.react-flow__node-output {
+	padding: 0px;
+	border-radius: 2px;
+	font-size: 12px;
+	/* color: #222; */
+	text-align: center;
+	border-width: 1px;
+	border-style: solid;
+	width: auto;
+	min-width: 150px;
+	background: none;
+}
+
+/* SELECTIONS */
+/* especially this and nodesselection-rect */
+.react-flow__selection {
+	background-color: #eeeeee80;
+}
+.react-flow__selectionpane {
+	background-color: #eeeeee80;
+}
+.react-flow__nodesselection {
+}
+.react-flow__nodesselection-rect {
+	/* background-color: #eeeeee80; */
+}
+
+.ports {
+	padding: 0px;
+	margin: 0px;
+	width: 10px;
+	position: absolute;
+	top: 6px;
+}
+.port-name {
+	/* position: absolute; */
+	/* top: 3px; */
+	list-style: none;
+	font-size: 10px;
+	color: gray;
+	height: 18px;
 }

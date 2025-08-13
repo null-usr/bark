@@ -11,7 +11,6 @@ import Divider from '../Divider'
 import { Paragraph } from '../Typography/text'
 import { FlexRow } from '../styles'
 
-import IconButton from '../Button/IconButton'
 // import BookmarkIcon from '../Icons/Bookmark'
 import CloseIcon from '../Icons/Close'
 import FourSquaresIcon from '../Icons/FourSquares'
@@ -96,31 +95,25 @@ export const ContextMenu: React.FC<{
 			</ContextButton>
 			<FlexRow style={{ justifyContent: 'space-between' }}>
 				<FlexRow>
-					<IconButton
-						color="white"
-						radius="3px"
-						width={32}
-						height={32}
-						Icon={FourSquaresIcon}
+					<button
+						className="btn-primary  "
 						onClick={duplicateNode}
-					/>
-					<IconButton
-						color="white"
-						radius="3px"
-						width={32}
-						height={32}
-						Icon={SaveIcon}
+					>
+						{FourSquaresIcon}
+					</button>
+					<button
+						className="btn-primary  "
 						onClick={onSave}
-					/>
+					>
+						{SaveIcon}
+					</button>
 				</FlexRow>
-				<IconButton
-					color="white"
-					radius="3px"
-					width={32}
-					height={32}
-					Icon={CloseIcon}
+				<button
+					className="btn-primary  "
 					onClick={deleteNode}
-				/>
+				>
+					{CloseIcon}
+				</button>
 			</FlexRow>
 		</ContextMenuContainer>
 	)
