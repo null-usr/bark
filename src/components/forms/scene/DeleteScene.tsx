@@ -1,7 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
-import { Formik, Form, Field } from 'formik'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 
 // Create a custom editor or workspace node
@@ -14,10 +12,10 @@ const DeleteScene: React.FC<{
 		<FlexColumn>
 			<p>Are you sure you want to delete {name}?</p>
 			<FlexRow>
-				<button className="btn-primary" danger onClick={submit}>
+				<button className="btn-alert" onClick={submit}>
 					Delete
 				</button>
-				<button className="btn-primary" type="subtle" onClick={cancel}>
+				<button className="btn-secondary" onClick={cancel}>
 					cancel
 				</button>
 			</FlexRow>

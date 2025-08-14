@@ -4,13 +4,15 @@ import './index.css'
 import Splash from './SplashPage'
 import reportWebVitals from './reportWebVitals'
 
-ReactDOM.render(
+// @ts-ignore
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
+
+root.render(
 	<React.StrictMode>
 		<div className="Splash">
 			<Splash />
 		</div>
-	</React.StrictMode>,
-	document.getElementById('root')
+	</React.StrictMode>
 )
 
 // If you want to start measuring performance in your app, pass a function

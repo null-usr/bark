@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
 import { Formik, Form, Field } from 'formik'
-import Button from '@/components/Button/Button'
 import { FlexColumn, FlexRow } from '@/components/styles'
 import { Paragraph } from '@/components/Typography/text'
 
@@ -48,8 +47,8 @@ const CreateScene: React.FC<{
 						) : null}
 
 						<FlexRow>
-							<button className="btn-primary" submitType="submit">Save</button>
-							<button className="btn-primary" type="subtle" onClick={cancel}>
+							<button className="btn-primary" type="submit">Save</button>
+							<button className="btn-secondary" onClick={cancel}>
 								cancel
 							</button>
 						</FlexRow>

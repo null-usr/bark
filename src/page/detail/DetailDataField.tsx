@@ -1,4 +1,3 @@
-import Button from '@/components/Button/Button'
 import { FlexRow } from '@/components/styles'
 import { BasicNode } from '@/helpers/classes/BasicNode'
 import { DataEdge } from '@/helpers/classes/DataEdge'

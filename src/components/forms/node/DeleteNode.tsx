@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react'
-import Button from '@/components/Button/Button'
 import { Formik, Form, Field } from 'formik'
 import { Paragraph } from '@/components/Typography/text'
 import { FlexColumn, FlexRow } from '@/components/styles'
@@ -17,7 +16,7 @@ const DeleteNode: React.FC<{
 				Are you sure you want to delete {name}?
 			</Paragraph>
 			<FlexRow style={{ justifyContent: 'center' }}>
-				<button className="btn-primary" danger onClick={submit}>
+				<button className="btn-danger" onClick={submit}>
 					Delete
 				</button>
 				<button className="btn-primary" onClick={cancel}>cancel</button>

@@ -95,24 +95,15 @@ export const ContextMenu: React.FC<{
 			</ContextButton>
 			<FlexRow style={{ justifyContent: 'space-between' }}>
 				<FlexRow>
-					<button
-						className="btn-primary  "
-						onClick={duplicateNode}
-					>
-						{FourSquaresIcon}
+					<button className="btn-primary  " onClick={duplicateNode}>
+						<FourSquaresIcon />
 					</button>
-					<button
-						className="btn-primary  "
-						onClick={onSave}
-					>
-						{SaveIcon}
+					<button className="btn-primary  " onClick={onSave}>
+						<SaveIcon />
 					</button>
 				</FlexRow>
-				<button
-					className="btn-primary  "
-					onClick={deleteNode}
-				>
-					{CloseIcon}
+				<button className="btn-primary  " onClick={deleteNode}>
+					<CloseIcon />
 				</button>
 			</FlexRow>
 		</ContextMenuContainer>
